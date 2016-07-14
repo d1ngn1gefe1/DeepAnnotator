@@ -7,7 +7,7 @@ var VideoAnnotator = React.createClass({
 
   render: function() {
     return (
-      <video id={"video"+this.props.videoId} className="video-js" controls preload="auto" width="640" height="264" poster={"img/portfolio/"+this.props.thumbnail+".png"} data-setup="{}">
+      <video id={"video"+this.props.videoId} className="video-js" controls preload="auto" width="640" height="264" poster={"img/video-annotator/"+this.props.thumbnail+".png"} data-setup="{}">
         <source src="video/example.mp4" type='video/mp4' />
         <p className="vjs-no-js">
           To view this video please enable JavaScript, and consider upgrading to a web browser that
@@ -19,14 +19,14 @@ var VideoAnnotator = React.createClass({
 });
 
 
-var VideoList = React.createClass({
+var VideoAnnotators = React.createClass({
   render: function() {
     var thumbnails = ["cabin", "cake", "circus", "game", "safe", "submarine"];
     return (
       <div>{
       thumbnails.map(function(thumbnail, index) {
         return (
-          <div className="portfolio-modal modal fade" key={index} id={"portfolioModal"+index} tabIndex="-1" role="dialog" aria-hidden="true">
+          <div className="video-annotator-modal modal fade" key={index} id={"video-annotator-modal"+index} tabIndex="-1" role="dialog" aria-hidden="true">
               <div className="modal-content">
                   <div className="close-modal" data-dismiss="modal">
                       <div className="lr">
@@ -38,7 +38,7 @@ var VideoList = React.createClass({
                       <div className="row">
                           <div className="col-lg-8 col-lg-offset-2">
                               <div className="modal-body">
-                                  <h2>Project Title</h2>
+                                  <h2>{thumbnail}</h2>
                                   <hr className="star-primary"></hr>
 
                                   <VideoAnnotator videoId={index} thumbnail={thumbnail}/>
@@ -72,6 +72,6 @@ var VideoList = React.createClass({
 });
 
 ReactDOM.render(
-  <VideoList/>,
-  document.getElementById("video-list")
+  <VideoAnnotators/>,
+  document.getElementById("video-annotators")
 );
