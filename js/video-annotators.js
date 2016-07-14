@@ -7,7 +7,7 @@ var VideoAnnotator = React.createClass({
 
   render: function() {
     return (
-      <video id={"video"+this.props.videoId} className="video-js" controls preload="auto" width="640" height="264" poster={"img/video-annotator/"+this.props.thumbnail+".png"} data-setup="{}">
+      <video id={"video"+this.props.videoId} className="video-js" controls preload="auto" width="640" height="480" poster={"img/video-annotator/"+this.props.thumbnail+".png"} data-setup="{}">
         <source src="video/example.mp4" type='video/mp4' />
         <p className="vjs-no-js">
           To view this video please enable JavaScript, and consider upgrading to a web browser that
@@ -30,8 +30,7 @@ var VideoAnnotators = React.createClass({
               <div className="modal-content">
                   <div className="close-modal" data-dismiss="modal">
                       <div className="lr">
-                          <div className="rl">
-                          </div>
+                          <div className="rl"></div>
                       </div>
                   </div>
                   <div className="container">
