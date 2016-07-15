@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--data_dir', default='/mnt/bigdata/intermountain',
                         help='Root directory where all data resides')
-    parser.add_argument('--out_dir', default='/home/www/emma/DeepAnnotator/videos',
+    parser.add_argument('--out_dir', default='../videos',
                         help='Output directory')
     parser.add_argument('--frame_per_video', default=500,
                         help='Number of frames per video')
