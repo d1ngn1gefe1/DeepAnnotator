@@ -10,7 +10,7 @@ var uglify = require('gulp-uglify');
 var pkg = require('./package.json');
 
 // Default task
-gulp.task('default', ['minify-js', 'copy', 'webpack']);
+gulp.task('default', ['minify-js', 'copy', 'webpack', 'dev']);
 
 // webpack
 gulp.task('webpack', function() {
@@ -74,7 +74,7 @@ gulp.task('browserSync', function() {
     })
 })
 
-// // Watch Task that compiles LESS and watches for HTML or JS changes and reloads with browserSync
+// Watch Tasks
 gulp.task('dev', ['browserSync', 'minify-js', 'webpack'], function() {
     gulp.watch('app/components/*.js', ['minify-js']);
     gulp.watch('app/components/*.jsx', ['webpack']);
