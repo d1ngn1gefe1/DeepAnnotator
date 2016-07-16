@@ -89,10 +89,6 @@ def parse_frames(sensor, data_dir, fpv):
     print 'Parsing data...Output to:', out_dir
     if os.path.exists(out_dir): rmtree(out_dir)
     os.makedirs(out_dir)
-    command = ['chmod', '777', '-R', out_dir]
-    command = ' '.join(command)
-    print command
-    sp.call(command, shell=True)
 
     frame_dir = os.path.join(data_dir, sensor, 'd')
     assert os.path.exists(frame_dir), 'Frames not found: ' + frame_dir
@@ -117,6 +113,8 @@ def parse_frames(sensor, data_dir, fpv):
         frame_count += 1
     print 'Num. videos:', dir_count
 
+    command = ' '.join(['chmod', '777', '-R', out_dir])
+    sp.call(command, shell=True)
     return (out_dir, dir_count)
 
 
