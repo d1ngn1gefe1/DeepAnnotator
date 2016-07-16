@@ -30,6 +30,8 @@ class Main extends React.Component {
             <i className="fa fa-chevron-up"></i>
           </a>
         </div>
+
+        <VideoAnnotators />
       </div>
     );
   }
