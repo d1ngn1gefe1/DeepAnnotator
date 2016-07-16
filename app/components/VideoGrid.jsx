@@ -1,4 +1,5 @@
 import React from "react";
+import info from '../../public/video/info.json';
 
 export default class VideoGrid extends React.Component {
   // similar to componentWillMount in ES5
@@ -9,6 +10,8 @@ export default class VideoGrid extends React.Component {
   };
 
   render() {
+    var self = this;
+
     return (
       <section id="video-grid">
         <div className="container">
@@ -20,20 +23,26 @@ export default class VideoGrid extends React.Component {
           </div>
 
           <div className="row">{
-          this.props.players.map(function(thumbnail, index) {
-            return (
-              <div className="col-sm-4 video-annotator-item" key={index}>
-                <a href={"#video-annotator-modal"+index} className="video-annotator-link" data-toggle="modal">
-                  <div className="caption">
-                    <div className="caption-content">
-                      <i className="fa fa-pencil fa-3x"></i>
+            self.props.playlists.map(function(playlist, index) {
+              var thumbnail = "video/"+playlist+"/"+self.props.start_index[index]+"/"+self.props.thumbnailName
+
+              return (
+                <div className="col-sm-4 video-annotator-item" key={index}>
+                  <a href={"#video-annotator-modal"+index} className="video-annotator-link" data-toggle="modal">
+                    <div className="caption">
+                      <div className="caption-content">
+                        <i className="fa fa-pencil fa-3x"></i>
+                      </div>
                     </div>
-                  </div>
-                  <img src={"video/-annotator/"+thumbnail+".png"} className="img-responsive" alt=""></img>
-                </a>
-              </div>
-            );
-          })
+                    <img src={thumbnail} className="img-responsive" alt=""></img>
+                    <div className="playlist-label">
+                      <h3>{playlist}</h3>
+                      <h4>{"video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1)}</h4>
+                    </div>
+                  </a>
+                </div>
+              );
+            })
           }</div>
         </div>
       </section>
@@ -42,10 +51,10 @@ export default class VideoGrid extends React.Component {
 }
 
 VideoGrid.propTypes = {
-  height: React.propTypes.number,
-  width: React.propTypes.number,
-  videoName: React.propTypes.string,
-  thumbnailName: React.propTypes.string
+  height: React.PropTypes.number,
+  width: React.PropTypes.number,
+  videoName: React.PropTypes.string,
+  thumbnailName: React.PropTypes.string
 };
 
 VideoGrid.defaultProps = {
@@ -53,6 +62,7 @@ VideoGrid.defaultProps = {
   width: 320,
   videoName: "depth.mp4",
   thumbnailName: "thumbnail.jpg",
-  folders = ["10.233.219.150", "10.233.219.169"],
-  lengths = [22, 18]
+  playlists: info.playlists,
+  start_index: info.start_index,
+  end_index: info.end_index
 };

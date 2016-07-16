@@ -2,22 +2,31 @@ import re
 import os
 import argparse
 import json
+import math
 import subprocess as sp
 from shutil import copyfile, rmtree
 from create_config import write_json
 
-
-def inspect_video_data(video_dir):
+def inspect_video_data(video_dir, video_per_playlist):
     stat = {}
     sensors = [s for s in os.listdir(video_dir) if s.find('10') != -1]
-    video_counts = []
+    start_index = []
+    end_index = [] # exclusive
+    playlists = []
     for s in sensors:
         s_dir = os.path.join(video_dir, s)
-        video_counts.append(
-            len([v for v in os.listdir(s_dir) if v.find('v') != -1]))
-    stat['sensors'] = sensors
-    stat['video_counts'] = video_counts
-    out_path = os.path.join(video_dir, 'stat.json')
+        video_count = len(os.listdir(s_dir))
+        print video_count
+        num_video = int(math.ceil(float(video_count)/video_per_playlist))
+        for i in range(num_video):
+          start_index.append(i*video_per_playlist)
+          end_index.append(min((i+1)*video_per_playlist, video_count))
+          playlists.append(s)
+
+    stat['start_index'] = start_index
+    stat['end_index'] = end_index
+    stat['playlists'] = playlists
+    out_path = os.path.join(video_dir, 'info.json')
     print 'Output json to:', out_path
     print stat
     write_json(stat, out_path)
@@ -111,7 +120,7 @@ def main(params):
             params['frame_per_video'])
         for i in range(dir_count):
             frame_dir = os.path.join(frames_dir, str(i))
-            out_dir = os.path.join(params['out_dir'], s, 'v'+str(i))
+            out_dir = os.path.join(params['out_dir'], s, str(i))
             assert os.path.exists(frame_dir), 'Frames not found: ' + frame_dir
             if not os.path.exists(out_dir):
                 os.makedirs(out_dir)
@@ -121,7 +130,7 @@ def main(params):
             copyfile(thumbnail, os.path.join(out_dir, 'thumbnail.jpg'))
             frames_to_mp4(frame_dir, out_dir, params['frame_per_second'])
 
-    inspect_video_data(params['out_dir'])
+    inspect_video_data(params['out_dir'], params['video_per_playlist'])
 
 
 if __name__ == "__main__":
@@ -135,6 +144,8 @@ if __name__ == "__main__":
                         help='Number of frames per video')
     parser.add_argument('--frame_per_second', default=5,
                         help='Number of frames per second (frame rate)')
+    parser.add_argument('--video_per_playlist', default=10,
+                        help='Number of videos per playlist')
 
     args = parser.parse_args()
     params = vars(args)
