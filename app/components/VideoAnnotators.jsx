@@ -1,12 +1,23 @@
 import React from "react";
 import VideoAnnotator from "./VideoAnnotator.jsx";
+import info from '../../public/video/info.json';
 
 export default class VideoAnnotators extends React.Component {
+  // similar to componentWillMount in ES5
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  };
+
   render() {
-    var thumbnails = ["cabin", "cake", "circus", "game", "safe", "submarine"];
+    var self = this;
+
     return (
       <div>{
-      thumbnails.map(function(thumbnail, index) {
+      self.props.playlists.map(function(playlistName, index) {
+        var playlistLabel = "video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1)
+
         return (
           <div className="video-annotator-modal modal fade" key={index} id={"video-annotator-modal"+index} tabIndex="-1" role="dialog" aria-hidden="true">
               <div className="modal-content">
@@ -19,10 +30,10 @@ export default class VideoAnnotators extends React.Component {
                       <div className="row">
                           <div className="col-lg-8 col-lg-offset-2">
                               <div className="modal-body">
-                                  <h2>{thumbnail}</h2>
+                                  <h2>{playlistLabel}</h2>
                                   <hr className="star-primary"></hr>
 
-                                  <VideoAnnotator videoId={index} thumbnail={thumbnail}/>
+                                  <VideoAnnotator start={self.props.start_index[index]} end={self.props.end_index[index]} playlistName={playlistName}/>
 
                                   <ul className="list-inline item-details">
                                       <li>Client:
@@ -51,3 +62,9 @@ export default class VideoAnnotators extends React.Component {
     );
   }
 }
+
+VideoAnnotators.defaultProps = {
+  playlists: info.playlists,
+  start_index: info.start_index,
+  end_index: info.end_index
+};

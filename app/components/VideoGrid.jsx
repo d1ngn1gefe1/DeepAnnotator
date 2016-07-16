@@ -23,8 +23,9 @@ export default class VideoGrid extends React.Component {
           </div>
 
           <div className="row">{
-            self.props.playlists.map(function(playlist, index) {
-              var thumbnail = "video/"+playlist+"/"+self.props.start_index[index]+"/"+self.props.thumbnailName
+            self.props.playlists.map(function(playlistName, index) {
+              var thumbnail = "video/"+playlistName+"/"+self.props.start_index[index]+"/thumbnail.jpg"
+              var playlistLabel = "video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1)
 
               return (
                 <div className="col-sm-4 video-annotator-item" key={index}>
@@ -36,8 +37,8 @@ export default class VideoGrid extends React.Component {
                     </div>
                     <img src={thumbnail} className="img-responsive" alt=""></img>
                     <div className="playlist-label">
-                      <h3>{playlist}</h3>
-                      <h4>{"video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1)}</h4>
+                      <h3>{playlistName}</h3>
+                      <h4>{playlistLabel}</h4>
                     </div>
                   </a>
                 </div>
@@ -51,17 +52,9 @@ export default class VideoGrid extends React.Component {
 }
 
 VideoGrid.propTypes = {
-  height: React.PropTypes.number,
-  width: React.PropTypes.number,
-  videoName: React.PropTypes.string,
-  thumbnailName: React.PropTypes.string
 };
 
 VideoGrid.defaultProps = {
-  height: 240,
-  width: 320,
-  videoName: "depth.mp4",
-  thumbnailName: "thumbnail.jpg",
   playlists: info.playlists,
   start_index: info.start_index,
   end_index: info.end_index
