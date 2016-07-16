@@ -12,6 +12,7 @@ import "../css/freelancer.css";
 import "../less/freelancer.less";
 import "../less/mixins.less";
 import "../less/variables.less";
+import "../css/video.css";
 
 class Main extends React.Component {
   render() {

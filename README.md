@@ -1,4 +1,4 @@
 # DeepAnnotator
-Build: 
+Build:
 npm install
 gulp
