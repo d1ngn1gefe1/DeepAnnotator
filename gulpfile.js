@@ -16,7 +16,7 @@ gulp.task('default', ['minify-js', 'copy', 'webpack', 'dev']);
 gulp.task('webpack', function() {
   return gulp.src('app/components/Main.js')
     .pipe(webpack(require('./webpack.config.js')))
-    .pipe(gulp.dest('public'));
+    .pipe(gulp.dest('public/static/js'));
 });
 
 // Minify JS
@@ -24,7 +24,7 @@ gulp.task('minify-js-0', function() {
     return gulp.src('app/components/contact_me.js')
         .pipe(uglify())
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('public'))
+        .pipe(gulp.dest('public/static/js'))
         .pipe(browserSync.reload({
             stream: true
         }))
@@ -34,7 +34,7 @@ gulp.task('minify-js-1', function() {
     return gulp.src('app/components/freelancer.js')
         .pipe(uglify())
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('public'))
+        .pipe(gulp.dest('public/static/js'))
         .pipe(browserSync.reload({
             stream: true
         }))
@@ -44,7 +44,7 @@ gulp.task('minify-js-2', function() {
     return gulp.src('app/components/jqBootstrapValidation.js')
         .pipe(uglify())
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('public'))
+        .pipe(gulp.dest('public/static/js'))
         .pipe(browserSync.reload({
             stream: true
         }))
@@ -55,15 +55,20 @@ gulp.task('minify-js', ['minify-js-0', 'minify-js-1', 'minify-js-2']);
 // Copy
 gulp.task('copy-0', function() {
     return gulp.src(['img/**'])
-        .pipe(gulp.dest('public/img'))
+        .pipe(gulp.dest('public/static/img'))
 })
 
 gulp.task('copy-1', function() {
     return gulp.src(['index.html'])
+        .pipe(gulp.dest('public/templates/'))
+})
+
+gulp.task('copy-2', function() {
+    return gulp.src(['app/app.py'])
         .pipe(gulp.dest('public/'))
 })
 
-gulp.task('copy', ['copy-0', 'copy-1']);
+gulp.task('copy', ['copy-0', 'copy-1', 'copy-2']);
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {

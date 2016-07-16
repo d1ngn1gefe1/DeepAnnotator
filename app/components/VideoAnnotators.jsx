@@ -1,6 +1,6 @@
 import React from "react";
 import VideoAnnotator from "./VideoAnnotator.jsx";
-import info from '../../public/video/info.json';
+import info from '../../public/static/video/info.json';
 
 export default class VideoAnnotators extends React.Component {
   // similar to componentWillMount in ES5
