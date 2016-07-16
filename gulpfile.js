@@ -10,7 +10,7 @@ var uglify = require('gulp-uglify');
 var pkg = require('./package.json');
 
 // Default task
-gulp.task('default', ['minify-js-0', 'minify-js-1', 'minify-js-2', 'copy', 'webpack']);
+gulp.task('default', ['minify-js', 'copy', 'webpack']);
 
 // webpack
 gulp.task('webpack', function() {
@@ -19,7 +19,7 @@ gulp.task('webpack', function() {
     .pipe(gulp.dest('public'));
 });
 
-// Minify contact_me.js
+// Minify JS
 gulp.task('minify-js-0', function() {
     return gulp.src('app/components/contact_me.js')
         .pipe(uglify())
@@ -30,7 +30,6 @@ gulp.task('minify-js-0', function() {
         }))
 });
 
-// Minify freelancer.js
 gulp.task('minify-js-1', function() {
     return gulp.src('app/components/freelancer.js')
         .pipe(uglify())
@@ -41,7 +40,6 @@ gulp.task('minify-js-1', function() {
         }))
 });
 
-// Minify jqBootstrapValidation.js
 gulp.task('minify-js-2', function() {
     return gulp.src('app/components/jqBootstrapValidation.js')
         .pipe(uglify())
@@ -51,6 +49,8 @@ gulp.task('minify-js-2', function() {
             stream: true
         }))
 });
+
+gulp.task('minify-js', ['minify-js-0', 'minify-js-1', 'minify-js-2']);
 
 // Copy
 gulp.task('copy-0', function() {
@@ -75,11 +75,12 @@ gulp.task('browserSync', function() {
 })
 
 // // Watch Task that compiles LESS and watches for HTML or JS changes and reloads with browserSync
-// gulp.task('dev', ['browserSync', 'less', 'minify-css', 'minify-js'], function() {
-//     gulp.watch('app/less/*.less', ['less']);
-//     gulp.watch('app/css/*.css', ['minify-css']);
-//     gulp.watch('app/components/*.js', ['minify-js']);
-//     // Reloads the browser whenever HTML or JS files change
-//     gulp.watch('public/*.html', browserSync.reload);
-//     gulp.watch('public/*.js', browserSync.reload);
-// });
+gulp.task('dev', ['browserSync', 'minify-js', 'webpack'], function() {
+    gulp.watch('app/components/*.js', ['minify-js']);
+    gulp.watch('app/components/*.jsx', ['webpack']);
+    gulp.watch('app/css/*.css', ['webpack']);
+    gulp.watch('app/less/*.less', ['webpack']);
+    // Reloads the browser whenever HTML or JS files change
+    gulp.watch('public/*.html', browserSync.reload);
+    gulp.watch('public/*.js', browserSync.reload);
+});
