@@ -120,6 +120,7 @@ def main(params):
             thumbnail = os.path.join(frame_dir, frames[0])
             copyfile(thumbnail, os.path.join(out_dir, 'thumbnail.jpg'))
             frames_to_mp4(frame_dir, out_dir, params['frame_per_second'])
+
     inspect_video_data(params['out_dir'])
 
 
