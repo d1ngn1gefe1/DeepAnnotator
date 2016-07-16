@@ -1,5 +1,5 @@
 import React from "react";
-import info from '../../public/video/info.json';
+import info from '../../public/static/video/info.json';
 
 export default class VideoGrid extends React.Component {
   // similar to componentWillMount in ES5
@@ -24,7 +24,7 @@ export default class VideoGrid extends React.Component {
 
           <div className="row">{
             self.props.playlists.map(function(playlistName, index) {
-              var thumbnail = "video/"+playlistName+"/"+self.props.start_index[index]+"/thumbnail.jpg"
+              var thumbnail = "./static/video/"+playlistName+"/"+self.props.start_index[index]+"/thumbnail.jpg"
               var playlistLabel = "video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1)
 
               return (

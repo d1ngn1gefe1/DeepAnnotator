@@ -15,8 +15,8 @@ export default class VideoAnnotator extends React.Component {
 
   render() {
     var self = this;
-    var thumbnail = "video/"+self.props.playlistName+"/"+self.props.start+"/thumbnail.jpg"
-    var videoPath = "video/"+self.props.playlistName+"/"+self.props.start+"/depth.mp4"
+    var thumbnail = "./static/video/"+self.props.playlistName+"/"+self.props.start+"/thumbnail.jpg"
+    var videoPath = "./static/video/"+self.props.playlistName+"/"+self.props.start+"/depth.mp4"
 
     return (
       <Video src={videoPath} />

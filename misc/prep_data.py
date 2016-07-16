@@ -8,6 +8,13 @@ from shutil import copyfile, rmtree
 from create_config import write_json
 
 def inspect_video_data(video_dir, video_per_playlist):
+    '''Save video information to json.
+      Args:
+        video_dir: root directory that contains all the videos
+        video_per_playlist: number of videos per playlist
+      Returns:
+        None
+    '''
     stat = {}
     sensors = [s for s in os.listdir(video_dir) if s.find('10') != -1]
     start_index = []
@@ -138,7 +145,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--data_dir', default='/mnt/bigdata/intermountain',
                         help='Root directory where all data resides')
-    parser.add_argument('--out_dir', default='../public/video',
+    parser.add_argument('--out_dir', default='../public/static/video',
                         help='Output directory')
     parser.add_argument('--frame_per_video', default=500,
                         help='Number of frames per video')

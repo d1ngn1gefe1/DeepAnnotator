@@ -1,7 +1,7 @@
 var config = {
   entry: __dirname + "/app/components/Main.jsx",
   output: {
-    path: __dirname + "/public",
+    path: __dirname + "/public/static/js",
     filename: "bundle.js"
   },
   module: {
@@ -27,16 +27,10 @@ var config = {
         loader: "url?limit=100000@name=[name][ext]"
       },
       {
-        test: /\.json$/, 
+        test: /\.json$/,
         loader: 'json'
       }
     ]
-  },
-  devServer: {
-    contentBase: "./public",
-    colors: true,
-    historyApiFallback: true,
-    inline: true
   }
 };
 
