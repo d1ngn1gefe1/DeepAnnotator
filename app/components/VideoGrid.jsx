@@ -1,5 +1,7 @@
-var VideoGrid = React.createClass({
-  render: function() {
+import React from "react";
+
+export default class VideoGrid extends React.Component {
+  render() {
     var thumbnails = ["cabin", "cake", "circus", "game", "safe", "submarine"];
     return (
       <div className="container">
@@ -28,9 +30,4 @@ var VideoGrid = React.createClass({
       </div>
     );
   }
-});
-
-ReactDOM.render(
-  <VideoGrid/>,
-  document.getElementById("video-grid")
-);
+}
