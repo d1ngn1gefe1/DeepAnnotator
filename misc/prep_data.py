@@ -1,8 +1,26 @@
 import re
 import os
 import argparse
+import json
 import subprocess as sp
 from shutil import copyfile, rmtree
+from create_config import write_json
+
+
+def inspect_video_data(video_dir):
+    stat = {}
+    sensors = [s for s in os.listdir(video_dir) if s.find('10') != -1]
+    video_counts = []
+    for s in sensors:
+        s_dir = os.path.join(video_dir, s)
+        video_counts.append(
+            len([v for v in os.listdir(s_dir) if v.find('v') != -1]))
+    stat['sensors'] = sensors
+    stat['video_counts'] = video_counts
+    out_path = os.path.join(video_dir, 'stat.json')
+    print 'Output json to:', out_path
+    print stat
+    write_json(stat, out_path)
 
 
 def frames_to_mp4(frame_dir, out_dir, fps):
@@ -83,14 +101,17 @@ def parse_frames(sensor, data_dir, fpv):
 
 
 def main(params):
+    if os.path.exists(params['out_dir']): rmtree(params['out_dir'])
+    os.makedirs(params['out_dir'])
     sensor_dirs = [d for d in os.listdir(params['data_dir']) if
                    d.find('10') != -1]
+
     for s in sensor_dirs:
         frames_dir, dir_count = parse_frames(s, params['data_dir'],
             params['frame_per_video'])
         for i in range(dir_count):
             frame_dir = os.path.join(frames_dir, str(i))
-            out_dir = os.path.join(params['out_dir'], s, str(i))
+            out_dir = os.path.join(params['out_dir'], s, 'v'+str(i))
             assert os.path.exists(frame_dir), 'Frames not found: ' + frame_dir
             if not os.path.exists(out_dir):
                 os.makedirs(out_dir)
@@ -99,6 +120,7 @@ def main(params):
             thumbnail = os.path.join(frame_dir, frames[0])
             copyfile(thumbnail, os.path.join(out_dir, 'thumbnail.jpg'))
             frames_to_mp4(frame_dir, out_dir, params['frame_per_second'])
+    inspect_video_data(params['out_dir'])
 
 
 if __name__ == "__main__":
