@@ -1,26 +1,8 @@
-var VideoAnnotator = React.createClass({
-  propTypes: {
-    videoId: React.PropTypes.number,
-    videoPartId: React.PropTypes.number,
-    thumbnail: React.PropTypes.string,
-  },
+import React from "react";
+import VideoAnnotator from "./VideoAnnotator.jsx";
 
-  render: function() {
-    return (
-      <video id={"video"+this.props.videoId} className="video-js" controls preload="auto" width="640" height="480" poster={"img/video-annotator/"+this.props.thumbnail+".png"} data-setup="{}">
-        <source src="video/example.mp4" type='video/mp4' />
-        <p className="vjs-no-js">
-          To view this video please enable JavaScript, and consider upgrading to a web browser that
-          <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-        </p>
-      </video>
-    );
-  }
-});
-
-
-var VideoAnnotators = React.createClass({
-  render: function() {
+export default class VideoAnnotators extends React.Component {
+  render() {
     var thumbnails = ["cabin", "cake", "circus", "game", "safe", "submarine"];
     return (
       <div>{
@@ -68,9 +50,4 @@ var VideoAnnotators = React.createClass({
       }</div>
     );
   }
-});
-
-ReactDOM.render(
-  <VideoAnnotators/>,
-  document.getElementById("video-annotators")
-);
+}

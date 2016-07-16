@@ -1,2 +1,4 @@
-videos/*
+/public
+/node_modules
+/videos/*
 *.pyc
