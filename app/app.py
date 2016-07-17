@@ -1,6 +1,7 @@
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
+import argparse
 
 # create the application object
 app = Flask(__name__)
@@ -51,4 +52,9 @@ def logout():
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, threaded=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', default=5000, type=int,
+                        help='Specify port number for the server')
+    args = parser.parse_args()
+    params = vars(args)
+    app.run(host='0.0.0.0', port=int(params['port']), debug=True, threaded=True)
