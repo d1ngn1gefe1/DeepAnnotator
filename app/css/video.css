@@ -381,7 +381,6 @@ body.vjs-full-window {
   transition: all 0.4s; }
 
 .vjs-big-play-centered {
-  width: 50%;
   margin: 0 auto; }
 
 .vjs-big-play-centered .vjs-big-play-button {

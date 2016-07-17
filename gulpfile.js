@@ -70,7 +70,7 @@ gulp.task('copy-0', function() {
 })
 
 gulp.task('copy-1', function() {
-    return gulp.src(['index.html'])
+    return gulp.src(['app/templates/'])
         .pipe(gulp.dest('public/templates/'))
 })
 
@@ -110,8 +110,9 @@ gulp.task('dev', ['browserSync', 'minify-js', 'webpack'], function() {
     gulp.watch('app/components/*.js', ['minify-js']);
     gulp.watch('app/components/*.jsx', ['webpack']);
     gulp.watch('app/css/*.css', ['webpack']);
-    gulp.watch('app/less/*.less', ['webpack']);
+    gulp.watch('app/templates/*', ['copy-1']);
+    gulp.watch('app/app.py', ['copy-2']);
     // Reloads the browser whenever HTML or JS files change
-    gulp.watch('public/*.html', browserSync.reload);
-    gulp.watch('public/*.js', browserSync.reload);
+    gulp.watch('public/templates/*.html', browserSync.reload);
+    gulp.watch('public/static/js/*.js', browserSync.reload);
 });
