@@ -1,13 +1,13 @@
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
+from sqlalchemy.orm import sessionmaker
+from sql.init_users import *
 import argparse
+import os
 
 # create the application object
 app = Flask(__name__)
-
-# config
-app.secret_key = 'my precious'
 
 # login required decorator
 def login_required(f):
@@ -35,12 +35,20 @@ def welcome():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Invalid Credentials. Please try again.'
-        else:
+        POST_USERNAME = str(request.form['username'])
+        POST_PASSWORD = str(request.form['password'])
+
+        Session = sessionmaker(bind=engine)
+        s = Session()
+        query = s.query(User).filter(User.username.in_([POST_USERNAME]),
+                                     User.password.in_([POST_PASSWORD]))
+        result = query.first()
+        if result:
             session['logged_in'] = True
             flash('You were logged in.')
             return redirect(url_for('home'))
+        else:
+            error = 'Invalid Credentials. Please try again.'
     return render_template('login.html', error=error)
 
 @app.route('/logout')
@@ -57,4 +65,6 @@ if __name__ == '__main__':
                         help='Specify port number for the server')
     args = parser.parse_args()
     params = vars(args)
+
+    app.secret_key = os.urandom(12)
     app.run(host='0.0.0.0', port=int(params['port']), debug=True, threaded=True)
