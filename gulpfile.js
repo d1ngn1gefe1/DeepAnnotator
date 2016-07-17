@@ -8,9 +8,20 @@ var cleanCSS = require('gulp-clean-css');
 var rename = require("gulp-rename");
 var uglify = require('gulp-uglify');
 var pkg = require('./package.json');
+var del = require('del');
 
 // Default task
 gulp.task('default', ['minify-js', 'copy', 'webpack', 'dev']);
+
+// clean
+gulp.task('clean', function (cb) {
+  return del([
+    'public/**/*',
+    '!public/static',
+    '!public/static/video',
+    '!public/static/video/**/*'
+  ], cb);
+});
 
 // webpack
 gulp.task('webpack', function() {
