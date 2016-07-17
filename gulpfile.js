@@ -79,7 +79,12 @@ gulp.task('copy-2', function() {
         .pipe(gulp.dest('public/'))
 })
 
-gulp.task('copy', ['copy-0', 'copy-1', 'copy-2']);
+gulp.task('copy-3', function() {
+    return gulp.src(['app/templates/*'])
+        .pipe(gulp.dest('public/templates/'))
+})
+
+gulp.task('copy', ['copy-0', 'copy-1', 'copy-2', 'copy-3']);
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {

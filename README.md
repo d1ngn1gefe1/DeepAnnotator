@@ -1,6 +1,7 @@
 # DeepAnnotator
 ## Dependencies
 * React
+* Flask
 * Bootstrap
 * jQuery
 * video.js
@@ -16,4 +17,9 @@
 ```bash
 npm install
 npm start
+```
+
+## To clean up, please run:
+```bash
+gulp clean
 ```
