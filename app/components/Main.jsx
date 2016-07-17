@@ -13,6 +13,7 @@ import "../less/freelancer.less";
 import "../less/mixins.less";
 import "../less/variables.less";
 import "../css/video.css";
+import "../css/videojs-playlist-ui.vertical.css"
 
 class Main extends React.Component {
   render() {

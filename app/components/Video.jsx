@@ -2,13 +2,15 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var cx = require("classnames");
 var vjs = require("video.js");
-var abc = require("videojs-playlist");
+var vjsPlaylist = require("videojs-playlist");
+var vjsPlaylistUI = require("videojs-playlist-ui");
 var _forEach = require("lodash/forEach");
 var _debounce = require("lodash/debounce");
 var _defaults = require("lodash/defaults");
 
 var DEFAULT_HEIGHT = 240;
 var DEFAULT_WIDTH = 320;
+var DEFAULT_SCALING = 2;
 var DEFAULT_ASPECT_RATIO = (4 / 3);
 var DEFAULT_ADJUSTED_SIZE = 0;
 var DEFAULT_RESIZE_DEBOUNCE_TIME = 500;
@@ -60,24 +62,25 @@ var Video = React.createClass({
   componentDidMount: function() {
     this.mountVideoPlayer();
 
-    // vjs('playerId').ready(function () {
-    //   var myPlayer = this;
-    //   myPlayer.playlist([{
-    //     "sources": [{
-    //       "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_SeaHorse.mp4", "type": "video/mp4"
-    //     }],
-    //     "name": "Seahorse",
-    //     "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png",
-    //     "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png"
-    //   }, {
-    //     "sources": [{
-    //       "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_Anemone.mp4", "type": "video/mp4"
-    //     }],
-    //     "name": "Sea Anemone",
-    //     "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png",
-    //     "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png"
-    //   }]);
-    // });
+    vjs('playerId').ready(function () {
+      var myPlayer = this;
+      myPlayer.playlist([{
+        "sources": [{
+          "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_SeaHorse.mp4", "type": "video/mp4"
+        }],
+        "name": "Seahorse",
+        "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png",
+        "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png"
+      }, {
+        "sources": [{
+          "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_Anemone.mp4", "type": "video/mp4"
+        }],
+        "name": "Sea Anemone",
+        "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png",
+        "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png"
+      }]);
+      myPlayer.playlistUi();
+    });
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -132,8 +135,8 @@ var Video = React.createClass({
   getVideoPlayerOptions: function() {
     return _defaults(
       {}, this.props.options, {
-      height: this.props.resize ? "auto" : (this.props.height || DEFAULT_HEIGHT),
-      width: this.props.resize ? "auto" : 600//(this.props.width || DEFAULT_WIDTH)
+      height: this.props.resize ? "auto" : (this.props.height || DEFAULT_HEIGHT*DEFAULT_SCALING),
+      width: this.props.resize ? "auto" : (this.props.width || DEFAULT_WIDTH*DEFAULT_SCALING)
     }, DEFAULT_VIDEO_OPTIONS);
   },
 
@@ -290,14 +293,19 @@ var Video = React.createClass({
     console.log("hou a ");
     var videoPlayerClasses = cx({
       "video-js": true,
+      "col-md-8": true,
       "vjs-default-skin": this.props.vjsDefaultSkin,
       "vjs-big-play-centered": this.props.vjsBigPlayCentered
     });
 
     return (
-      <video ref="videoPlayer" className={videoPlayerClasses} id="playerId">
-        {this.props.children || this.renderDefaultWarning()}
-      </video>
+      <div>
+        <video ref="videoPlayer" className={videoPlayerClasses} id="playerId">
+          {this.props.children || this.renderDefaultWarning()}
+        </video>
+        <ol className="vjs-playlist .col-md-4">
+        </ol>
+      </div>
     );
   }
 });
