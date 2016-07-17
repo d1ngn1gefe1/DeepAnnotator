@@ -84,7 +84,12 @@ gulp.task('copy-3', function() {
         .pipe(gulp.dest('public/templates/'))
 })
 
-gulp.task('copy', ['copy-0', 'copy-1', 'copy-2', 'copy-3']);
+gulp.task('copy-4', function() {
+    return gulp.src(['app/login-assets/**'])
+        .pipe(gulp.dest('public/static/login-assets/'))
+})
+
+gulp.task('copy', ['copy-0', 'copy-1', 'copy-2', 'copy-3', 'copy-4']);
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {
