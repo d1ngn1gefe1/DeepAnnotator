@@ -60,24 +60,24 @@ var Video = React.createClass({
   componentDidMount: function() {
     this.mountVideoPlayer();
 
-    vjs('playerId').ready(function () {
-      var myPlayer = this;
-      myPlayer.playlist([{
-        "sources": [{
-          "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_SeaHorse.mp4", "type": "video/mp4"
-        }],
-        "name": "Seahorse",
-        "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png",
-        "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png"
-      }, {
-        "sources": [{
-          "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_Anemone.mp4", "type": "video/mp4"
-        }],
-        "name": "Sea Anemone",
-        "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png",
-        "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png"
-      }]);
-    });
+    // vjs('playerId').ready(function () {
+    //   var myPlayer = this;
+    //   myPlayer.playlist([{
+    //     "sources": [{
+    //       "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_SeaHorse.mp4", "type": "video/mp4"
+    //     }],
+    //     "name": "Seahorse",
+    //     "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png",
+    //     "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png"
+    //   }, {
+    //     "sources": [{
+    //       "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_Anemone.mp4", "type": "video/mp4"
+    //     }],
+    //     "name": "Sea Anemone",
+    //     "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png",
+    //     "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png"
+    //   }]);
+    // });
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -133,7 +133,7 @@ var Video = React.createClass({
     return _defaults(
       {}, this.props.options, {
       height: this.props.resize ? "auto" : (this.props.height || DEFAULT_HEIGHT),
-      width: this.props.resize ? "auto" : (this.props.width || DEFAULT_WIDTH)
+      width: this.props.resize ? "auto" : 600//(this.props.width || DEFAULT_WIDTH)
     }, DEFAULT_VIDEO_OPTIONS);
   },
 
