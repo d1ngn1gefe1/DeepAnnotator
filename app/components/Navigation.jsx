@@ -28,6 +28,9 @@ export default class Navigation extends React.Component {
                       <li className="page-scroll">
                           <a href="#contact">Contact</a>
                       </li>
+                      <li className="page-scroll">
+                          <a href="/logout">Logout</a>
+                      </li>
                   </ul>
               </div>
               {/* navbar-collapse */}
