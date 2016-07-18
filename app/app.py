@@ -9,6 +9,7 @@ import os
 # create the application object
 app = Flask(__name__)
 
+
 # login required decorator
 def login_required(f):
     @wraps(f)
@@ -26,9 +27,6 @@ def login_required(f):
 def home():
     return render_template('index.html')  # render a template
 
-@app.route('/welcome')
-def welcome():
-    return render_template('welcome.html')  # render a template
 
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
@@ -45,18 +43,18 @@ def login():
         result = query.first()
         if result:
             session['logged_in'] = True
-            flash('You were logged in.')
             return redirect(url_for('home'))
         else:
             error = 'Invalid Credentials. Please try again.'
     return render_template('login.html', error=error)
 
+
 @app.route('/logout')
 @login_required
 def logout():
     session.pop('logged_in', None)
-    flash('You were logged out.')
-    return redirect(url_for('welcome'))
+    return render_template('logout.html')
+
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
