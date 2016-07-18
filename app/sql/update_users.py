@@ -2,11 +2,11 @@ import datetime
 import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from init_users import *
+from init_tables import *
 
 # Contact admin if config files don't exist
-CONFIG = '../../configs/config.json'
-USER_CONFIG = '../../configs/users.json'
+CONFIG = 'configs/config.json'
+USER_CONFIG = 'configs/users.json'
 
 
 def read_json(data_path):

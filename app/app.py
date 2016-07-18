@@ -2,7 +2,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
 from sqlalchemy.orm import sessionmaker
-from sql.init_users import *
+from sql.init_tables import *
 import argparse
 import os
 
@@ -26,6 +26,20 @@ def login_required(f):
 @login_required
 def home():
     return render_template('index.html')  # render a template
+
+
+@app.route("/<sensor_id>/", methods=["GET"])
+def get_request(sensor_id):
+    """
+    Handle GET request to - /<sensor_id>/
+    Return a list of labeled video ids
+    """
+    videos = Video.query.all()
+
+    data = [ video.id for video in videos ]
+    response = make_response(json.dumps(data))
+    response.content_type = 'application/json'
+    return response
 
 
 # route for handling the login page logic

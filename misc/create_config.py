@@ -13,7 +13,7 @@ def read_json(data_path):
     return json.load(fp)
 
 
-def create_user_config(users):
+def update_user_config(users):
     while True:
         try:
             username = raw_input("Username: ")
@@ -35,9 +35,12 @@ def main(params):
   config_path = os.path.join(params['config_root'], 'config.json')
   write_json(config, config_path)
 
-  users = {}
   user_config_path = os.path.join(params['config_root'], 'users.json')
-  create_user_config(users)
+  if not os.path.exists:
+      users = {}
+  else:
+      users = read_json(user_config_path)
+  update_user_config(users)
   write_json(users, user_config_path)
 
 
@@ -46,7 +49,7 @@ if __name__ == "__main__":
   parser.add_argument('-video_root', nargs='?', default='../public/static/video', type=str)
   parser.add_argument('-server', nargs='?', default='128.12.137.178', type=str)
   parser.add_argument('-database', nargs='?', default='deep_annotator', type=str)
-  parser.add_argument('-config_root', nargs='?', default='../configs/', type=str)
+  parser.add_argument('-config_root', nargs='?', default='../app/sql/configs/', type=str)
 
   args = parser.parse_args()
   params = vars(args)

@@ -90,12 +90,18 @@ gulp.task('copy-4', function() {
         .pipe(gulp.dest('public/static/login-assets/'))
 })
 
+// SQL
 gulp.task('copy-5', function() {
-    return gulp.src(['app/sql/**'])
+    return gulp.src(['app/sql/init_tables.py'])
         .pipe(gulp.dest('public/sql/'))
 })
 
-gulp.task('copy', ['copy-0', 'copy-1', 'copy-2', 'copy-3', 'copy-4', 'copy-5']);
+gulp.task('copy-6', function() {
+    return gulp.src(['app/sql/configs/config.json'])
+        .pipe(gulp.dest('public/sql/configs/'))
+})
+
+gulp.task('copy', ['copy-0', 'copy-1', 'copy-2', 'copy-3', 'copy-4', 'copy-5', 'copy-6']);
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {
