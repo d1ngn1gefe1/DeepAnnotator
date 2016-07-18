@@ -1,5 +1,6 @@
 import React from "react";
-import info from '../../public/static/video/info.json';
+import { Link } from "react-router";
+import info from "../../public/static/video/info.json";
 
 export default class VideoGrid extends React.Component {
   // similar to componentWillMount in ES5
@@ -24,12 +25,13 @@ export default class VideoGrid extends React.Component {
 
           <div className="row">{
             self.props.playlists.map(function(playlistName, index) {
-              var thumbnail = "./static/video/"+playlistName+"/"+self.props.start_index[index]+"/thumbnail.jpg"
-              var playlistLabel = "video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1)
+              var thumbnail = "./static/video/"+playlistName+"/"+self.props.start_index[index]+"/thumbnail.jpg";
+              var playlistLabel = "video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1);
+              var link = "/"+playlistName+"/"+self.props.start_index[index]+"-"+(self.props.end_index[index]-1);
 
               return (
                 <div className="col-sm-4 video-annotator-item" key={index}>
-                  <a href={"#video-annotator-modal"+index} className="video-annotator-link" data-toggle="modal">
+                  <Link to={link} className="video-annotator-link" data-toggle="modal">
                     <div className="caption">
                       <div className="caption-content">
                         <i className="fa fa-pencil fa-3x"></i>
@@ -40,7 +42,7 @@ export default class VideoGrid extends React.Component {
                       <h3>{playlistName}</h3>
                       <h4>{playlistLabel}</h4>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               );
             })

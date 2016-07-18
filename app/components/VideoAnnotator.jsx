@@ -10,22 +10,29 @@ export default class VideoAnnotator extends React.Component {
     };
   };
 
-  componentDidMount() {
+  componentWillMount() {
+    this.playlistName = this.props.params.playlistName;
+    var range = this.props.params.range.split("-");
+    this.start = parseInt(range[0]);
+    this.end = parseInt(range[1])+1; // exclusive
+    console.log(this.playlistName);
   };
 
   render() {
     var self = this;
-    var thumbnail = "./static/video/"+self.props.playlistName+"/"+self.props.start+"/thumbnail.jpg"
-    var videoPath = "./static/video/"+self.props.playlistName+"/"+self.props.start+"/depth.mp4"
 
     return (
-      <Video src={videoPath} />
+      <div className="annotator-content container">
+        <div className="row">
+            <div className="col-lg-10 col-lg-offset-1">
+              <h2>{self.playlistName}</h2>
+              <h3>{"video "+self.start+" - "+self.end}</h3>
+              <hr className="star-primary"></hr>
+
+              <Video playlistName={self.playlistName} start={self.start} end={self.end}/>
+            </div>
+        </div>
+      </div>
     );
   }
 }
-
-VideoAnnotator.propTypes = {
-  playlistName: React.PropTypes.string.isRequired,
-  start: React.PropTypes.number.isRequired,
-  end: React.PropTypes.number.isRequired
-};

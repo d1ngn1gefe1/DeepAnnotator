@@ -223,12 +223,24 @@ section.success {
     .video-annotator-item {
         margin: 0 0 15px;
         right: 0;
+				.playlist-label {
+				  display: block;
+				  position: absolute;
+				  max-width: 320px;
+				  width: 100%;
+				  height: 70%;
+				  top: 30%;
+				  z-index: 3;
+				  text-align: center;
+				  color: white;
+				}
         .video-annotator-link {
             display: block;
             position: relative;
             max-width: 320px;
             margin: 0 auto;
             .caption {
+							  z-index: 5;
                 background: fade(@theme-success, 90%);
                 position: absolute;
                 width: 100%;
@@ -413,64 +425,26 @@ footer {
     }
 }
 
-.video-annotator-modal {
-	.modal-content {
-	    border-radius: 0;
-	    background-clip: border-box;
-	    -webkit-box-shadow: none;
-	    box-shadow: none;
-	    border: none;
-	    min-height: 100%;
-	    padding: 100px 0;
-	    text-align: center;
-		h2 {
-	    	margin: 0;
-	    	font-size: 3em;
-		}
-		img {
-			margin-bottom: 30px;
-		}
-		.item-details {
-			margin: 30px 0;
-		}
+.annotator-content {
+    border-radius: 0;
+    background-clip: border-box;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: none;
+    min-height: 100%;
+    padding: 100px 0;
+    text-align: center;
+	h2, h3 {
+		margin: 0;
+		text-align: center;
 	}
-    .close-modal {
-        position: absolute;
-        width:75px;
-        height:75px;
-        background-color:transparent;
-        top: 25px;
-        right: 25px;
-        cursor: pointer;
-        &:hover {
-            opacity: 0.3;
-        }
-        .lr {
-            height:75px;
-            width:1px;
-            margin-left:35px;
-            background-color:@theme-primary;
-            transform: rotate(45deg);
-            -ms-transform: rotate(45deg);
-            /* IE 9 */
-            -webkit-transform: rotate(45deg);
-            /* Safari and Chrome */
-            z-index:1051;
-            .rl {
-                height:75px;
-                width:1px;
-                background-color:@theme-primary;
-                transform: rotate(90deg);
-                -ms-transform: rotate(90deg);
-                /* IE 9 */
-                -webkit-transform: rotate(90deg);
-                /* Safari and Chrome */
-                z-index:1052;
-            }
-        }
-    }
-    .modal-backdrop {
-    	opacity: 0;
-    	display: none;
-    }
+	h2 {
+    	font-size: 3em;
+	}
+	img {
+		margin-bottom: 30px;
+	}
+	.item-details {
+		margin: 30px 0;
+	}
 }
