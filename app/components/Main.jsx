@@ -1,14 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { render } from "react-dom";
+import { Router, Route, hashHistory } from "react-router";
 import About from "./About.jsx";
 import Contact from "./Contact.jsx";
 import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
 import Navigation from "./Navigation.jsx";
-import VideoAnnotators from "./VideoAnnotators.jsx";
+import VideoAnnotator from "./VideoAnnotator.jsx";
 import VideoGrid from "./VideoGrid.jsx";
 
-import "../css/freelancer.css";
 import "../less/freelancer.less";
 import "../less/mixins.less";
 import "../less/variables.less";
@@ -32,8 +33,6 @@ class Main extends React.Component {
             <i className="fa fa-chevron-up"></i>
           </a>
         </div>
-
-        <VideoAnnotators />
       </div>
     );
   }
@@ -43,3 +42,10 @@ ReactDOM.render(
   <Main />,
   document.getElementById("app")
 );
+
+render((
+  <Router history={hashHistory}>
+    <Route path="/" component={Main}/>
+    <Route path="/:playlistName/:range" component={VideoAnnotator} />
+  </Router>
+), document.getElementById("app"))

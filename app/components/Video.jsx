@@ -24,7 +24,9 @@ function noop() {}
 
 var Video = React.createClass({
   propTypes: {
-    src: React.PropTypes.string.isRequired,
+    playlistName: React.PropTypes.string.isRequired,
+    start: React.PropTypes.number.isRequired,
+    end: React.PropTypes.number.isRequired,
     height: React.PropTypes.number,
     width: React.PropTypes.number,
     endlessMode: React.PropTypes.bool,
@@ -60,27 +62,20 @@ var Video = React.createClass({
   },
 
   componentDidMount: function() {
-    this.mountVideoPlayer();
+    var self = this;
+    var playlist = [];
 
-    vjs('playerId').ready(function () {
-      var myPlayer = this;
-      myPlayer.playlist([{
+    for (var i = self.props.start; i < self.props.end; i++) {
+      playlist.push({
         "sources": [{
-          "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_SeaHorse.mp4", "type": "video/mp4"
+          "src": "/static/video/"+self.props.playlistName+"/"+i+"/depth.mp4", "type": "video/mp4"
         }],
-        "name": "Seahorse",
-        "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png",
-        "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Seahorse_poster.png"
-      }, {
-        "sources": [{
-          "src": "http://solutions.brightcove.com/bcls/assets/videos/Sea_Anemone.mp4", "type": "video/mp4"
-        }],
-        "name": "Sea Anemone",
-        "thumbnail": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png",
-        "poster": "http://solutions.brightcove.com/bcls/assets/images/Sea_Anemone_poster.png"
-      }]);
-      myPlayer.playlistUi();
-    });
+        "name": "Video "+i,
+        "thumbnail": "/static/video/"+self.props.playlistName+"/"+i+"/thumbnail.jpg"
+      });
+    }
+
+    this.mountVideoPlayer(playlist);
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -105,15 +100,6 @@ var Video = React.createClass({
         this.removeResizeEventListener();
       }
     }
-
-    var currentSrc = this.props.src;
-    var newSrc = nextProps.src;
-
-    if (currentSrc !== newSrc) {
-      this.setVideoPlayerSrc(newSrc);
-    } else if (isEndless === willBeEndless) {
-      this.restartVideo();
-    }
   },
 
   shouldComponentUpdate: function() {
@@ -129,7 +115,7 @@ var Video = React.createClass({
   },
 
   getVideoPlayerEl: function() {
-    return ReactDOM.findDOMNode(this.refs.videoPlayer);
+    return ReactDOM.findDOMNode(this.refs["player"+this.props.index]);
   },
 
   getVideoPlayerOptions: function() {
@@ -172,25 +158,24 @@ var Video = React.createClass({
     };
   },
 
-  setVideoPlayerSrc: function(src) {
-    this._player.src(src);
-  },
-
-  mountVideoPlayer: function() {
-    var src = this.props.src;
+  mountVideoPlayer: function(playlist) {
+    var self = this;
     var options = this.getVideoPlayerOptions();
 
-    this._player = vjs(this.getVideoPlayerEl(), options);
+    this._player = vjs("player"+self.props.index, options);
 
     var player = this._player;
 
-    player.ready(this.handleVideoPlayerReady);
+    player.ready(function() {
+      self.handleVideoPlayerReady()
+      var myPlayer = this;
+      myPlayer.playlist(playlist);
+      myPlayer.playlistUi();
+    });
 
     _forEach(this.props.eventListeners, function(val, key) {
       player.on(key, val);
     });
-
-    player.src(src);
 
     if (this.props.endlessMode) {
       this.addEndlessMode();
@@ -290,7 +275,6 @@ var Video = React.createClass({
   },
 
   render: function() {
-    console.log("hou a ");
     var videoPlayerClasses = cx({
       "video-js": true,
       "col-md-8": true,
@@ -300,10 +284,10 @@ var Video = React.createClass({
 
     return (
       <div>
-        <video ref="videoPlayer" className={videoPlayerClasses} id="playerId">
+        <video ref={"player"+this.props.index} className={videoPlayerClasses} id={"player"+this.props.index}>
           {this.props.children || this.renderDefaultWarning()}
         </video>
-        <ol className="vjs-playlist .col-md-4">
+        <ol className="vjs-playlist .col-md-4" id={"playlist"+this.props.index}>
         </ol>
       </div>
     );
