@@ -166,3 +166,6 @@ during ads and capture click events on IE<11 */
   top: 0;
   left: 0;
 }
+.fix-height {
+  height: 480px;
+}

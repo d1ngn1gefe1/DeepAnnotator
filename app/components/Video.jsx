@@ -115,7 +115,7 @@ var Video = React.createClass({
   },
 
   getVideoPlayerEl: function() {
-    return ReactDOM.findDOMNode(this.refs["player"+this.props.index]);
+    return ReactDOM.findDOMNode(this.refs["player"]);
   },
 
   getVideoPlayerOptions: function() {
@@ -162,7 +162,7 @@ var Video = React.createClass({
     var self = this;
     var options = this.getVideoPlayerOptions();
 
-    this._player = vjs("player"+self.props.index, options);
+    this._player = vjs("player", options);
 
     var player = this._player;
 
@@ -275,24 +275,23 @@ var Video = React.createClass({
   },
 
   render: function() {
+    var self = this;
+
     var videoPlayerClasses = cx({
       "video-js": true,
-      "col-md-12": true,
+      "col-lg-9 col-md-9 col-sm-9 col-sm-9": true,
+      "fix-height": true,
       "vjs-default-skin": this.props.vjsDefaultSkin,
       "vjs-big-play-centered": this.props.vjsBigPlayCentered
     });
 
     return (
       <div>
-        <div className="col-md-8">
-          <video ref={"player"+this.props.index} className={videoPlayerClasses} id={"player"+this.props.index}>
-            {this.props.children || this.renderDefaultWarning()}
-          </video>
-        </div>
-        <div className="col-md-4">
-          <ol className="vjs-playlist .col-md-12" id={"playlist"+this.props.index}>
-          </ol>
-        </div>
+        <video ref={"player"} className={videoPlayerClasses} id={"player"}>
+          {this.props.children || this.renderDefaultWarning()}
+        </video>
+        <ol className="vjs-playlist col-lg-3 col-md-3 col-sm-3 col-sm-3 fix-height" id={"playlist"+this.props.index}>
+        </ol>
       </div>
     );
   }
