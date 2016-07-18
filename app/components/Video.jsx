@@ -277,18 +277,22 @@ var Video = React.createClass({
   render: function() {
     var videoPlayerClasses = cx({
       "video-js": true,
-      "col-md-8": true,
+      "col-md-12": true,
       "vjs-default-skin": this.props.vjsDefaultSkin,
       "vjs-big-play-centered": this.props.vjsBigPlayCentered
     });
 
     return (
       <div>
-        <video ref={"player"+this.props.index} className={videoPlayerClasses} id={"player"+this.props.index}>
-          {this.props.children || this.renderDefaultWarning()}
-        </video>
-        <ol className="vjs-playlist .col-md-4" id={"playlist"+this.props.index}>
-        </ol>
+        <div className="col-md-8">
+          <video ref={"player"+this.props.index} className={videoPlayerClasses} id={"player"+this.props.index}>
+            {this.props.children || this.renderDefaultWarning()}
+          </video>
+        </div>
+        <div className="col-md-4">
+          <ol className="vjs-playlist .col-md-12" id={"playlist"+this.props.index}>
+          </ol>
+        </div>
       </div>
     );
   }

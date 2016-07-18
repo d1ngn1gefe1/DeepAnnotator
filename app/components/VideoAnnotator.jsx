@@ -26,7 +26,7 @@ export default class VideoAnnotator extends React.Component {
         <div className="row">
             <div className="col-lg-10 col-lg-offset-1">
               <h2>{self.playlistName}</h2>
-              <h3>{"video "+self.start+" - "+self.end}</h3>
+              <h3>{"video "+self.start+" - "+(self.end-1)}</h3>
               <hr className="star-primary"></hr>
 
               <Video playlistName={self.playlistName} start={self.start} end={self.end}/>
