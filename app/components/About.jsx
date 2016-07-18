@@ -11,7 +11,7 @@ export default class About extends React.Component {
                       <hr className="star-light" />
                   </div>
               </div>
-              <div className="row">a
+              <div className="row">
                   <div className="col-lg-4 col-lg-offset-2">
                       <p>Deep Annotator is a free, online, interactive video annotation tool for computer vision research that crowdsources work to Amazon Mechanical Turk.</p>
                   </div>

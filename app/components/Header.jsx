@@ -7,7 +7,7 @@ export default class Header extends React.Component {
           <div className="container">
               <div className="row">
                   <div className="col-lg-12">
-                      <img className="img-responsive" src="./static/img/profile.png" alt="" />
+                      <img className="img-responsive icon-header" src="./static/img/profile.png" alt="" />
                       <div className="intro-text">
                           <span className="name">Deep Annotator</span>
                           <hr className="star-light" />
