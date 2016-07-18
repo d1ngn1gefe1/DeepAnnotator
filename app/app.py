@@ -28,7 +28,7 @@ def home():
     return render_template('index.html')  # render a template
 
 
-@app.route("/<sensor_id>/", methods=["GET"])
+@app.route("/#/<sensor_id>/", methods=["GET"])
 def get_request(sensor_id):
     """
     Handle GET request to - /<sensor_id>/
