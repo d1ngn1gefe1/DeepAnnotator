@@ -62,6 +62,8 @@ var Video = React.createClass({
   },
 
   componentDidMount: function() {
+    console.log("componentDidMount");
+
     var self = this;
     var playlist = [];
 
@@ -79,6 +81,7 @@ var Video = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    console.log("componentWillReceiveProps");
     var isEndless = this.props.endlessMode;
     var willBeEndless = nextProps.endlessMode;
 
@@ -107,6 +110,7 @@ var Video = React.createClass({
   },
 
   componentWillUnmount: function() {
+    console.log("componentWillUnmount");
     this.unmountVideoPlayer();
   },
 
@@ -164,17 +168,15 @@ var Video = React.createClass({
 
     this._player = vjs("player", options);
 
-    var player = this._player;
-
-    player.ready(function() {
+    this._player.ready(function() {
       self.handleVideoPlayerReady()
-      var myPlayer = this;
-      myPlayer.playlist(playlist);
-      myPlayer.playlistUi();
+      var player = this;
+      player.playlist(playlist);
+      player.playlistUi();
     });
 
     _forEach(this.props.eventListeners, function(val, key) {
-      player.on(key, val);
+      this._player.on(key, val);
     });
 
     if (this.props.endlessMode) {
@@ -274,12 +276,18 @@ var Video = React.createClass({
     return this.getVideoPlayerEl().parentElement.parentElement.offsetWidth;
   },
 
+  hello: function() {
+    console.log("hello world");
+  },
+
   render: function() {
+    console.log("render");
+
     var self = this;
 
     var videoPlayerClasses = cx({
       "video-js": true,
-      "col-lg-9 col-md-9 col-sm-9 col-sm-9": true,
+      "col-lg-6 col-md-6 col-sm-6 col-sm-6": true,
       "fix-height": true,
       "vjs-default-skin": this.props.vjsDefaultSkin,
       "vjs-big-play-centered": this.props.vjsBigPlayCentered

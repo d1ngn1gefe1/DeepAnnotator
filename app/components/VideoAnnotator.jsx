@@ -18,19 +18,22 @@ export default class VideoAnnotator extends React.Component {
     this.end = parseInt(range[1])+1; // exclusive
   };
 
+  componentDidMount() {
+    this.refs.videojs.hello();
+  };
+
   render() {
     var self = this;
 
     return (
-      <div className="annotator-content container">
-        <AnnotatorNavigation />
+      <div className="annotator-content container-fluid">
+        <AnnotatorNavigation description={self.playlistName+", video "+self.start+" - "+(self.end-1)} />
         <div className="row">
-          <div>
-            <h2>{self.playlistName}</h2>
-            <h3>{"video "+self.start+" - "+(self.end-1)}</h3>
-            <hr className="star-primary"></hr>
-            <Video playlistName={self.playlistName} start={self.start} end={self.end}/>
+          <div className="col-lg-3 col-md-3 col-sm-3 col-sm-3 fix-height control-panel">
+            <button type="button">New Frame Labels</button>
+            <button type="button">New Object Labels</button>
           </div>
+          <Video playlistName={self.playlistName} start={self.start} end={self.end} ref={"videojs"}/>
         </div>
       </div>
     );
