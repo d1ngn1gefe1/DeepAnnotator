@@ -22,10 +22,17 @@ engine = create_engine(mysql, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+# Clear table
+try:
+    num_rows_deleted = session.query(Video).delete()
+    session.commit()
+except:
+    session.rollback()
+
 # Insert videos to table
 videos = []
 videos.append(('1', 1))
-videos.append(('10', 1))
+videos.append(('10', 0))
 videos.append(('2', 1))
 for v in videos:
     video = Video(v[0], v[1])

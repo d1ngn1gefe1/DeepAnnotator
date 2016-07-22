@@ -24,6 +24,13 @@ engine = create_engine(mysql, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+# Clear table
+try:
+    num_rows_deleted = session.query(User).delete()
+    session.commit()
+except:
+    session.rollback()
+
 # Insert users to table
 users = read_json(USER_CONFIG)
 for username, password in users.iteritems():

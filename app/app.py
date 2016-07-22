@@ -29,19 +29,16 @@ def home():
 
 
 @app.route("/videoInfo", methods=["POST"])
-def get_request(sensor_id):
+def get_video_info():
     """
-    Handle GET request to - /<sensor_id>/
     Return a list of labeled video ids
     """
     Session = sessionmaker(bind=engine)
     s = Session()
-    videos = s.query(Video).all()
+    videos = s.query(Video).filter_by(is_labeled=1).all()
 
-    data = [ video.id for video in videos ]
-    response = make_response(json.dumps(data))
-    response.content_type = 'application/json'
-    return response
+    ids = [ video.id for video in videos ]
+    return json.dumps({'id': ids})
 
 
 # route for handling the login page logic

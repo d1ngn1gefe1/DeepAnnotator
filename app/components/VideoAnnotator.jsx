@@ -1,11 +1,13 @@
 import React from "react";
+import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import Video from './Video.jsx';
 import LabelInfo from './LabelInfo.jsx';
 
 export default class VideoAnnotator extends React.Component {
+
   // similar to componentWillMount in ES5
-  constructor(props) {
-    super(props);
+  constructor(props, defaultProps) {
+    super(props, defaultProps);
 
     this.state = {
       labelInfoLists: []
@@ -20,15 +22,16 @@ export default class VideoAnnotator extends React.Component {
     var range = this.props.params.range.split("-");
     this.start = parseInt(range[0]);
     this.end = parseInt(range[1])+1; // exclusive
-  };
+  }
 
   componentDidMount() {
-    this.refs.videojs.hello();
-    fetch('/videoInfo', {method: 'post'})
-      .then(response => response)
+    console.log(this.props.url)
+    fetch(this.props.url, {method: 'post'})
+      .then(response => response.text())
       .then(data => console.log(data))
-      .catch(err => console.error('/videoInfo', err.toString()))
-  };
+      .catch(err => console.error(this.props.url, err.toString()))
+    this.refs.videojs.hello();
+  }
 
   handleNewFrameLabels() {
     console.log("new frame labels");
@@ -83,3 +86,5 @@ export default class VideoAnnotator extends React.Component {
     );
   }
 }
+
+VideoAnnotator.defaultProps = { url: '/videoInfo' };
