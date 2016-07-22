@@ -49,7 +49,7 @@ class Video(Base):
     object_label = Column(String(1000))
 
     #----------------------------------------------------------------------
-    def __init__(self, id, is_labeled, frame_label, object_label):
+    def __init__(self, id, is_labeled, frame_label=None, object_label=None):
         """"""
         self.id = id
         self.is_labeled = is_labeled

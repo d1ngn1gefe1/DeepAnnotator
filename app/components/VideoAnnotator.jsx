@@ -1,5 +1,4 @@
 import React from "react";
-import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import Video from './Video.jsx';
 
 export default class VideoAnnotator extends React.Component {
@@ -16,24 +15,29 @@ export default class VideoAnnotator extends React.Component {
     var range = this.props.params.range.split("-");
     this.start = parseInt(range[0]);
     this.end = parseInt(range[1])+1; // exclusive
+    console.log(this.playlistName);
   };
 
   componentDidMount() {
-    this.refs.videojs.hello();
+    fetch('/videoInfo', {method: 'post'})
+      .then(response => response)
+      .then(data => console.log(data))
+      .catch(err => console.error('/videoInfo', err.toString()))
   };
 
   render() {
     var self = this;
 
     return (
-      <div className="annotator-content container-fluid">
-        <AnnotatorNavigation description={self.playlistName+", video "+self.start+" - "+(self.end-1)} />
+      <div className="annotator-content container">
         <div className="row">
-          <div className="col-lg-3 col-md-3 col-sm-3 col-sm-3 fix-height control-panel">
-            <button type="button">New Frame Labels</button>
-            <button type="button">New Object Labels</button>
-          </div>
-          <Video playlistName={self.playlistName} start={self.start} end={self.end} ref={"videojs"}/>
+            <div className="col-lg-10 col-lg-offset-1">
+              <h2>{self.playlistName}</h2>
+              <h3>{"video "+self.start+" - "+(self.end-1)}</h3>
+              <hr className="star-primary"></hr>
+
+              <Video playlistName={self.playlistName} start={self.start} end={self.end}/>
+            </div>
         </div>
       </div>
     );
