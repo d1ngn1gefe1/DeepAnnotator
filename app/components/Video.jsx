@@ -77,7 +77,23 @@ var Video = React.createClass({
       });
     }
 
-    this.mountVideoPlayer(playlist);
+    self.mountVideoPlayer(playlist);
+
+    // wait 3 seconds at the end of a video before proceeding automatically to the next video
+    // self._player.playlist.autoadvance(3);
+
+    // user chooses a different video
+    self._player.on("suspend", function() {
+      console.log("suspend");
+      console.log(self._player.playlist());
+      console.log(self._player.playlist.currentItem());
+    });
+  },
+
+  handleClick: function() {
+     console.log("handleClick");
+     this._player.playlist.next();
+     console.log(this._player.playlist.currentItem());
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -167,12 +183,11 @@ var Video = React.createClass({
     var options = this.getVideoPlayerOptions();
 
     this._player = vjs("player", options);
+    this._player.playlist(playlist);
+    this._player.playlistUi();
 
     this._player.ready(function() {
       self.handleVideoPlayerReady()
-      var player = this;
-      player.playlist(playlist);
-      player.playlistUi();
     });
 
     _forEach(this.props.eventListeners, function(val, key) {
@@ -281,7 +296,7 @@ var Video = React.createClass({
   },
 
   render: function() {
-    console.log("render");
+    console.log("render Video");
 
     var self = this;
 
@@ -300,6 +315,8 @@ var Video = React.createClass({
         </video>
         <ol className="vjs-playlist col-lg-3 col-md-3 col-sm-3 col-sm-3 fix-height" id={"playlist"+this.props.index}>
         </ol>
+        <button type="button" className="btn btn-warning" onClick={self.handleClick}>OH
+        </button>
       </div>
     );
   }

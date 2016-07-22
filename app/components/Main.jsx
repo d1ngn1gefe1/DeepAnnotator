@@ -10,6 +10,7 @@ import Navigation from "./Navigation.jsx";
 import VideoAnnotator from "./VideoAnnotator.jsx";
 import VideoGrid from "./VideoGrid.jsx";
 
+import "../less/control-panel.less";
 import "../less/freelancer.less";
 import "../less/mixins.less";
 import "../less/variables.less";
