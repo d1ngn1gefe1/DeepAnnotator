@@ -50,7 +50,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("render!");
+    console.log("render VideoAnnotator");
     var self = this;
 
     return (
