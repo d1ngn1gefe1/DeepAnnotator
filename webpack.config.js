@@ -29,7 +29,7 @@ var config = {
         loader: "style!css!sass"
       },
       {
-        test: /\.woff2?$|\.ttf$|\.eot$|\.svg$/,
+        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: "file"
       },
       {

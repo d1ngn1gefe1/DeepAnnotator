@@ -1,6 +1,7 @@
 @import "./colors";
 $bootstrap-sass-asset-helper: true;
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
+$fa-font-path: "~font-awesome/fonts";
 @import "~font-awesome/scss/font-awesome";
 @import "./utility";
 @import "./measurements";
