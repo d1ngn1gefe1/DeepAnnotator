@@ -1,3 +1,5 @@
+var path = require("path");
+
 var config = {
   entry: __dirname + "/app/components/Main.jsx",
   output: {
@@ -23,12 +25,16 @@ var config = {
         loader: "style!css!less"
       },
       {
-        test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif)(\?\S*)?$/,
-        loader: "url?limit=100000@name=[name][ext]"
+        test: /\.scss$/,
+        loader: "style!css!sass"
+      },
+      {
+        test: /\.woff2?$|\.ttf$|\.eot$|\.svg$/,
+        loader: "file"
       },
       {
         test: /\.json$/,
-        loader: 'json'
+        loader: "json"
       }
     ]
   }

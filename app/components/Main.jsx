@@ -10,12 +10,13 @@ import Navigation from "./Navigation.jsx";
 import VideoAnnotator from "./VideoAnnotator.jsx";
 import VideoGrid from "./VideoGrid.jsx";
 
-import "../less/control-panel.less";
-import "../less/freelancer.less";
-import "../less/mixins.less";
-import "../less/variables.less";
 import "../css/video.css";
 import "../css/videojs-playlist-ui.vertical.css"
+import "../css/less/control-panel.less";
+import "../css/less/freelancer.less";
+import "../css/less/mixins.less";
+import "../css/less/variables.less";
+import "../css/scss/main.scss";
 
 class Main extends React.Component {
   render() {
