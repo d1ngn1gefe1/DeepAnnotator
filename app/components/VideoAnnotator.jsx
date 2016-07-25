@@ -4,7 +4,6 @@ import LabelInfo from './LabelInfo.jsx';
 var vjs = require("video.js");
 var vjsPlaylist = require("videojs-playlist");
 var vjsPlaylistUI = require("videojs-playlist-ui");
-import playlist from './video/playlist.js';
 import boundProperties from './video/bound-properties.js';
 import mediaEvents from './video/media-events.js';
 import mediaProperties from './video/media-properties.js';
@@ -51,6 +50,18 @@ export default class VideoAnnotator extends React.Component {
       const plitem = pl[self.player.playlist.currentItem()];
     });
 
+    var playlist = [];
+
+    for (var i = self.start; i < self.end; i++) {
+      playlist.push({
+        "sources": [{
+          "src": "/static/video/"+self.playlistName+"/"+i+"/depth.mp4", "type": "video/mp4"
+        }],
+        "name": "Video "+i,
+        "thumbnail": "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg"
+      });
+    }
+
     self.player.playlist(playlist);
     self.player.playlistUi();
 
@@ -87,12 +98,14 @@ export default class VideoAnnotator extends React.Component {
 
     return (
       <div>
+        <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)}/>
+
         <section className="main-preview-player">
-          <video id="preview-player" className="video-js vjs-fluid" controls preload="auto" crossOrigin="anonymous">
+          <video id="preview-player" className="video-js vjs-fluid col-lg-6 col-md-6 col-sm-6 col-sm-6" controls preload="auto" crossOrigin="anonymous">
             <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
           </video>
 
-          <div className="playlist-container preview-player-dimensions vjs-fluid">
+          <div className="playlist-container preview-player-dimensions vjs-fluid col-lg-3 col-md-3 col-sm-3 col-sm-3">
             <ol className="vjs-playlist"></ol>
           </div>
         </section>
@@ -105,5 +118,9 @@ export default class VideoAnnotator extends React.Component {
     );
   }
 }
+
+AnnotatorNavigation.propTypes = {
+  description: React.PropTypes.string.isRequired
+};
 
 VideoAnnotator.defaultProps = { url: '/videoInfo' };
