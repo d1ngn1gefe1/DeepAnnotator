@@ -29,8 +29,8 @@ var config = {
         loader: "style!css!sass"
       },
       {
-        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "file"
+        test: /\.png|\.jpe?g|\.gif|\.svg|\.woff|\.woff2|\.ttf|\.eot|\.ico|\.svg$/,
+        loader: 'file?name=static/js/fonts/[name].[hash].[ext]?'
       },
       {
         test: /\.json$/,
