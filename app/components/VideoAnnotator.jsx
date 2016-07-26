@@ -1,12 +1,17 @@
 import React from "react";
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
-import LabelInfo from './LabelInfo.jsx';
-var vjs = require("video.js");
-var vjsPlaylist = require("videojs-playlist");
-var vjsPlaylistUI = require("videojs-playlist-ui");
-import boundProperties from './video/bound-properties.js';
-import mediaEvents from './video/media-events.js';
-import mediaProperties from './video/media-properties.js';
+import LabelInfo from "./LabelInfo.jsx";
+import videojs from "video.js";
+import "videojs-playlist";
+import "videojs-playlist-ui";
+var framebyframe = require("videojs-framebyframe");
+import boundProperties from "./video/bound-properties.js";
+import mediaEvents from "./video/media-events.js";
+import mediaProperties from "./video/media-properties.js";
+
+var HEIGHT = 240;
+var WIDTH = 320;
+var SCALING = 2;
 
 export default class VideoAnnotator extends React.Component {
 
@@ -21,6 +26,7 @@ export default class VideoAnnotator extends React.Component {
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
+    this.handleUpdateOption = this.handleUpdateOption.bind(this);
   }
 
   componentWillMount() {
@@ -36,16 +42,31 @@ export default class VideoAnnotator extends React.Component {
     self = this;
 
     console.log(this.props.url)
-    fetch(this.props.url, {method: 'post'})
+    fetch(this.props.url, {method: "post"})
       .then(response => response.text())
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()))
 
-    self.player = vjs('preview-player', {
-      fluid: true
+    self.player = videojs("player", {
+      control: true,
+      autoplay: true,
+      preload: "auto",
+      height: HEIGHT*SCALING,
+      width: WIDTH*SCALING,
+      plugins: {
+        framebyframe: {
+          fps: 10,
+          steps: [
+            { text: '-5', step: -5 },
+            { text: '-1', step: -1 },
+            { text: '+1', step: 1 },
+            { text: '+5', step: 5 },
+          ]
+        }
+      }
     });
 
-    self.player.on('loadstart', function() {
+    self.player.on("loadstart", function() {
       const pl = self.player.playlist();
       const plitem = pl[self.player.playlist.currentItem()];
     });
@@ -68,16 +89,28 @@ export default class VideoAnnotator extends React.Component {
     boundProperties(self.player);
     mediaEvents(self.player);
     mediaProperties(self.player);
+
+    self.player.on("suspend", function() {
+      self.currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+      console.log("currentItem: ", self.currentItem);
+    });
+
+    self.player.on("timeupdate", function() {
+
+    });
   }
 
   handleNewFrameLabels() {
     console.log("new frame labels");
     var self = this;
 
+    var labelInfoLists = self.state.labelInfoLists;
+    labelInfoLists.push({
+      isFrameLabels: true,
+      labels: []
+    });
     self.setState({
-      labelInfoLists: self.state.labelInfoLists.concat({
-        isFrameLabels: false
-      })
+      labelInfoLists: labelInfoLists
     });
   }
 
@@ -85,34 +118,69 @@ export default class VideoAnnotator extends React.Component {
     console.log("new object labels");
     var self = this;
 
+    var labelInfoLists = self.state.labelInfoLists;
+    labelInfoLists.push({
+      isFrameLabels: false,
+      labels: []
+    });
     self.setState({
-      labelInfoLists: self.state.labelInfoLists.concat({
-        isFrameLabels: true
-      })
+      labelInfoLists: labelInfoLists
     });
   }
 
+  handleUpdateOption(id, option) {
+    self = this;
+
+    console.log("update option", id, option);
+    var labelInfoLists = self.state.labelInfoLists;
+    labelInfoLists[id].labels.push({
+      option: option,
+      time: self.player.currentTime()
+    });
+    self.setState({
+      labelInfoLists: labelInfoLists
+    });
+    console.log(self.state.labelInfoLists);
+  }
+
   render() {
-    console.log("VideoAnnotator render");
+    console.log("VideoAnnotator render!!!");
     var self = this;
 
     return (
-      <div>
+      <div className="container-fluid">
         <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)}/>
 
-        <section className="main-preview-player">
-          <video id="preview-player" className="video-js vjs-fluid col-lg-6 col-md-6 col-sm-6 col-sm-6" controls preload="auto" crossOrigin="anonymous">
+        <section className="main-preview-player row row-eq-height clearfix">
+          <div className="control-panel col-lg-3 col-md-3 col-sm-3" style={{height: HEIGHT*SCALING+"px"}}>
+            <div className="row control-panel-add-buttons">
+              <button type="button" className="btn btn-warning new-frame-labels" onClick={this.handleNewFrameLabels}>
+                <span className="glyphicon glyphicon-plus-sign"></span> Frame Labels
+              </button>
+              <button type="button" className="btn btn-info new-object-labels" onClick={this.handleNewObjectLabels}>
+                <span className="glyphicon glyphicon-plus-sign"></span> Object Labels
+              </button>
+            </div>
+            {
+              self.state.labelInfoLists.map(function(labelInfo, index) {
+                return (
+                  <LabelInfo key={index} id={index} isFrameLabels={labelInfo.isFrameLabels} updateOption={self.handleUpdateOption}/>
+                );
+              })
+            }
+          </div>
+
+          <video id="player" className="video-js col-lg-6 col-md-6 col-sm-6" controls preload="auto" crossOrigin="anonymous" style={{height: HEIGHT*SCALING+"px"}}>
             <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
           </video>
 
-          <div className="playlist-container preview-player-dimensions vjs-fluid col-lg-3 col-md-3 col-sm-3 col-sm-3">
-            <ol className="vjs-playlist"></ol>
-          </div>
+          <ol className="vjs-playlist col-lg-3 col-md-3 col-sm-3" style={{height: HEIGHT*SCALING+"px"}}></ol>
         </section>
+
         <section className="details">
-          <div className="bound-properties"></div>
-          <div className="media-properties"></div>
-          <div className="media-events"></div>
+          <div className="bound-properties col-lg-4 col-md-4 col-sm-4"></div>
+          <div className="media-properties col-lg-4 col-md-4 col-sm-4"></div>
+          <div className="media-events col-lg-4 col-md-4 col-sm-4"></div>
         </section>
       </div>
     );
@@ -123,4 +191,4 @@ AnnotatorNavigation.propTypes = {
   description: React.PropTypes.string.isRequired
 };
 
-VideoAnnotator.defaultProps = { url: '/videoInfo' };
+VideoAnnotator.defaultProps = { url: "/videoInfo" };

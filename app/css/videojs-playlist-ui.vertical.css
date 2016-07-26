@@ -8,6 +8,7 @@ hover effects */
   list-style-type: none;
   overflow: auto;
   position: relative;
+  margin: 0px;
 }
 .vjs-playlist .vjs-playlist-item {
   cursor: pointer;
@@ -165,7 +166,4 @@ during ads and capture click events on IE<11 */
   content: 'Now Playing';
   top: 0;
   left: 0;
-}
-.fix-height {
-  height: 480px;
 }

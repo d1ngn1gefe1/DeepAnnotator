@@ -1,32 +1,11 @@
 .main-preview-player {
+}
+
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-
-  & .video-js,
-  & .playlist-container {
-    position: relative;
-    min-width: 300px;
-    min-height: 150px;
-    height: 0;
-  }
-
-  & .video-js {
-    flex: 3 1 70%;
-  }
-
-  & .playlist-container {
-    flex: 1 1 30%;
-
-    & .vjs-playlist {
-      margin: 0;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
-  }
 }
 
 .details {
@@ -37,7 +16,7 @@
   justify-content: space-between;
   align-content: space-between;
   min-height: 100px;
-  overflow: scroll;
+  overflow: auto;
 
   .bound-properties,
   .media-properties,

@@ -89,7 +89,7 @@ var Video = React.createClass({
       console.log(self._player.playlist.currentItem());
     });
   },
-
+getVideoPlayerOptions
   handleClick: function() {
      console.log("handleClick");
      this._player.playlist.next();

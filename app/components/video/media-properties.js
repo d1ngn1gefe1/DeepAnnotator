@@ -10,6 +10,11 @@ const Box = BoxMaker(MediaPropertiesItem);
 
 const  MediaProperties = [
   {
+    name: "currentItem",
+    getter(player) {
+      return parseInt(player.currentSrc().split("/")[6]);
+    }
+  }, {
     name: "error",
     updater: "error"
   }, {
