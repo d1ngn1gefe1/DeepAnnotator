@@ -4,14 +4,15 @@ import LabelInfo from "./LabelInfo.jsx";
 import videojs from "video.js";
 import "videojs-playlist";
 import "videojs-playlist-ui";
-var framebyframe = require("videojs-framebyframe");
 import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
+import Nouislider from 'react-nouislider';
 
 var HEIGHT = 240;
 var WIDTH = 320;
 var SCALING = 2;
+var FPS = 5.0;
 
 export default class VideoAnnotator extends React.Component {
 
@@ -47,30 +48,6 @@ export default class VideoAnnotator extends React.Component {
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()))
 
-    self.player = videojs("player", {
-      control: true,
-      autoplay: true,
-      preload: "auto",
-      height: HEIGHT*SCALING,
-      width: WIDTH*SCALING,
-      plugins: {
-        framebyframe: {
-          fps: 10,
-          steps: [
-            { text: '-5', step: -5 },
-            { text: '-1', step: -1 },
-            { text: '+1', step: 1 },
-            { text: '+5', step: 5 },
-          ]
-        }
-      }
-    });
-
-    self.player.on("loadstart", function() {
-      const pl = self.player.playlist();
-      const plitem = pl[self.player.playlist.currentItem()];
-    });
-
     var playlist = [];
 
     for (var i = self.start; i < self.end; i++) {
@@ -83,21 +60,37 @@ export default class VideoAnnotator extends React.Component {
       });
     }
 
-    self.player.playlist(playlist);
-    self.player.playlistUi();
+    self.player = videojs("player", {
+      control: true,
+      preload: "auto",
+      height: HEIGHT*SCALING,
+      width: WIDTH*SCALING
+    }, function() {
+      console.log("ready!");
 
-    boundProperties(self.player);
-    mediaEvents(self.player);
-    mediaProperties(self.player);
+      self.player.playlist(playlist);
+      self.player.playlistUi();
+      boundProperties(self.player);
+      mediaEvents(self.player);
+      mediaProperties(self.player);
+    });
 
-    self.player.on("suspend", function() {
+    self.player.on("loadstart", function() {
+      console.log("loadstart");
       self.currentItem = parseInt(self.player.currentSrc().split("/")[6]);
       console.log("currentItem: ", self.currentItem);
     });
 
-    self.player.on("timeupdate", function() {
-
+    self.player.on("durationchange", function() {
+      console.log("durationchange");
+      self.numFrames = Math.round(self.player.duration()*FPS);
+      console.log("total frames: ", self.numFrames);
     });
+  }
+
+  getCurrentFrame() {
+    self = this;
+    return Math.round(self.player.currentTime()*FPS);
   }
 
   handleNewFrameLabels() {
@@ -107,8 +100,11 @@ export default class VideoAnnotator extends React.Component {
     var labelInfoLists = self.state.labelInfoLists;
     labelInfoLists.push({
       isFrameLabels: true,
-      labels: []
+      labelName: "",
+      options: [],
+      frames: []
     });
+
     self.setState({
       labelInfoLists: labelInfoLists
     });
@@ -121,30 +117,41 @@ export default class VideoAnnotator extends React.Component {
     var labelInfoLists = self.state.labelInfoLists;
     labelInfoLists.push({
       isFrameLabels: false,
-      labels: []
+      options: [],
+      frames: []
     });
+
     self.setState({
       labelInfoLists: labelInfoLists
     });
   }
 
   handleUpdateOption(id, option) {
-    self = this;
-
     console.log("update option", id, option);
+    var self = this;
+
     var labelInfoLists = self.state.labelInfoLists;
-    labelInfoLists[id].labels.push({
-      option: option,
-      time: self.player.currentTime()
-    });
+    var currentFrame = self.getCurrentFrame();
+    var exist = false;
+    for (var i = 0; i < labelInfoLists[id].options.length; i++) {
+      if (labelInfoLists[id].frames[i] == currentFrame) {
+        labelInfoLists[id].options[i] = option;
+        exist = true;
+        break; // assume that one frame corresponds to one option
+      }
+    }
+    if (!exist) {
+      labelInfoLists[id].frames.push(currentFrame);
+      labelInfoLists[id].options.push(option);
+    }
+
     self.setState({
       labelInfoLists: labelInfoLists
     });
-    console.log(self.state.labelInfoLists);
   }
 
   render() {
-    console.log("VideoAnnotator render!!!");
+    console.log("VideoAnnotator render!!!!");
     var self = this;
 
     return (
@@ -176,6 +183,27 @@ export default class VideoAnnotator extends React.Component {
 
           <ol className="vjs-playlist col-lg-3 col-md-3 col-sm-3" style={{height: HEIGHT*SCALING+"px"}}></ol>
         </section>
+
+        {
+          self.state.labelInfoLists.map(function(labelInfo, index) {
+            console.log(labelInfo.frames);
+            if (labelInfo.isFrameLabels) {
+              return (
+                  <div className="progress">
+                    <div className="progress-bar progress-bar-success" style="width: 35%">
+                      <span className="sr-only">35% Complete (success)</span>
+                    </div>
+                    <div className="progress-bar progress-bar-warning progress-bar-striped" style="width: 20%">
+                      <span className="sr-only">20% Complete (warning)</span>
+                    </div>
+                    <div className="progress-bar progress-bar-danger" style="width: 10%">
+                      <span className="sr-only">10% Complete (danger)</span>
+                    </div>
+                  </div>
+              );
+            }
+          })
+        }
 
         <section className="details">
           <div className="bound-properties col-lg-4 col-md-4 col-sm-4"></div>

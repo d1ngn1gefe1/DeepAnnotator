@@ -1,3 +1,5 @@
+@import "variables.less";
+
 .control-panel {
   padding: 10px;
   background-color: #1A1A1A;
@@ -12,11 +14,28 @@
     }
   }
 
+  .label-info {
+    padding: 10px;
+    color: white;
+
+    h5 {
+      margin: 0px 0px 5px 0px;
+    }
+
+    .btn-group {
+      width: 100%;
+    }
+  }
+
   .frame-label-info {
-    background-color: #f0ad4e;
+    background-color: @color-frame;
+    border-style: solid;
+    border-color: darken(@color-frame, 20%);
   }
 
   .object-label-info {
-    background-color: #5bc0de;
+    background-color: @color-object;
+    border-style: solid;
+    border-color: darken(@color-object, 20%);
   }
 }

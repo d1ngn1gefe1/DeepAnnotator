@@ -8,14 +8,15 @@ export default class LabelInfo extends React.Component {
     this.state = {
       name: "frame label 1"
     };
-
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
-    self = this;
+  componentDidMount() {
+    this.props.updateOption(this.props.id, 0); // default
+  }
 
-    self.props.updateOption(self.props.id, event.target.value);
+  handleClick(i) {
+    var self = this;
+    self.props.updateOption(self.props.id, i);
   }
 
   render() {
@@ -26,22 +27,15 @@ export default class LabelInfo extends React.Component {
       return (
         <div className="label-info frame-label-info">
           <h5>Frame</h5>
-          <div className="radio">
-            <label>
-              <input type="radio" name="optradio" value={0} onChange={self.handleChange} />
-              Visible
+          <div className="btn-group" data-toggle="buttons">
+            <label className="btn btn-primary col-lg-4 col-md-4 col-sm-4 active" onClick={self.handleClick.bind(self, 0)}>
+              <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
             </label>
-          </div>
-          <div className="radio">
-            <label>
-              <input type="radio" name="optradio" value={1} onChange={self.handleChange} />
-              Outside of frame
+            <label className="btn btn-primary col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 1)}>
+              <input type="radio" name="options" id="option2" autoComplete="off" /> Out of frame
             </label>
-          </div>
-          <div className="radio">
-            <label>
-              <input type="radio" name="optradio" value={2} onChange={self.handleChange} />
-              Occluded
+            <label className="btn btn-primary col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 2)}>
+              <input type="radio" name="options" id="option3" autoComplete="off" /> Occluded
             </label>
           </div>
         </div>

@@ -120,9 +120,11 @@ gulp.task('browserSync', function() {
 // Watch Tasks
 gulp.task('dev', ['browserSync', 'minify-js', 'webpack'], function() {
     gulp.watch('app/components/*.js', ['minify-js']);
+    gulp.watch('app/components/video/*.js', ['minify-js']);
     gulp.watch('app/components/*.jsx', ['webpack']);
     gulp.watch('app/css/*.css', ['webpack']);
-    gulp.watch('app/less/*.less', ['webpack']);
+    gulp.watch('app/css/scss/*.scss', ['webpack']);
+    gulp.watch('app/css/less/*.less', ['webpack']);
     // Reloads the browser whenever HTML or JS files change
     gulp.watch('public/*.html', browserSync.reload);
     gulp.watch('public/*.js', browserSync.reload);
