@@ -7,7 +7,6 @@ import "videojs-playlist-ui";
 import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
-import Nouislider from 'react-nouislider';
 
 var HEIGHT = 240;
 var WIDTH = 320;

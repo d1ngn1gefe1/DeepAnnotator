@@ -12,7 +12,6 @@ import VideoGrid from "./VideoGrid.jsx";
 
 import "../css/video-js.css";
 import "../css/videojs-playlist-ui.vertical.css"
-import "../css/nouislider.css"
 import "../css/less/control-panel.less";
 import "../css/less/freelancer.less";
 import "../css/less/mixins.less";
