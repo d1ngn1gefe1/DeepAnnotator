@@ -1,9 +1,10 @@
 import React from "react";
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import LabelInfo from "./LabelInfo.jsx";
-var vjs = require("video.js");
-var vjsPlaylist = require("videojs-playlist");
-var vjsPlaylistUI = require("videojs-playlist-ui");
+import videojs from "video.js";
+import "videojs-playlist";
+import "videojs-playlist-ui";
+var framebyframe = require("videojs-framebyframe");
 import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
@@ -46,10 +47,23 @@ export default class VideoAnnotator extends React.Component {
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()))
 
-    self.player = vjs("player", {
-      fluid: true,
+    self.player = videojs("player", {
+      control: true,
+      autoplay: true,
+      preload: "auto",
       height: HEIGHT*SCALING,
-      width: WIDTH*SCALING
+      width: WIDTH*SCALING,
+      plugins: {
+        framebyframe: {
+          fps: 10,
+          steps: [
+            { text: '-5', step: -5 },
+            { text: '-1', step: -1 },
+            { text: '+1', step: 1 },
+            { text: '+5', step: 5 },
+          ]
+        }
+      }
     });
 
     self.player.on("loadstart", function() {
@@ -141,10 +155,10 @@ export default class VideoAnnotator extends React.Component {
           <div className="control-panel col-lg-3 col-md-3 col-sm-3" style={{height: HEIGHT*SCALING+"px"}}>
             <div className="row control-panel-add-buttons">
               <button type="button" className="btn btn-warning new-frame-labels" onClick={this.handleNewFrameLabels}>
-                <span className="glyphicon glyphicon-plus-sign"></span> New Frame Labels
+                <span className="glyphicon glyphicon-plus-sign"></span> Frame Labels
               </button>
               <button type="button" className="btn btn-info new-object-labels" onClick={this.handleNewObjectLabels}>
-                <span className="glyphicon glyphicon-plus-sign"></span> New Object Labels
+                <span className="glyphicon glyphicon-plus-sign"></span> Object Labels
               </button>
             </div>
             {
