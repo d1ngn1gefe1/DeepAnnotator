@@ -31,6 +31,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
     this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
     this.handleCloseLabelInfo = this.handleCloseLabelInfo.bind(this);
+    this.handleSave = this.handleSave.bind(this);
   }
 
   componentWillMount() {
@@ -191,8 +192,22 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  handleSave() {
+    var self = this;
+    var data = [];
+
+    for (var i = 0; i < self.state.labelInfoLists.length; i++) {
+      if (self.state.labelInfoLists[i].isFrameLabels) {
+        var labels = self.refs["labelInfo"+i].getLabels();
+        data.push(labels);
+      }
+    }
+    console.log("saved");
+    console.log(data);
+  }
+
   render() {
-    console.log("VideoAnnotator render!!");
+    console.log("VideoAnnotator render!");
     var self = this;
 
     return (
@@ -201,12 +216,15 @@ export default class VideoAnnotator extends React.Component {
 
         <section className="main-preview-player row row-eq-height clearfix">
           <div className="control-panel col-lg-4 col-md-4 col-sm-4" style={{height: HEIGHT*SCALING+"px"}}>
-            <div className="row control-panel-add-buttons">
-              <button type="button" className="btn btn-warning new-frame-labels" onClick={this.handleNewFrameLabels}>
+            <div className="row control-panel-buttons">
+              <button type="button" className="btn btn-frame new-frame-labels" onClick={self.handleNewFrameLabels}>
                 <span className="glyphicon glyphicon-plus-sign"></span> Frame Labels
               </button>
-              <button type="button" className="btn btn-info new-object-labels" onClick={this.handleNewObjectLabels}>
+              <button type="button" className="btn btn-object new-object-labels" onClick={self.handleNewObjectLabels}>
                 <span className="glyphicon glyphicon-plus-sign"></span> Object Labels
+              </button>
+              <button type="button" className="btn btn-save save" onClick={self.handleSave}>
+                <span className="glyphicon glyphicon glyphicon-floppy-disk"></span> Save
               </button>
             </div>
             {
@@ -229,7 +247,7 @@ export default class VideoAnnotator extends React.Component {
                   bg = "bg-success";
                   break;
                 case 1:
-                  bg = "bg-primary";
+                  bg = "bg-info";
                   break;
                 case 2:
                   bg = "bg-danger";

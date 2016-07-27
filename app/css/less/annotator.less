@@ -1,5 +1,58 @@
 @import "variables.less";
 
+.button-variant(@color; @background; @border) {
+  color: @color;
+  background-color: @background;
+  border-color: @border;
+
+  &:focus,
+  &.focus {
+    color: @color;
+    background-color: darken(@background, 10%);
+        border-color: darken(@border, 25%);
+  }
+  &:hover {
+    color: @color;
+    background-color: darken(@background, 10%);
+        border-color: darken(@border, 12%);
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    color: @color;
+    background-color: darken(@background, 10%);
+        border-color: darken(@border, 12%);
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: @color;
+      background-color: darken(@background, 17%);
+          border-color: darken(@border, 25%);
+    }
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &:hover,
+    &:focus,
+    &.focus {
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+
+  .badge {
+    color: @background;
+    background-color: @color;
+  }
+}
+
 .video-annotator {
   padding: 0px;
 
@@ -13,7 +66,7 @@
     overflow: auto;
     padding: 0px;
 
-    .control-panel-add-buttons {
+    .control-panel-buttons {
       padding: 15px;
       width: 100%;
       margin: 0px;
@@ -21,6 +74,18 @@
 
       .btn {
         margin: 0px 15px 0px 0px;
+      }
+
+      .btn-frame {
+        .button-variant(#fff; @theme-primary; darken(@theme-primary, 15%));
+      }
+
+      .btn-object {
+        .button-variant(#fff; @theme-success; darken(@theme-primary, 15%));
+      }
+
+      .btn-save {
+
       }
     }
 
@@ -40,18 +105,22 @@
         margin: 10px 0px 0px 0px;
         background-color: @gray;
       }
+
+      .close {
+        color: white;
+      }
     }
 
     .frame-label-info {
-      background-color: @color-frame;
+      background-color: @theme-primary;
       border-style: solid;
-      border-color: darken(@color-frame, 20%);
+      border-color: darken(@theme-primary, 20%);
     }
 
     .object-label-info {
-      background-color: @color-object;
+      background-color: @theme-success;
       border-style: solid;
-      border-color: darken(@color-object, 20%);
+      border-color: darken(@theme-success, 20%);
     }
   }
 
@@ -74,10 +143,10 @@
       border-color: darken(@color-success, 20%);
     }
 
-    .bg-primary {
-      background-color: @color-primary;
+    .bg-info {
+      background-color: @color-info;
       border-style: solid;
-      border-color: darken(@color-primary, 20%);
+      border-color: darken(@color-info, 20%);
     }
 
     .bg-danger {

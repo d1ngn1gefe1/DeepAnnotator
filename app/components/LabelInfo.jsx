@@ -6,7 +6,6 @@ export default class LabelInfo extends React.Component {
     super(props);
 
     this.state = {
-      name: "frame label 1",
       labels: []
     };
   }
@@ -25,6 +24,10 @@ export default class LabelInfo extends React.Component {
       }
     }
     return -1;
+  }
+
+  getLabels() {
+    return this.state.labels;
   }
 
   handleClick(option) {
@@ -102,7 +105,7 @@ export default class LabelInfo extends React.Component {
             <label className="btn btn-success col-lg-4 col-md-4 col-sm-4 active" onClick={self.handleClick.bind(self, 0)}>
               <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
             </label>
-            <label className="btn btn-primary col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 1)}>
+            <label className="btn btn-info col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 1)}>
               <input type="radio" name="options" id="option2" autoComplete="off" /> Out of frame
             </label>
             <label className="btn btn-danger col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 2)}>
@@ -125,7 +128,7 @@ export default class LabelInfo extends React.Component {
                   color = "progress-bar-success";
                   break;
                 case 1:
-                  color = "progress-bar-primary";
+                  color = "progress-bar-info";
                   break;
                 case 2:
                   color = "progress-bar-danger";
