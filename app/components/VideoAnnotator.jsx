@@ -21,12 +21,13 @@ export default class VideoAnnotator extends React.Component {
     super(props, defaultProps);
 
     this.state = {
-      labelInfoLists: []
+      labelInfoLists: [],
+      currentFrameLabels: []
     };
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
-    this.handleUpdateOption = this.handleUpdateOption.bind(this);
+    this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
   }
 
   componentWillMount() {
@@ -39,7 +40,7 @@ export default class VideoAnnotator extends React.Component {
 
   componentDidMount() {
     console.log("VideoAnnotator componentDidMount");
-    self = this;
+    var self = this;
 
     console.log(this.props.url)
     fetch(this.props.url, {method: "post"})
@@ -65,8 +66,6 @@ export default class VideoAnnotator extends React.Component {
       height: HEIGHT*SCALING,
       width: WIDTH*SCALING
     }, function() {
-      console.log("ready!");
-
       self.player.playlist(playlist);
       self.player.playlistUi();
       boundProperties(self.player);
@@ -85,10 +84,42 @@ export default class VideoAnnotator extends React.Component {
       self.numFrames = Math.round(self.player.duration()*FPS);
       console.log("total frames: ", self.numFrames);
     });
+
+    self.player.on("timeupdate", function() {
+      var currentFrameLabels = [];
+      var update = false;
+
+      for (var i = 0; i < self.state.labelInfoLists.length; i++) {
+        if (self.state.labelInfoLists[i].isFrameLabels) {
+          var option = self.refs["labelInfo"+i].getCurrentOption(self.handleGetCurrentFrame());
+          currentFrameLabels.push({
+            id: i,
+            option: option
+          });
+        }
+      }
+
+      if (self.state.currentFrameLabels.length != currentFrameLabels.length) {
+        update = true;
+      } else {
+        for (var i = 0; i < currentFrameLabels.length; i++) {
+          if (self.state.currentFrameLabels[i].id != currentFrameLabels[i].id || self.state.currentFrameLabels[i].option != currentFrameLabels[i].option) {
+            update = true;
+            break;
+          }
+        }
+      }
+
+      if (update) {
+        self.setState({
+          currentFrameLabels: currentFrameLabels
+        });
+      }
+    });
   }
 
-  getCurrentFrame() {
-    self = this;
+  handleGetCurrentFrame() {
+    var self = this;
     return Math.round(self.player.currentTime()*FPS);
   }
 
@@ -123,80 +154,16 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
-  handleUpdateOption(id, option) {
-    console.log("update option", id, option);
-    var self = this;
-
-    var labelInfoLists = self.state.labelInfoLists;
-    var currentFrame = self.getCurrentFrame();
-
-    console.log("option: ", option);
-    console.log("current frame: ", currentFrame);
-
-    if (labelInfoLists[id].labels.length == 0) {
-      labelInfoLists[id].labels.push({
-        startFrame: 0,
-        option: option,
-        length: self.numFrames
-      });
-    } else {
-      for (var i = 0; i < labelInfoLists[id].labels.length; i++) {
-        console.log("i=", i);
-
-        if (labelInfoLists[id].labels[i].startFrame == currentFrame) { // same frame, update option
-          if (i >= 1 && labelInfoLists[id].labels[i-1].option == option) {
-            labelInfoLists[id].labels[i-1].length += labelInfoLists[id].labels[i].length
-            labelInfoLists[id].labels.splice(i, 1);
-          } else {
-            labelInfoLists[id].labels[i].option = option;
-          }
-          break;
-        } else if (labelInfoLists[id].labels[i].startFrame > currentFrame) { // insert
-          if (labelInfoLists[id].labels[i].option == option) { // option same as next
-            labelInfoLists[id].labels[i].length += labelInfoLists[id].labels[i].startFrame-currentFrame;
-            labelInfoLists[id].labels[i-1].length -= labelInfoLists[id].labels[i].startFrame-currentFrame;
-            labelInfoLists[id].labels[i].startFrame = currentFrame;
-          } else if (labelInfoLists[id].labels[i-1].option != option) { // option same as prev
-            labelInfoLists[id].labels[i-1].length -= labelInfoLists[id].labels[i].startFrame-currentFrame;
-            labelInfoLists[id].labels.splice(i, 0, {
-              startFrame: currentFrame,
-              option: option,
-              length: labelInfoLists[id].labels[i].startFrame-currentFrame
-            });
-          }
-          break;
-        } else if (i == labelInfoLists[id].labels.length-1) { // append
-          if (labelInfoLists[id].labels[i].option != option) {
-            labelInfoLists[id].labels[i].length -= self.numFrames-currentFrame;
-            labelInfoLists[id].labels.push({
-              startFrame: currentFrame,
-              option: option,
-              length: self.numFrames-currentFrame
-            });
-          }
-          break;
-        }
-      }
-    }
-
-    console.log(id);
-    console.log(labelInfoLists[id].labels);
-
-    self.setState({
-      labelInfoLists: labelInfoLists
-    });
-  }
-
   render() {
-    console.log("VideoAnnotator render!!");
+    console.log("VideoAnnotator render");
     var self = this;
 
     return (
-      <div className="container-fluid">
+      <div className="container-fluid video-annotator">
         <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)}/>
 
         <section className="main-preview-player row row-eq-height clearfix">
-          <div className="control-panel col-lg-3 col-md-3 col-sm-3" style={{height: HEIGHT*SCALING+"px"}}>
+          <div className="control-panel col-lg-4 col-md-4 col-sm-4" style={{height: HEIGHT*SCALING+"px"}}>
             <div className="row control-panel-add-buttons">
               <button type="button" className="btn btn-warning new-frame-labels" onClick={this.handleNewFrameLabels}>
                 <span className="glyphicon glyphicon-plus-sign"></span> Frame Labels
@@ -208,60 +175,40 @@ export default class VideoAnnotator extends React.Component {
             {
               self.state.labelInfoLists.map(function(labelInfo, index) {
                 return (
-                  <LabelInfo key={index} id={index} isFrameLabels={labelInfo.isFrameLabels} updateOption={self.handleUpdateOption}/>
+                  <LabelInfo key={index} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} getCurrentFrame={self.handleGetCurrentFrame} numFrames={self.numFrames}/>
                 );
               })
             }
           </div>
 
-          <video id="player" className="video-js col-lg-6 col-md-6 col-sm-6" controls preload="auto" crossOrigin="anonymous" style={{height: HEIGHT*SCALING+"px"}}>
-            <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-          </video>
 
-          <ol className="vjs-playlist col-lg-3 col-md-3 col-sm-3" style={{height: HEIGHT*SCALING+"px"}}></ol>
-        </section>
-
-        {
-          self.state.labelInfoLists.map(function(labelInfo, indexLabelInfo) {
-            var sum = 0;
-            var percentage = 0;
-            if (labelInfo.isFrameLabels) {
+          <div className="videojs-wrapper col-lg-6 col-md-6 col-sm-6" style={{height: HEIGHT*SCALING+"px"}}>
+          {
+            self.state.currentFrameLabels.map(function(currentFrameLabel, index) {
+              var bg;
+              switch (currentFrameLabel.option) {
+                case 0:
+                  bg = "bg-success";
+                  break;
+                case 1:
+                  bg = "bg-primary";
+                  break;
+                case 2:
+                  bg = "bg-danger";
+                  break;
+              }
               return (
-                <div className="progress" key={indexLabelInfo}>
-                  {
-                    labelInfo.labels.map(function (label, indexLabel) {
-                      if (indexLabel == labelInfo.labels.length-1) {
-                        percentage = 100-sum;
-                      } else {
-                        percentage = Math.round(100*label.length/self.numFrames);
-                        sum += percentage;
-                      }
-                      var color = "";
-                      switch (label.option) {
-                        case 0:
-                          color = "progress-bar-success";
-                          break;
-                        case 1:
-                          color = "progress-bar-warning";
-                          break;
-                        case 2:
-                          color = "progress-bar-danger";
-                          break;
-                        default:
-                          break;
-                      }
-                      return (
-                        <div className={"progress-bar "+color} key={indexLabel} style={{width: percentage+"%"}}>
-                          <span className="sr-only">ABCDEFG</span>
-                        </div>
-                      );
-                    })
-                  }
-                </div>
+                <div className={"frame-label "+bg} key={index} style={{left: 76*index+"px"}}>{"Frame "+currentFrameLabel.id}</div>
               );
-            }
-          })
-        }
+            })
+          }
+            <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
+              <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+            </video>
+          </div>
+
+          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2" style={{height: HEIGHT*SCALING+"px"}}></ol>
+        </section>
 
         <section className="details">
           <div className="bound-properties col-lg-4 col-md-4 col-sm-4"></div>

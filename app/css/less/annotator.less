@@ -1,0 +1,90 @@
+@import "variables.less";
+
+.video-annotator {
+  padding: 0px;
+
+  .main-preview-player {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .control-panel {
+    background-color: @gray-even-darker;
+    overflow: auto;
+    padding: 0px;
+
+    .control-panel-add-buttons {
+      padding: 15px;
+      width: 100%;
+      margin: 0px;
+      background-color: @gray-darkest;
+
+      .btn {
+        margin: 0px 15px 0px 0px;
+      }
+    }
+
+    .label-info {
+      padding: 10px;
+      margin: 1px 10px 1px 10px;
+
+      h5 {
+        margin: 0px 0px 5px 0px;
+        color: white;
+      }
+
+      .btn-group {
+        width: 100%;
+      }
+
+      .progress {
+        margin: 10px 0px 0px 0px;
+        background-color: @gray;
+      }
+    }
+
+    .frame-label-info {
+      background-color: @color-frame;
+      border-style: solid;
+      border-color: darken(@color-frame, 20%);
+    }
+
+    .object-label-info {
+      background-color: @color-object;
+      border-style: solid;
+      border-color: darken(@color-object, 20%);
+    }
+  }
+
+  .videojs-wrapper {
+    padding: 0px;
+
+    .frame-label {
+      position: absolute;
+      width: 75px;
+      height: 25px;
+      top: 0px;
+      color: white;
+      z-index: 5;
+      margin: 1px;
+    }
+
+    .bg-success {
+      background-color: @color-success;
+      border-style: solid;
+      border-color: darken(@color-success, 20%);
+    }
+
+    .bg-primary {
+      background-color: @color-primary;
+      border-style: solid;
+      border-color: darken(@color-primary, 20%);
+    }
+
+    .bg-danger {
+      border-style: solid;
+      border-color: darken(@color-danger, 20%);
+      background-color: @color-danger;
+    }
+  }
+}
