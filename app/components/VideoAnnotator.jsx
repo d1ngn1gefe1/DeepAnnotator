@@ -43,7 +43,7 @@ export default class VideoAnnotator extends React.Component {
 
     console.log(this.props.url)
     fetch(this.props.url, {method: "post"})
-      .then(response => response.text())
+      .then(response => response.json())
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()))
 
@@ -107,6 +107,21 @@ export default class VideoAnnotator extends React.Component {
     self.setState({
       labelInfoLists: labelInfoLists
     });
+
+    // Test: send frame data to server on click
+    fetch(this.props.urlFrame, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        videoId: '12',
+        isLabeled: 0, })
+    })
+      .then(response => response.text())
+      .then(data => console.log(data))
+      .catch(err => console.error(this.props.url, err.toString()));
   }
 
   handleNewObjectLabels() {
@@ -218,4 +233,7 @@ AnnotatorNavigation.propTypes = {
   description: React.PropTypes.string.isRequired
 };
 
-VideoAnnotator.defaultProps = { url: "/videoInfo" };
+VideoAnnotator.defaultProps = {
+  url: "/videoInfo",
+  urlFrame: "/frameLabel"
+};
