@@ -100,8 +100,7 @@ export default class VideoAnnotator extends React.Component {
     labelInfoLists.push({
       isFrameLabels: true,
       labelName: "",
-      options: [],
-      frames: []
+      labels: []
     });
 
     self.setState({
@@ -116,8 +115,7 @@ export default class VideoAnnotator extends React.Component {
     var labelInfoLists = self.state.labelInfoLists;
     labelInfoLists.push({
       isFrameLabels: false,
-      options: [],
-      frames: []
+      labels: []
     });
 
     self.setState({
@@ -131,18 +129,54 @@ export default class VideoAnnotator extends React.Component {
 
     var labelInfoLists = self.state.labelInfoLists;
     var currentFrame = self.getCurrentFrame();
-    var exist = false;
-    for (var i = 0; i < labelInfoLists[id].options.length; i++) {
-      if (labelInfoLists[id].frames[i] == currentFrame) {
-        labelInfoLists[id].options[i] = option;
-        exist = true;
-        break; // assume that one frame corresponds to one option
+
+    if (labelInfoLists[id].labels.length == 0) {
+      labelInfoLists[id].labels.push({
+        startFrame: currentFrame, // == 0
+        option: option,
+        length: self.numFrames
+      });
+    } else {
+      for (var i = 0; i < labelInfoLists[id].labels.length; i++) {
+        if (labelInfoLists[id].labels[i].startFrame == currentFrame) { // same frame, update option
+          if (i >= 1 && labelInfoLists[id].labels[i-1].option == option) {
+            labelInfoLists[id].labels[i-1].length += labelInfoLists[id].labels[i].length
+            labelInfoLists[id].labels.splice(i, 1);
+          } else {
+            labelInfoLists[id].labels[i].option = option;
+          }
+          break;
+        } else if (labelInfoLists[id].labels[i].startFrame > currentFrame) { // insert
+          if (labelInfoLists[id].labels[i].option == option) { // option same as next
+            labelInfoLists[id].labels[i].length += labelInfoLists[id].labels[i].startFrame-currentFrame;
+            labelInfoLists[id].labels[i-1].length -= labelInfoLists[id].labels[i].startFrame-currentFrame;
+            labelInfoLists[id].labels[i].startFrame = currentFrame;
+          } else if (labelInfoLists[id].labels[i-1].option == option) { // option same as prev
+          } else {
+            labelInfoLists[id].labels[i-1].length -= labelInfoLists[id].labels[i].startFrame-currentFrame;
+            labelInfoLists[id].labels.splice(i, 0, {
+              startFrame: currentFrame,
+              option: option,
+              length: labelInfoLists[id].labels[i].startFrame-currentFrame
+            });
+          }
+          break;
+        } else if (i == labelInfoLists[id].labels.length-1) { // append
+          if (labelInfoLists[id].labels[i].option != option) {
+            labelInfoLists[id].labels[i].length -= self.numFrames-currentFrame;
+            labelInfoLists[id].labels.push({
+              startFrame: currentFrame,
+              option: option,
+              length: self.numFrames-currentFrame
+            });
+          }
+          break;
+        }
       }
     }
-    if (!exist) {
-      labelInfoLists[id].frames.push(currentFrame);
-      labelInfoLists[id].options.push(option);
-    }
+
+    console.log(id);
+    console.log(labelInfoLists[id].labels);
 
     self.setState({
       labelInfoLists: labelInfoLists
@@ -150,7 +184,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render!!!!");
+    console.log("VideoAnnotator render!!");
     var self = this;
 
     return (
@@ -184,21 +218,42 @@ export default class VideoAnnotator extends React.Component {
         </section>
 
         {
-          self.state.labelInfoLists.map(function(labelInfo, index) {
-            console.log(labelInfo.frames);
+          self.state.labelInfoLists.map(function(labelInfo, indexLabelInfo) {
+            var sum = 0;
+            var percentage = 0;
             if (labelInfo.isFrameLabels) {
               return (
-                  <div className="progress">
-                    <div className="progress-bar progress-bar-success" style="width: 35%">
-                      <span className="sr-only">35% Complete (success)</span>
-                    </div>
-                    <div className="progress-bar progress-bar-warning progress-bar-striped" style="width: 20%">
-                      <span className="sr-only">20% Complete (warning)</span>
-                    </div>
-                    <div className="progress-bar progress-bar-danger" style="width: 10%">
-                      <span className="sr-only">10% Complete (danger)</span>
-                    </div>
-                  </div>
+                <div className="progress" key={indexLabelInfo}>
+                  {
+                    labelInfo.labels.map(function (label, indexLabel) {
+                      if (indexLabel == labelInfo.labels.length-1) {
+                        percentage = 100-sum;
+                      } else {
+                        percentage = Math.round(100*label.length/self.numFrames);
+                        sum += percentage;
+                      }
+                      var color = "";
+                      switch (label.option) {
+                        case 0:
+                          color = "progress-bar-success";
+                          break;
+                        case 1:
+                          color = "progress-bar-warning";
+                          break;
+                        case 2:
+                          color = "progress-bar-danger";
+                          break;
+                        default:
+                          break;
+                      }
+                      return (
+                        <div className={"progress-bar "+color} key={indexLabel} style={{width: percentage+"%"}}>
+                          <span className="sr-only">ABCDEFG</span>
+                        </div>
+                      );
+                    })
+                  }
+                </div>
               );
             }
           })
