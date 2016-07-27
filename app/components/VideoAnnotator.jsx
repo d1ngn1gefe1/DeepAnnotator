@@ -130,14 +130,19 @@ export default class VideoAnnotator extends React.Component {
     var labelInfoLists = self.state.labelInfoLists;
     var currentFrame = self.getCurrentFrame();
 
+    console.log("option: ", option);
+    console.log("current frame: ", currentFrame);
+
     if (labelInfoLists[id].labels.length == 0) {
       labelInfoLists[id].labels.push({
-        startFrame: currentFrame, // == 0
+        startFrame: 0,
         option: option,
         length: self.numFrames
       });
     } else {
       for (var i = 0; i < labelInfoLists[id].labels.length; i++) {
+        console.log("i=", i);
+
         if (labelInfoLists[id].labels[i].startFrame == currentFrame) { // same frame, update option
           if (i >= 1 && labelInfoLists[id].labels[i-1].option == option) {
             labelInfoLists[id].labels[i-1].length += labelInfoLists[id].labels[i].length
@@ -151,8 +156,7 @@ export default class VideoAnnotator extends React.Component {
             labelInfoLists[id].labels[i].length += labelInfoLists[id].labels[i].startFrame-currentFrame;
             labelInfoLists[id].labels[i-1].length -= labelInfoLists[id].labels[i].startFrame-currentFrame;
             labelInfoLists[id].labels[i].startFrame = currentFrame;
-          } else if (labelInfoLists[id].labels[i-1].option == option) { // option same as prev
-          } else {
+          } else if (labelInfoLists[id].labels[i-1].option != option) { // option same as prev
             labelInfoLists[id].labels[i-1].length -= labelInfoLists[id].labels[i].startFrame-currentFrame;
             labelInfoLists[id].labels.splice(i, 0, {
               startFrame: currentFrame,
