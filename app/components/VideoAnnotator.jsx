@@ -25,9 +25,12 @@ export default class VideoAnnotator extends React.Component {
       currentFrameLabels: []
     };
 
+    this.currentKey = 0;
+
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
     this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
+    this.handleCloseLabelInfo = this.handleCloseLabelInfo.bind(this);
   }
 
   componentWillMount() {
@@ -103,7 +106,7 @@ export default class VideoAnnotator extends React.Component {
         update = true;
       } else {
         for (var i = 0; i < currentFrameLabels.length; i++) {
-          if (self.state.currentFrameLabels[i].id != currentFrameLabels[i].id || self.state.currentFrameLabels[i].option != currentFrameLabels[i].option) {
+          if (self.state.currentFrameLabels[i].option != currentFrameLabels[i].option) {
             update = true;
             break;
           }
@@ -115,6 +118,19 @@ export default class VideoAnnotator extends React.Component {
           currentFrameLabels: currentFrameLabels
         });
       }
+    });
+  }
+
+  handleCloseLabelInfo(id) {
+    console.log("close", id);
+    var self = this;
+
+    var labelInfoLists = self.state.labelInfoLists;
+
+    labelInfoLists.splice(id, 1);
+
+    self.setState({
+      labelInfoLists: labelInfoLists,
     });
   }
 
@@ -131,8 +147,11 @@ export default class VideoAnnotator extends React.Component {
     labelInfoLists.push({
       isFrameLabels: true,
       labelName: "",
-      labels: []
+      labels: [],
+      key: self.currentKey
     });
+
+    self.currentKey += 1;
 
     self.setState({
       labelInfoLists: labelInfoLists
@@ -161,8 +180,11 @@ export default class VideoAnnotator extends React.Component {
     var labelInfoLists = self.state.labelInfoLists;
     labelInfoLists.push({
       isFrameLabels: false,
-      labels: []
+      labels: [],
+      key: self.currentKey
     });
+
+    self.currentKey += 1;
 
     self.setState({
       labelInfoLists: labelInfoLists
@@ -170,7 +192,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render");
+    console.log("VideoAnnotator render!!");
     var self = this;
 
     return (
@@ -189,8 +211,9 @@ export default class VideoAnnotator extends React.Component {
             </div>
             {
               self.state.labelInfoLists.map(function(labelInfo, index) {
+                console.log("index", index);
                 return (
-                  <LabelInfo key={index} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} getCurrentFrame={self.handleGetCurrentFrame} numFrames={self.numFrames}/>
+                  <LabelInfo key={labelInfo.key} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} getCurrentFrame={self.handleGetCurrentFrame} closeLabelInfo={self.handleCloseLabelInfo} numFrames={self.numFrames} />
                 );
               })
             }

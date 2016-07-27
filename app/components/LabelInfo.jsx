@@ -94,7 +94,10 @@ export default class LabelInfo extends React.Component {
       // three cases: visible, outside of view frame, occluded or obstructed
       return (
         <div className="label-info frame-label-info">
-          <h5>{"Frame "+self.props.id}</h5>
+          <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabelInfo.bind(self, self.props.id)}>
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <p>{"Frame "+self.props.id}</p>
           <div className="btn-group" data-toggle="buttons">
             <label className="btn btn-success col-lg-4 col-md-4 col-sm-4 active" onClick={self.handleClick.bind(self, 0)}>
               <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
