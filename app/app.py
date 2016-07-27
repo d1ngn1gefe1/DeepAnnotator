@@ -41,6 +41,27 @@ def get_video_info():
     return json.dumps({'id': ids})
 
 
+@app.route("/frameLabel", methods=["POST"])
+def save_frame_label():
+    """
+    save frame labels
+    """
+    Session = sessionmaker(bind=engine)
+    s = Session()
+    video_id = request.json['videoId']
+    is_labeled = int(request.json['isLabeled'])
+
+    if s.query(Video).get(video_id) is None:
+        s.add(Video(video_id, is_labeled))
+    else:
+        video = s.query(Video).filter_by(id=video_id).update(
+            dict(is_labeled=is_labeled))
+    s.commit()
+
+    return json.dumps({'id': video_id, 'is_labeled': is_labeled,
+                       'status': 'success'})
+
+
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
 def login():

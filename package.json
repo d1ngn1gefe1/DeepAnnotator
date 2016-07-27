@@ -42,6 +42,7 @@
     "video.js": "^5.10.4",
     "videojs-playlist": "^2.4.1",
     "videojs-playlist-ui": "^2.2.0",
+    "videojs-framebyframe": "1.0.1",
     "webpack": "^1.13.1",
     "webpack-stream": "^3.2.0"
   },
