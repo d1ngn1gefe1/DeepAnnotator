@@ -11,7 +11,9 @@ export default class LabelInfo extends React.Component {
   }
 
   componentDidMount() {
-    this.handleClick(0);
+    var self = this;
+
+    self.handleClick(self.props.isFrameLabels, 0);
   }
 
   getCurrentOption(currentFrame) {
@@ -30,7 +32,7 @@ export default class LabelInfo extends React.Component {
     return this.state.labels;
   }
 
-  handleClick(option) {
+  handleClick(isFrameLabels, option) {
     var self = this;
 
     var currentFrame = self.props.getCurrentFrame();
@@ -91,28 +93,44 @@ export default class LabelInfo extends React.Component {
   render() {
     var self = this;
 
-    if (self.props.isFrameLabels) {
-      var sum = 0;
-      var percentage = 0;
+    var sum = 0;
+    var percentage = 0;
 
-      // three cases: visible, outside of view frame, occluded or obstructed
-      return (
-        <div className="label-info frame-label-info">
+    return (
+        <div className={"label-info "+(self.props.isFrameLabels?"frame-label-info":"object-label-info")}>
           <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabelInfo.bind(self, self.props.id)}>
             <span aria-hidden="true">&times;</span>
           </button>
-          <p>{"Frame "+self.props.id}</p>
-          <div className="btn-group" data-toggle="buttons">
-            <label className="btn btn-success col-lg-4 col-md-4 col-sm-4 active" onClick={self.handleClick.bind(self, 0)}>
-              <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
-            </label>
-            <label className="btn btn-info col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 1)}>
-              <input type="radio" name="options" id="option2" autoComplete="off" /> Out of frame
-            </label>
-            <label className="btn btn-danger col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 2)}>
-              <input type="radio" name="options" id="option3" autoComplete="off" /> Occluded
-            </label>
-          </div>
+          <p>{(self.props.isFrameLabels?"Frame ":"Object ")+self.props.id}</p>
+
+          {(() => {
+            if (self.props.isFrameLabels) {
+              return (
+                <div className="btn-group" data-toggle="buttons">
+                  <label className="btn btn-success col-lg-6 col-md-6 col-sm-6 active" onClick={self.handleClick.bind(self, true, 1)}>
+                    <input type="radio" name="options" id="option1" autoComplete="off" /> Start
+                  </label>
+                  <label className="btn btn-info col-lg-6 col-md-6 col-sm-6" onClick={self.handleClick.bind(self, true, 0)}>
+                    <input type="radio" name="options" id="option2" autoComplete="off" /> End
+                  </label>
+                </div>
+              );
+            } else {
+              return (
+                <div className="btn-group" data-toggle="buttons">
+                  <label className="btn btn-success col-lg-4 col-md-4 col-sm-4 active" onClick={self.handleClick.bind(self, false, 0)}>
+                    <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
+                  </label>
+                  <label className="btn btn-info col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, false, 1)}>
+                    <input type="radio" name="options" id="option2" autoComplete="off" /> Out of frame
+                  </label>
+                  <label className="btn btn-danger col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, false, 2)}>
+                    <input type="radio" name="options" id="option3" autoComplete="off" /> Occluded
+                  </label>
+                </div>
+              );
+            }
+          })()}
 
           <div className="progress">
           {
@@ -146,14 +164,7 @@ export default class LabelInfo extends React.Component {
           }
           </div>
         </div>
-      );
-    } else {
-      return (
-        <div className="label-info object-label-info">
-          <h5>Object</h5>
-        </div>
-      );
-    }
+    );
   }
 }
 
