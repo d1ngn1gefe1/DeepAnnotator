@@ -162,9 +162,7 @@ export default class VideoAnnotator extends React.Component {
     self.setState({
       isOpen: false
     });
-    var currentItem1 = parseInt(self.player.currentSrc().split("/")[6]);
-    var currentItem2 = self.state.currentItem;
-    console.log("currentItem: ", currentItem1, currentItem2);
+    self.player.playlist.currentItem(self.state.currentItem);
   }
 
   handleOK() {
