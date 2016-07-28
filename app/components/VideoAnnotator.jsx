@@ -7,6 +7,7 @@ import "videojs-playlist-ui";
 import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
+import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from "react-modal-bootstrap"
 
 var HEIGHT = 240;
 var WIDTH = 320;
@@ -22,16 +23,21 @@ export default class VideoAnnotator extends React.Component {
 
     this.state = {
       labelInfoLists: [],
-      currentFrameLabels: []
+      currentFrameLabels: [],
+      isOpen: false
     };
 
     this.currentKey = 0;
+    this.isSaved = true;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
     this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
     this.handleCloseLabelInfo = this.handleCloseLabelInfo.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.handleNotSaved = this.handleNotSaved.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.handleOK = this.handleOK.bind(this);
   }
 
   componentWillMount() {
@@ -81,6 +87,13 @@ export default class VideoAnnotator extends React.Component {
       console.log("loadstart");
       self.currentItem = parseInt(self.player.currentSrc().split("/")[6]);
       console.log("currentItem: ", self.currentItem);
+      console.log("is saved: ", self.isSaved);
+
+      if (!self.isSaved) {
+        self.setState({
+          isOpen: true
+        });
+      }
     });
 
     self.player.on("durationchange", function() {
@@ -125,6 +138,7 @@ export default class VideoAnnotator extends React.Component {
   handleCloseLabelInfo(id) {
     console.log("close", id);
     var self = this;
+    self.isSaved = false;
 
     var labelInfoLists = self.state.labelInfoLists;
 
@@ -143,6 +157,7 @@ export default class VideoAnnotator extends React.Component {
   handleNewFrameLabels() {
     console.log("new frame labels");
     var self = this;
+    self.isSaved = false;
 
     var labelInfoLists = self.state.labelInfoLists;
     labelInfoLists.push({
@@ -160,13 +175,13 @@ export default class VideoAnnotator extends React.Component {
 
     // Test: send frame data to server on click
     fetch(this.props.urlFrame, {
-      method: 'post',
+      method: "post",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        "Accept": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        videoId: '12',
+        videoId: "12",
         isLabeled: 0, })
     })
       .then(response => response.text())
@@ -177,6 +192,7 @@ export default class VideoAnnotator extends React.Component {
   handleNewObjectLabels() {
     console.log("new object labels");
     var self = this;
+    self.isSaved = false;
 
     var labelInfoLists = self.state.labelInfoLists;
     labelInfoLists.push({
@@ -206,6 +222,16 @@ export default class VideoAnnotator extends React.Component {
     console.log(data);
   }
 
+  handleNotSaved() {
+    this.isSaved = false;
+  }
+
+  handleCancel() {
+    this.setState({
+      isOpen: false
+    });
+  };
+
   render() {
     console.log("VideoAnnotator render!");
     var self = this;
@@ -231,7 +257,7 @@ export default class VideoAnnotator extends React.Component {
               self.state.labelInfoLists.map(function(labelInfo, index) {
                 console.log("index", index);
                 return (
-                  <LabelInfo key={labelInfo.key} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} getCurrentFrame={self.handleGetCurrentFrame} closeLabelInfo={self.handleCloseLabelInfo} numFrames={self.numFrames} />
+                  <LabelInfo key={labelInfo.key} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} getCurrentFrame={self.handleGetCurrentFrame} closeLabelInfo={self.handleCloseLabelInfo} notSaved={self.handleNotSaved} numFrames={self.numFrames} />
                 );
               })
             }
@@ -271,6 +297,26 @@ export default class VideoAnnotator extends React.Component {
           <div className="media-properties col-lg-4 col-md-4 col-sm-4"></div>
           <div className="media-events col-lg-4 col-md-4 col-sm-4"></div>
         </section>
+
+        <Modal isOpen={self.state.isOpen} onRequestHide={self.handleCancel}>
+          <ModalHeader>
+            <ModalClose onClick={self.handleCancel}/>
+            <ModalTitle>Friendly Reminder</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p>Are you sure you want to navigate away from this video and discard the changes?</p>
+            <p>Press OK to continue, or Cancel to stay on the current page.</p>
+          </ModalBody>
+          <ModalFooter>
+            <button className="btn btn-default" onClick={self.handleCancel}>
+              Cancel
+            </button>
+            <button className="btn btn-primary" onClick={self.handleOK}>
+              OK
+            </button>
+          </ModalFooter>
+        </Modal>
+
       </div>
     );
   }

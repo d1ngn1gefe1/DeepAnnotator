@@ -34,6 +34,7 @@ export default class LabelInfo extends React.Component {
     var self = this;
 
     var currentFrame = self.props.getCurrentFrame();
+    self.props.notSaved();
     var labels = self.state.labels;
 
     if (labels.length == 0) {
