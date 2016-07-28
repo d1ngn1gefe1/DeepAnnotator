@@ -62,7 +62,17 @@ gulp.task('minify-js-2', function() {
         }))
 });
 
-gulp.task('minify-js', ['minify-js-0', 'minify-js-1', 'minify-js-2']);
+gulp.task('minify-js-3', function() {
+    return gulp.src('app/components/videojs.framebyframe.js')
+        .pipe(uglify())
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(gulp.dest('public/static/js'))
+        .pipe(browserSync.reload({
+            stream: true
+        }))
+});
+
+gulp.task('minify-js', ['minify-js-0', 'minify-js-1', 'minify-js-2', 'minify-js-3']);
 
 // Copy
 gulp.task('copy-0', function() {
@@ -120,11 +130,9 @@ gulp.task('browserSync', function() {
 // Watch Tasks
 gulp.task('dev', ['browserSync', 'minify-js', 'webpack'], function() {
     gulp.watch('app/components/*.js', ['minify-js']);
-    gulp.watch('app/components/video/*.js', ['minify-js']);
     gulp.watch('app/components/*.jsx', ['webpack']);
     gulp.watch('app/css/*.css', ['webpack']);
-    gulp.watch('app/css/scss/*.scss', ['webpack']);
-    gulp.watch('app/css/less/*.less', ['webpack']);
+    gulp.watch('app/less/*.less', ['webpack']);
     // Reloads the browser whenever HTML or JS files change
     gulp.watch('public/*.html', browserSync.reload);
     gulp.watch('public/*.js', browserSync.reload);
