@@ -10,6 +10,7 @@ import Navigation from "./Navigation.jsx";
 import VideoAnnotator from "./VideoAnnotator.jsx";
 import VideoGrid from "./VideoGrid.jsx";
 
+import "../css/bootstrap.css";
 import "../css/video-js.css";
 import "../css/videojs-playlist-ui.vertical.css"
 import "../css/less/annotator.less";
