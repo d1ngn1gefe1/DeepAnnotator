@@ -72,7 +72,17 @@ gulp.task('minify-js-3', function() {
         }))
 });
 
-gulp.task('minify-js', ['minify-js-0', 'minify-js-1', 'minify-js-2', 'minify-js-3']);
+gulp.task('minify-js-4', function() {
+    return gulp.src('app/components/nouislider.js')
+        .pipe(uglify())
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(gulp.dest('public/static/js'))
+        .pipe(browserSync.reload({
+            stream: true
+        }))
+});
+
+gulp.task('minify-js', ['minify-js-0', 'minify-js-1', 'minify-js-2', 'minify-js-3', 'minify-js-4']);
 
 // Copy
 gulp.task('copy-0', function() {

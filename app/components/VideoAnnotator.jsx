@@ -268,7 +268,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render!");
+    console.log("VideoAnnotator render!!");
     var self = this;
 
     return (
@@ -313,6 +313,7 @@ export default class VideoAnnotator extends React.Component {
                   bg = "bg-danger";
                   break;
               }
+
               return (
                 <div className={"small-label "+bg} key={index} style={{left: 76*index+"px"}}>{(self.props.isFrameLabels?"Frame":"Object")+currentLabel.id}</div>
               );
