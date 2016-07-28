@@ -4,7 +4,7 @@ import LabelInfo from "./LabelInfo.jsx";
 import videojs from "video.js";
 import "videojs-playlist";
 import "videojs-playlist-ui";
-//import "videojs-framebyframe";
+import "./videojs.framebyframe.js";
 import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
@@ -77,17 +77,17 @@ export default class VideoAnnotator extends React.Component {
       preload: "auto",
       height: HEIGHT*SCALING,
       width: WIDTH*SCALING,
-    //   plugins: {
-    //     framebyframe: {
-    //       fps: 5,
-    //       steps: [
-    //         { text: '-5', step: -5 },
-    //         { text: '-1', step: -1 },
-    //         { text: '+1', step: 1 },
-    //         { text: '+5', step: 5 },
-    //       ]
-    //     }
-    //   }
+      plugins: {
+        framebyframe: {
+          fps: 5,
+          steps: [
+            { text: '-5', step: -5 },
+            { text: '-1', step: -1 },
+            { text: '+1', step: 1 },
+            { text: '+5', step: 5 },
+          ]
+        }
+      }
     }, function() {
       self.player.playlist(playlist);
       self.player.playlistUi();

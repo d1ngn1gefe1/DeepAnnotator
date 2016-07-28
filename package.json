@@ -2,7 +2,7 @@
   "name": "DeepAnnotator",
   "title": "Deep Annotator",
   "version": "1.0.0",
-  "homepage": "",
+  "homepage": "http://startbootstrap.com/template-overviews/freelancer",
   "author": "Alan & Emma",
   "license": {
     "type": "MIT",
@@ -42,7 +42,6 @@
     "video.js": "^5.10.4",
     "videojs-playlist": "^2.4.1",
     "videojs-playlist-ui": "^2.2.0",
-    "videojs-framebyframe": "1.0.1",
     "webpack": "^1.13.1",
     "webpack-stream": "^3.2.0"
   },
@@ -60,7 +59,6 @@
     "lodash": "^4.13.1",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
-    "react-modal-bootstrap": "^1.1.0",
     "react-router": "^2.5.2"
   }
 }
