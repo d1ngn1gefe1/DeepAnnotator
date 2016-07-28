@@ -30,7 +30,7 @@ var config = {
       },
       {
         test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url?limit=100000@name=[name][ext]&name=./[hash].[ext]"
+        loader: "url-loader?limit=100000@name=[name][ext]&name=./[hash].[ext]"
       },
       {
         test: /\.json$/,
