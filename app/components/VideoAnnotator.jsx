@@ -24,6 +24,7 @@ export default class VideoAnnotator extends React.Component {
     this.state = {
       labelInfoLists: [],
       currentFrameLabels: [],
+      currentItem: -1,
       isOpen: false
     };
 
@@ -84,15 +85,23 @@ export default class VideoAnnotator extends React.Component {
     });
 
     self.player.on("loadstart", function() {
-      console.log("loadstart");
-      self.currentItem = parseInt(self.player.currentSrc().split("/")[6]);
-      console.log("currentItem: ", self.currentItem);
-      console.log("is saved: ", self.isSaved);
+      console.log("loadstart, is saved: ", self.isSaved);
 
-      if (!self.isSaved) {
+      var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+
+      if (currentItem == self.state.currentItem) {
+        return;
+      } else if (!self.isSaved) {
         self.setState({
           isOpen: true
         });
+      } else {
+        self.setState({
+          currentItem: currentItem,
+          labelInfoLists: [],
+          currentFrameLabels: [],
+        });
+        console.log("currentItem: ", currentItem);
       }
     });
 
@@ -133,6 +142,31 @@ export default class VideoAnnotator extends React.Component {
         });
       }
     });
+  }
+
+  handleCancel() {
+    var self = this;
+
+    self.setState({
+      isOpen: false
+    });
+    var currentItem1 = parseInt(self.player.currentSrc().split("/")[6]);
+    var currentItem2 = self.state.currentItem;
+    console.log("currentItem: ", currentItem1, currentItem2);
+  }
+
+  handleOK() {
+    var self = this;
+
+    var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+    self.setState({
+      labelInfoLists: [],
+      currentFrameLabels: [],
+      currentItem: currentItem,
+      isOpen: false
+    });
+    self.isSaved = true;
+    console.log("currentItem: ", currentItem);
   }
 
   handleCloseLabelInfo(id) {
@@ -226,14 +260,8 @@ export default class VideoAnnotator extends React.Component {
     this.isSaved = false;
   }
 
-  handleCancel() {
-    this.setState({
-      isOpen: false
-    });
-  };
-
   render() {
-    console.log("VideoAnnotator render!");
+    console.log("VideoAnnotator render");
     var self = this;
 
     return (
@@ -255,7 +283,6 @@ export default class VideoAnnotator extends React.Component {
             </div>
             {
               self.state.labelInfoLists.map(function(labelInfo, index) {
-                console.log("index", index);
                 return (
                   <LabelInfo key={labelInfo.key} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} getCurrentFrame={self.handleGetCurrentFrame} closeLabelInfo={self.handleCloseLabelInfo} notSaved={self.handleNotSaved} numFrames={self.numFrames} />
                 );
