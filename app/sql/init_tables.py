@@ -43,18 +43,16 @@ class Video(Base):
     """"""
     __tablename__ = "videos"
 
-    id = Column(String(20), primary_key=True)
-    is_labeled = Column(Integer)
-    frame_label = Column(String(1000))
-    object_label = Column(String(1000))
+    video_id = Column(String(20), primary_key=True)
+    playlist_name = Column(String(100), primary_key=True)
+    label = Column(String(1000))
 
     #----------------------------------------------------------------------
-    def __init__(self, id, is_labeled, frame_label=None, object_label=None):
+    def __init__(self, video_id, playlist_name, label):
         """"""
-        self.id = id
-        self.is_labeled = is_labeled
-        self.frame_label = frame_label
-        self.object_label = object_label
+        self.video_id = video_id
+        self.playlist_name = playlist_name
+        self.label = label
 
 
 # create tables
