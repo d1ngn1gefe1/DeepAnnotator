@@ -39,8 +39,9 @@ export default class FrameLabel extends React.Component {
 
   mergeIntervals(intervals) {
     // Test if the given set has at least one interval
-    if (intervals.length <= 1)
-      return;
+    if (intervals.length <= 1) {
+      return intervals;
+    }
 
     // Create an empty stack of intervals
     var stack = [], last;
@@ -93,7 +94,8 @@ export default class FrameLabel extends React.Component {
             labels = self.mergeIntervals(labels);
           } else if (currentFrame < labels[i][0]) {
             labels[i][1] = labels[i][0];
-            labels[i][1] = currentFrame;
+            labels[i][0] = currentFrame;
+            labels = self.mergeIntervals(labels);
           } else {
             labels.splice(i, 1); // remove interval of length 0
           }
@@ -101,17 +103,24 @@ export default class FrameLabel extends React.Component {
         }
       }
     } else {
-      labels.push([currentFrame, -1]);
+      if (labels.length == 0 || currentFrame >= labels[labels.length-1][0]) {
+        labels.push([currentFrame, -1]);
+      } else {
+        for (var i = 0; i < labels.length; i++) {
+          if (labels[i][0] > currentFrame) {
+            labels.splice(i, 0, [currentFrame, -1]);
+          }
+        }
+      }
     }
 
     self.setState({
       labels: labels,
-      hasStarted: !hasStarted
+      hasStarted: !self.state.hasStarted
     });
     self.props.notSaved();
   }
 
-  // disable slider when hasStarted == true
   handleOnChange() {
     var self = this;
 
@@ -126,7 +135,7 @@ export default class FrameLabel extends React.Component {
       labels[i][0] = parseInt(handles[2*i]);
       labels[i][1] = parseInt(handles[2*i+1]);
     }
-    labels = mergeIntervals(labels);
+    labels = self.mergeIntervals(labels);
 
     self.setState({
       labels: labels
@@ -136,11 +145,16 @@ export default class FrameLabel extends React.Component {
 
   getHandles() {
     var self = this;
-    var handles = [];
+    if (self.state.labels.length == 0) {
+      return [0];
+    }
 
+    var handles = [];
     for (var i = 0; i < self.state.labels.length; i++) {
       handles.push(self.state.labels[i][0]);
-      handles.push(self.state.labels[i][1]);
+      if (self.state.labels[i][1] != -1) {
+        handles.push(self.state.labels[i][1]);
+      }
     }
 
     return handles;
@@ -167,10 +181,14 @@ export default class FrameLabel extends React.Component {
   }
 
   render() {
-    console.log("FrameLabel render");
+    console.log("FrameLabel render!!!");
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();
+
+    console.log(handles);
+    console.log(intervals);
+    console.log(self.state.labels);
 
     return (
       <div className={"label-info frame-label-info"}>
@@ -180,10 +198,10 @@ export default class FrameLabel extends React.Component {
         <p>{"Frame "+self.props.id}</p>
 
         <div className="btn-group" data-toggle="buttons">
-          <label className={"btn btn-success col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" active disabled":"")} onClick={self.handleClick.bind(self, true)}>
+          <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" disabled":"")} onClick={self.handleClick.bind(self, true)}>
             <input type="radio" name="options" id="option1" autoComplete="off" /> Start
           </label>
-          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" active disabled")} onClick={self.handleClick.bind(self, false)}>
+          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" disabled")} onClick={self.handleClick.bind(self, false)}>
             <input type="radio" name="options" id="option2" autoComplete="off" /> End
           </label>
         </div>
@@ -191,7 +209,7 @@ export default class FrameLabel extends React.Component {
         <div className="label-slider">
           <Nouislider
             ref={"Nouislider"}
-            range={{min: 0, max: self.props.numFrames}}
+            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames}}
             step={1}
             margin={1}
             start={handles}
@@ -202,12 +220,12 @@ export default class FrameLabel extends React.Component {
           />
           {
             intervals.map(function(interval, index) {
-              var bg = " slider-success";
+              var bg = " slider-danger";
 
-              if (index == 0 && interval[0] < 4) {
+              if (index == 0) {
                 bg += " slider-left"
               }
-              if (index == self.state.labels.length-1 && interval[0]+interval[1] >= self.props.numFrames-4) {
+              if (index == self.state.labels.length-1) {
                 bg += " slider-right"
               }
 

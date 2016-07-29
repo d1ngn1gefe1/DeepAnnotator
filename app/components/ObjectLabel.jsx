@@ -146,7 +146,7 @@ export default class ObjectLabel extends React.Component {
   }
 
   render() {
-    console.log("ObjectLabel render!!");
+    console.log("ObjectLabel render");
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();
@@ -173,7 +173,7 @@ export default class ObjectLabel extends React.Component {
         <div className="label-slider">
           <Nouislider
             ref={"Nouislider"}
-            range={{min: 0, max: self.props.numFrames}}
+            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames}}
             step={1}
             margin={1}
             start={handles}
@@ -194,10 +194,10 @@ export default class ObjectLabel extends React.Component {
                 bg = " slider-danger";
               }
 
-              if (index == 0 && interval[0] < 4) {
+              if (index == 0) {
                 bg += " slider-left"
               }
-              if (index == self.state.labels.length-1 && interval[0]+interval[1] >= self.props.numFrames-4) {
+              if (index == self.state.labels.length-1) {
                 bg += " slider-right"
               }
 

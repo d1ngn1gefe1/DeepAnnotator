@@ -321,7 +321,7 @@ export default class VideoAnnotator extends React.Component {
                 if (currentLabel.option == 0) {
                   bg = " bg-gray";
                 } else if (currentLabel.option == 1) {
-                  bg = " bg-success";
+                  bg = " bg-danger";
                 }
               } else {
                 if (currentLabel.option == 0) {
