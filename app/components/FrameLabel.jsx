@@ -76,9 +76,13 @@ export default class FrameLabel extends React.Component {
     return stack;
   }
 
-  handleClick() {
+  handleClick(startButton) {
     var self = this;
-    var currentFrame = self.props.currentFrame;
+    if (self.state.hasStarted == startButton) {
+      return;
+    }
+
+    var currentFrame = self.props.getCurrentFrame();
     var labels = self.state.labels;
 
     if (self.state.hasStarted) {
@@ -119,8 +123,8 @@ export default class FrameLabel extends React.Component {
     var handles = self.refs["Nouislider"].slider.get();
 
     for (var i = 0; i < labels.length; i++) {
-      labels[i][0] = handles[2*i];
-      labels[i][1] = handles[2*i+1];
+      labels[i][0] = parseInt(handles[2*i]);
+      labels[i][1] = parseInt(handles[2*i+1]);
     }
     labels = mergeIntervals(labels);
 
@@ -154,7 +158,7 @@ export default class FrameLabel extends React.Component {
       }
 
       var start = 100*label[0]/self.props.numFrames;
-      var length = 100*(label[1]-label[0])/self.props.numFrames;
+      var length = 100*(label[1]-label[0]+1)/self.props.numFrames;
 
       intervals.push([start, length]);
     }
@@ -170,16 +174,16 @@ export default class FrameLabel extends React.Component {
 
     return (
       <div className={"label-info frame-label-info"}>
-        <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabelInfo.bind(self, self.props.id)}>
+        <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabel.bind(self, self.props.id)}>
           <span aria-hidden="true">&times;</span>
         </button>
         <p>{"Frame "+self.props.id}</p>
 
         <div className="btn-group" data-toggle="buttons">
-          <label className={"btn btn-success col-lg-6 col-md-6 col-sm-6"+(hasStarted?" disabled":"")} onClick={self.handleClick.bind(self)}>
+          <label className={"btn btn-success col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" active disabled":"")} onClick={self.handleClick.bind(self, true)}>
             <input type="radio" name="options" id="option1" autoComplete="off" /> Start
           </label>
-          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(hasStarted?"":" disabled")} onClick={self.handleClick.bind(self)}>
+          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" active disabled")} onClick={self.handleClick.bind(self, false)}>
             <input type="radio" name="options" id="option2" autoComplete="off" /> End
           </label>
         </div>
@@ -193,11 +197,11 @@ export default class FrameLabel extends React.Component {
             start={handles}
             animate={false}
             onChange={self.handleOnChange.bind(this)}
-            disabled={hasStarted}
+            disabled={self.state.hasStarted || self.props.isPlaying}
             tooltips
           />
           {
-            self.state.intervals.map(function(interval, index) {
+            intervals.map(function(interval, index) {
               var bg = " slider-success";
 
               if (index == 0 && interval[0] < 4) {
@@ -221,7 +225,7 @@ export default class FrameLabel extends React.Component {
 FrameLabel.propTypes = {
   id: React.PropTypes.number.isRequired,
   numFrames: React.PropTypes.number.isRequired,
-  currentFrame: React.PropTypes.number.isRequired
+  isPlaying: React.PropTypes.bool.isRequired
 };
 
 FrameLabel.defaultProps = {

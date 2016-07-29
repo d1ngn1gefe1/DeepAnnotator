@@ -10,8 +10,7 @@ export default class ObjectLabel extends React.Component {
       /*
         label = [startFrame, endFrame, option]
       */
-      labels: [],
-      activeButton: -1
+      labels: []
     };
   }
 
@@ -38,7 +37,8 @@ export default class ObjectLabel extends React.Component {
 
   handleClick(option) {
     var self = this;
-    var currentFrame = self.props.currentFrame;
+
+    var currentFrame = self.props.getCurrentFrame();
     var labels = self.state.labels;
 
     if (labels.length == 0) {
@@ -54,7 +54,7 @@ export default class ObjectLabel extends React.Component {
             labels[i][2] = option;
             labels.splice(i+1, 1);
           } else {
-            labels[i].option = option;
+            labels[i][2] = option;
           }
           break;
         } else if (labels[i][0] > currentFrame) { // insert
@@ -67,7 +67,7 @@ export default class ObjectLabel extends React.Component {
           }
           break;
         } else if (i == labels.length-1) { // append
-          if (labels[i].option != option) {
+          if (labels[i][2] != option) {
             labels[i][1] = currentFrame-1;
             labels.push([currentFrame, self.props.numFrames, option]);
           }
@@ -77,8 +77,7 @@ export default class ObjectLabel extends React.Component {
     }
 
     self.setState({
-      labels: labels,
-      activeButton: option
+      labels: labels
     });
     self.props.notSaved();
   }
@@ -101,13 +100,13 @@ export default class ObjectLabel extends React.Component {
       for (var i = 0; i < labels.length; i++) {
         if (i == 0) {
           labels[0][0] = 0;
-          label[0][1] = handles[1]-1;
+          labels[0][1] = parseInt(handles[1])-1;
         } else if (i == labels.length-1) {
-          labels[i][0] = handles[i];
-          labels[i][1] = self.props.numFrames-handles[i];
+          labels[i][0] = parseInt(handles[i]);
+          labels[i][1] = self.props.numFrames-1;
         } else {
-          labels[i][0] = handles[i];
-          labels[i][1] = handles[i+1]-1;
+          labels[i][0] = parseInt(handles[i]);
+          labels[i][1] = parseInt(handles[i+1])-1;
         }
       }
     }
@@ -120,8 +119,11 @@ export default class ObjectLabel extends React.Component {
 
   getHandles() {
     var self = this;
-    var handles = [];
+    if (self.state.labels.length == 0) {
+      return [0];
+    }
 
+    var handles = [];
     for (var i = 0; i < self.state.labels.length; i++) {
       handles.push(self.state.labels[i][0]);
     }
@@ -135,10 +137,8 @@ export default class ObjectLabel extends React.Component {
 
     for (var i = 0; i < self.state.labels.length; i++) {
       var label = self.state.labels[i];
-
       var start = 100*label[0]/self.props.numFrames;
-      var length = 100*(label[1]-label[0])/self.props.numFrames;
-
+      var length = 100*(label[1]-label[0]+1)/self.props.numFrames;
       intervals.push([start, length, label[2]]);
     }
 
@@ -146,7 +146,7 @@ export default class ObjectLabel extends React.Component {
   }
 
   render() {
-    console.log("ObjectLabel render");
+    console.log("ObjectLabel render!!");
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();
@@ -159,13 +159,13 @@ export default class ObjectLabel extends React.Component {
         <p>{"Object "+self.props.id}</p>
 
         <div className="btn-group" data-toggle="buttons">
-          <label className={"btn btn-success col-lg-4 col-md-4 col-sm-4"+(activeButton==0?" active disabled":"")} onClick={self.handleClick.bind(self, 0)}>
+          <label className={"btn btn-success col-lg-4 col-md-4 col-sm-4"} onClick={self.handleClick.bind(self, 0)}>
             <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
           </label>
-          <label className={"btn btn-info col-lg-4 col-md-4 col-sm-4"+(activeButton==1?" active disabled":"")} onClick={self.handleClick.bind(self, 1)}>
+          <label className={"btn btn-info col-lg-4 col-md-4 col-sm-4"} onClick={self.handleClick.bind(self, 1)}>
             <input type="radio" name="options" id="option2" autoComplete="off" /> Out of frame
           </label>
-          <label className={"btn btn-danger col-lg-4 col-md-4 col-sm-4"+(activeButton==2?" active disabled":"")} onClick={self.handleClick.bind(self, 2)}>
+          <label className={"btn btn-danger col-lg-4 col-md-4 col-sm-4"} onClick={self.handleClick.bind(self, 2)}>
             <input type="radio" name="options" id="option3" autoComplete="off" /> Occluded
           </label>
         </div>
@@ -179,10 +179,11 @@ export default class ObjectLabel extends React.Component {
             start={handles}
             animate={false}
             onChange={self.handleOnChange.bind(this)}
+            disabled={self.props.isPlaying}
             tooltips
           />
           {
-            self.state.intervals.map(function(interval, index) {
+            intervals.map(function(interval, index) {
               var bg;
 
               if (interval[2] == 0) {
@@ -214,7 +215,7 @@ export default class ObjectLabel extends React.Component {
 ObjectLabel.propTypes = {
   id: React.PropTypes.number.isRequired,
   numFrames: React.PropTypes.number.isRequired,
-  currentFrame: React.PropTypes.number.isRequired
+  isPlaying: React.PropTypes.bool.isRequired
 };
 
 ObjectLabel.defaultProps = {

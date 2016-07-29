@@ -29,7 +29,8 @@ export default class VideoAnnotator extends React.Component {
       currentFrame: 0,
       numFrames: 0,
       currentItem: 0,
-      isOpen: false
+      isOpen: false,
+      isPlaying: false
     };
 
     this.currentKey = 0;
@@ -42,6 +43,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleNotSaved = this.handleNotSaved.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
+    this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
   }
 
   componentWillMount() {
@@ -117,7 +119,8 @@ export default class VideoAnnotator extends React.Component {
           currentFrame: 0,
           numFrames: 0,
           currentItem: currentItem,
-          isOpen: false
+          isOpen: false,
+          isPlaying: false
         });
         console.log("currentItem: ", currentItem);
       }
@@ -125,16 +128,31 @@ export default class VideoAnnotator extends React.Component {
 
     self.player.on("durationchange", function() {
       console.log("durationchange");
-      self.state.numFrames = Math.round(self.player.duration()*FPS);
-      console.log("total frames: ", self.state.numFrames);
+      self.setState({
+        numFrames: Math.round(self.player.duration()*FPS)
+      });
+    });
+
+    self.player.on("play", function() {
+      console.log("disable");
+      self.setState({
+        isPlaying: true
+      });
+    });
+
+    self.player.on("pause", function() {
+      console.log("enable");
+      self.setState({
+        isPlaying: false
+      });
     });
 
     self.player.on("timeupdate", function() {
       var currentLabels = [];
-      var currentFrame = self.getCurrentFrame();
+      var currentFrame = self.handleGetCurrentFrame();
 
       for (var i = 0; i < self.state.labelInfoList.length; i++) {
-        var option = self.refs["labelInfo"+i].getCurrentOption(currentFrame);
+        var option = self.refs["label"+i].getCurrentOption(currentFrame);
 
         currentLabels.push({
           id: i,
@@ -168,7 +186,8 @@ export default class VideoAnnotator extends React.Component {
       currentLabels: [],
       currentFrame: 0,
       currentItem: currentItem,
-      isOpen: false
+      isOpen: false,
+      isPlaying: false
     });
     self.isSaved = true;
     console.log("currentItem: ", currentItem);
@@ -187,9 +206,8 @@ export default class VideoAnnotator extends React.Component {
     self.isSaved = false;
   }
 
-  getCurrentFrame() {
+  handleGetCurrentFrame() {
     var self = this;
-
     return Math.round(self.player.currentTime()*FPS);
   }
 
@@ -259,7 +277,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render");
+    console.log("VideoAnnotator render!!");
     var self = this;
 
     return (
@@ -283,11 +301,11 @@ export default class VideoAnnotator extends React.Component {
               self.state.labelInfoList.map(function(labelInfo, index) {
                 if (labelInfo.isFrameLabel) {
                   return (
-                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} currentFrame={self.state.currentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} />
+                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} />
                   );
                 } else {
                   return (
-                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} currentFrame={self.state.currentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} />
+                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} />
                   );
                 }
               })
