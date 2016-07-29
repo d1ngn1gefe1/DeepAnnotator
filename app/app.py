@@ -35,30 +35,33 @@ def get_video_info():
     """
     Session = sessionmaker(bind=engine)
     s = Session()
-    videos = s.query(Video).filter_by(is_labeled=1).all()
+    videos = s.query(Video).all()
 
-    ids = [ video.id for video in videos ]
-    return json.dumps({'id': ids})
+    data = [ {'videoId': video.video_id, 'playlistName': video.playlist_name,
+             'label': video.label} for video in videos ]
+    return json.dumps({'data': data})
 
 
-@app.route("/frameLabel", methods=["POST"])
-def save_frame_label():
+@app.route("/saveLabel", methods=["POST"])
+def save_label():
     """
-    save frame labels
+    Save labels
     """
     Session = sessionmaker(bind=engine)
     s = Session()
     video_id = request.json['videoId']
-    is_labeled = int(request.json['isLabeled'])
+    playlist_name = request.json['playlistName']
+    label = request.json['label']
 
-    if s.query(Video).get(video_id) is None:
-        s.add(Video(video_id, is_labeled))
+    if s.query(Video).get((video_id, playlist_name)) is None:
+        s.add(Video(video_id, playlist_name, label))
     else:
-        video = s.query(Video).filter_by(id=video_id).update(
-            dict(is_labeled=is_labeled))
+        video = s.query(Video).filter_by(
+        video_id=video_id).filter_by(
+        playlist_name=playlist_name).update(dict(label=label))
     s.commit()
 
-    return json.dumps({'id': video_id, 'is_labeled': is_labeled,
+    return json.dumps({'video_id': video_id, 'playlist_name': playlist_name,
                        'status': 'success'})
 
 
