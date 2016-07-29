@@ -130,6 +130,7 @@ export default class VideoAnnotator extends React.Component {
 
       for (var i = 0; i < self.state.labelInfoLists.length; i++) {
         var option = self.refs["labelInfo"+i].getCurrentOption(self.handleGetCurrentFrame());
+
         currentLabels.push({
           id: i,
           isFrameLabels: self.state.labelInfoLists[i].isFrameLabels,
@@ -268,7 +269,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render!!");
+    console.log("VideoAnnotator render!");
     var self = this;
 
     return (
@@ -302,12 +303,21 @@ export default class VideoAnnotator extends React.Component {
           {
             self.state.currentLabels.map(function(currentLabel, index) {
               var bg;
+
               switch (currentLabel.option) {
                 case 0:
-                  bg = "bg-success";
+                  if (currentLabel.isFrameLabels) {
+                    bg = "bg-gray";
+                  } else {
+                    bg = "bg-success";
+                  }
                   break;
                 case 1:
-                  bg = "bg-info";
+                  if (currentLabel.isFrameLabels) {
+                    bg = "bg-success";
+                  } else {
+                    bg = "bg-info";
+                  }
                   break;
                 case 2:
                   bg = "bg-danger";
@@ -315,7 +325,7 @@ export default class VideoAnnotator extends React.Component {
               }
 
               return (
-                <div className={"small-label "+bg} key={index} style={{left: 76*index+"px"}}>{(self.props.isFrameLabels?"Frame":"Object")+currentLabel.id}</div>
+                <div className={"small-label "+bg} key={index} style={{left: 76*index+"px"}}>{(currentLabel.isFrameLabels?"Frame":"Object")+currentLabel.id}</div>
               );
             })
           }

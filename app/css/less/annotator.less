@@ -81,7 +81,7 @@
       }
 
       .btn-object {
-        .button-variant(#fff; @theme-success; darken(@theme-primary, 15%));
+        .button-variant(#fff; @theme-success; darken(@theme-success, 15%));
       }
 
       .btn-save {
@@ -108,6 +108,10 @@
 
       .close {
         color: white;
+      }
+
+      .btn-gray {
+        .button-variant(#fff; @gray-dark; darken(@gray-dark, 15%));
       }
     }
 
@@ -171,14 +175,14 @@
     }
 
     .bg-success {
-      background-color: @color-success;
       border-style: solid;
+      background-color: @color-success;
       border-color: darken(@color-success, 20%);
     }
 
     .bg-info {
-      background-color: @color-info;
       border-style: solid;
+      background-color: @color-info;
       border-color: darken(@color-info, 20%);
     }
 
@@ -186,6 +190,12 @@
       border-style: solid;
       border-color: darken(@color-danger, 20%);
       background-color: @color-danger;
+    }
+
+    .bg-gray {
+      border-style: solid;
+      border-color: darken(@gray-dark, 20%);
+      background-color: @gray-dark;
     }
   }
 }

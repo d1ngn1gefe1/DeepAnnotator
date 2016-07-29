@@ -14,7 +14,7 @@ export default class LabelInfo extends React.Component {
   componentDidMount() {
     var self = this;
 
-    self.handleClick(self.props.isFrameLabels, 0);
+    self.handleClick(self.props.isFrameLabels?1:0);
   }
 
   getCurrentOption(currentFrame) {
@@ -26,7 +26,7 @@ export default class LabelInfo extends React.Component {
         return label.option;
       }
     }
-    return -1;
+    return 0;
   }
 
   getLabels() {
@@ -48,19 +48,25 @@ export default class LabelInfo extends React.Component {
     return startFrames;
   }
 
-  handleClick(isFrameLabels, option) {
+  handleClick(option) {
     var self = this;
 
     var currentFrame = self.props.getCurrentFrame();
     self.props.notSaved();
     var labels = self.state.labels;
 
-    if (labels.length == 0) {
+    if (labels.length == 0 && self.props.isFrameLabels) {
+      labels.push({
+        startFrame: currentFrame,
+        option: option,
+        length: self.props.numFrames-currentFrame
+      });
+    } else if (labels.length == 0 && !self.props.isFrameLabels) {
       labels.push({
         startFrame: 0,
         option: option,
         length: self.props.numFrames
-      });
+       });
     } else {
       for (var i = 0; i < labels.length; i++) {
         if (labels[i].startFrame == currentFrame) { // same frame, update option
@@ -106,27 +112,27 @@ export default class LabelInfo extends React.Component {
 
   handleOnChange() {
     var self = this;
-    console.log("handleOnChange");
 
     var labels = self.state.labels;
     if (self.refs["Nouislider"] != null) {
       var starts = self.refs["Nouislider"].slider.get();
-      console.log(typeof starts);
-      console.log(starts);
 
-      if (typeof starts === 'string') {
+      if (typeof starts === 'string' && !self.props.isFrameLabels) {
         labels[0].startFrame = 0;
         labels[0].length = self.props.numFrames;
+      } else if (typeof starts === 'string' && self.props.isFrameLabels) {
+        labels[0].startFrame = parseInt(starts);
+        labels[0].length = self.props.numFrames-parseInt(starts);
       } else {
         for (var i = 0; i < starts.length; i++) {
-          if (i == 0) {
+          if (i == 0 && !self.props.isFrameLabels) {
             labels[i].startFrame = 0;
           } else {
             labels[i].startFrame = parseInt(starts[i]);
           }
           if (i == starts.length-1) {
             labels[i].length = self.props.numFrames-parseInt(starts[i]);
-          } else if (i == 0) {
+          } else if (i == 0 && !self.props.isFrameLabels) {
             labels[i].length = parseInt(starts[i+1]);
           } else {
             labels[i].length = parseInt(starts[i+1])-parseInt(starts[i]);
@@ -141,6 +147,7 @@ export default class LabelInfo extends React.Component {
   }
 
   render() {
+    console.log("LabelInfo render!!");
     var self = this;
     var startFrames = self.getStartFrames();
 
@@ -155,10 +162,10 @@ export default class LabelInfo extends React.Component {
           if (self.props.isFrameLabels) {
             return (
               <div className="btn-group" data-toggle="buttons">
-                <label className="btn btn-success col-lg-6 col-md-6 col-sm-6 active" onClick={self.handleClick.bind(self, true, 1)}>
+                <label className="btn btn-success col-lg-6 col-md-6 col-sm-6" onClick={self.handleClick.bind(self, 1)}>
                   <input type="radio" name="options" id="option1" autoComplete="off" /> Start
                 </label>
-                <label className="btn btn-info col-lg-6 col-md-6 col-sm-6" onClick={self.handleClick.bind(self, true, 0)}>
+                <label className="btn btn-gray col-lg-6 col-md-6 col-sm-6" onClick={self.handleClick.bind(self, 0)}>
                   <input type="radio" name="options" id="option2" autoComplete="off" /> End
                 </label>
               </div>
@@ -166,13 +173,13 @@ export default class LabelInfo extends React.Component {
           } else {
             return (
               <div className="btn-group" data-toggle="buttons">
-                <label className="btn btn-success col-lg-4 col-md-4 col-sm-4 active" onClick={self.handleClick.bind(self, false, 0)}>
+                <label className="btn btn-success col-lg-4 col-md-4 col-sm-4 active" onClick={self.handleClick.bind(self, 0)}>
                   <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
                 </label>
-                <label className="btn btn-info col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, false, 1)}>
+                <label className="btn btn-info col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 1)}>
                   <input type="radio" name="options" id="option2" autoComplete="off" /> Out of frame
                 </label>
-                <label className="btn btn-danger col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, false, 2)}>
+                <label className="btn btn-danger col-lg-4 col-md-4 col-sm-4" onClick={self.handleClick.bind(self, 2)}>
                   <input type="radio" name="options" id="option3" autoComplete="off" /> Occluded
                 </label>
               </div>
@@ -185,6 +192,7 @@ export default class LabelInfo extends React.Component {
             ref={"Nouislider"}
             range={{min: 0, max: self.props.numFrames}}
             step={1}
+            margin={1}
             start={startFrames}
             animate={false}
             onChange={self.handleOnChange.bind(this)}
@@ -198,10 +206,16 @@ export default class LabelInfo extends React.Component {
               var bg;
               switch (label.option) {
                 case 0:
-                  bg = "slider-success";
+                  if (!self.props.isFrameLabels) {
+                    bg = "slider-success";
+                  }
                   break;
                 case 1:
-                  bg = "slider-info";
+                  if (self.props.isFrameLabels) {
+                    bg = "slider-success";
+                  } else {
+                    bg = "slider-info";
+                  }
                   break;
                 case 2:
                   bg = "slider-danger";
