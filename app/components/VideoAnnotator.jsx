@@ -24,11 +24,11 @@ export default class VideoAnnotator extends React.Component {
     super(props, defaultProps);
 
     this.state = {
-      labelInfoLists: [],
+      labelInfoList: [],
       currentLabels: [],
-      currentFrame: -1,
+      currentFrame: 0,
       numFrames: 0,
-      currentItem: -1,
+      currentItem: 0,
       isOpen: false
     };
 
@@ -37,7 +37,7 @@ export default class VideoAnnotator extends React.Component {
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
-    this.handleCloseLabelInfo = this.handleCloseLabelInfo.bind(this);
+    this.handleCloseLabel = this.handleCloseLabel.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleNotSaved = this.handleNotSaved.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -111,8 +111,10 @@ export default class VideoAnnotator extends React.Component {
           isOpen: true
         });
       } else {
-        self.setState({option
-          currentFrame: -1,
+        self.setState({
+          labelInfoList: [],
+          currentLabels: [],
+          currentFrame: 0,
           numFrames: 0,
           currentItem: currentItem,
           isOpen: false
@@ -129,40 +131,22 @@ export default class VideoAnnotator extends React.Component {
 
     self.player.on("timeupdate", function() {
       var currentLabels = [];
-      var update = false;
       var currentFrame = self.getCurrentFrame();
 
-      for (var i = 0; i < self.state.labelInfoLists.length; i++) {
+      for (var i = 0; i < self.state.labelInfoList.length; i++) {
         var option = self.refs["labelInfo"+i].getCurrentOption(currentFrame);
 
         currentLabels.push({
           id: i,
-          isFrameLabels: self.state.labelInfoLists[i].isFrameLabels,
-          option: option // 0 - 2 for object labels, 0 - 1 for frame labels
+          isFrameLabel: self.state.labelInfoList[i].isFrameLabel,
+          option: option // 0 - 1 for frame labels, 0 - 2 for object labels
         });
       }
 
-      if (self.state.currentLabels.length != currentLabels.length) {
-        update = true;
-      } else {
-        for (var i = 0; i < currentLabels.length; i++) {
-          if (self.state.currentLabels[i].option != currentLabels[i].option) {
-            update = true;
-            break;
-          }
-        }
-      }
-
-      if (update) {
-        self.setState({
-          currentLabels: currentLabels,
-          currentFrame: currentFrame
-        });
-      } else {
-        self.setState({
-          currentFrame: currentFrame
-        });
-      }
+      self.setState({
+        currentLabels: currentLabels,
+        currentFrame: currentFrame
+      });
     });
   }
 
@@ -177,11 +161,12 @@ export default class VideoAnnotator extends React.Component {
 
   handleOK() {
     var self = this;
-
     var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+
     self.setState({
-      labelInfoLists: [],
+      labelInfoList: [],
       currentLabels: [],
+      currentFrame: 0,
       currentItem: currentItem,
       isOpen: false
     });
@@ -189,42 +174,40 @@ export default class VideoAnnotator extends React.Component {
     console.log("currentItem: ", currentItem);
   }
 
-  handleCloseLabelInfo(id) {
+  handleCloseLabel(id) {
     console.log("close", id);
     var self = this;
-    self.isSaved = false;
+    var labelInfoList = self.state.labelInfoList;
 
-    var labelInfoLists = self.state.labelInfoLists;
-
-    labelInfoLists.splice(id, 1);
+    labelInfoList.splice(id, 1);
 
     self.setState({
-      labelInfoLists: labelInfoLists,
+      labelInfoList: labelInfoList,
     });
+    self.isSaved = false;
   }
 
   getCurrentFrame() {
     var self = this;
+
     return Math.round(self.player.currentTime()*FPS);
   }
 
   handleNewFrameLabels() {
     console.log("new frame labels");
     var self = this;
-    self.isSaved = false;
+    var labelInfoList = self.state.labelInfoList;
 
-    var labelInfoLists = self.state.labelInfoLists;
-    labelInfoLists.push({
-      isFrameLabels: true,
-      labels: [],
+    labelInfoList.push({
+      isFrameLabel: true,
       key: self.currentKey
     });
-
     self.currentKey += 1;
 
     self.setState({
-      labelInfoLists: labelInfoLists
+      labelInfoList: labelInfoList
     });
+    self.isSaved = false;
 
     // Test: send frame data to server on click
     fetch(this.props.urlFrame, {
@@ -245,28 +228,26 @@ export default class VideoAnnotator extends React.Component {
   handleNewObjectLabels() {
     console.log("new object labels");
     var self = this;
-    self.isSaved = false;
+    var labelInfoList = self.state.labelInfoList;
 
-    var labelInfoLists = self.state.labelInfoLists;
-    labelInfoLists.push({
-      isFrameLabels: false,
-      labels: [],
+    labelInfoList.push({
+      isFrameLabel: false,
       key: self.currentKey
     });
-
     self.currentKey += 1;
 
     self.setState({
-      labelInfoLists: labelInfoLists
+      labelInfoList: labelInfoList
     });
+    self.isSaved = false;
   }
 
   handleSave() {
     var self = this;
     var data = [];
 
-    for (var i = 0; i < self.state.labelInfoLists.length; i++) {
-      var labels = self.refs["labelInfo"+i].getLabels();
+    for (var i = 0; i < self.state.labelInfoList.length; i++) {
+      var labels = self.refs["label"+i].getLabels();
       data.push(labels);
     }
     console.log("saved");
@@ -278,7 +259,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render!!");
+    console.log("VideoAnnotator render");
     var self = this;
 
     return (
@@ -299,47 +280,48 @@ export default class VideoAnnotator extends React.Component {
               </button>
             </div>
             {
-              self.state.labelInfoLists.map(function(labelInfo, index) {
-                return (
-                  <LabelInfo key={labelInfo.key} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} currentFrame={self.state.currentFrame} closeLabelInfo={self.handleCloseLabelInfo} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} />
-                );
+              self.state.labelInfoList.map(function(labelInfo, index) {
+                if (labelInfo.isFrameLabel) {
+                  return (
+                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} currentFrame={self.state.currentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} />
+                  );
+                } else {
+                  return (
+                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} currentFrame={self.state.currentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} />
+                  );
+                }
               })
             }
           </div>
-
 
           <div className="videojs-wrapper col-lg-6 col-md-6 col-sm-6" style={{height: HEIGHT*SCALING+"px"}}>
           {
             self.state.currentLabels.map(function(currentLabel, index) {
               var bg;
 
-              switch (currentLabel.option) {
-                case 0:
-                  if (currentLabel.isFrameLabels) {
-                    bg = "bg-gray";
-                  } else {
-                    bg = "bg-success";
-                  }
-                  break;
-                case 1:
-                  if (currentLabel.isFrameLabels) {
-                    bg = "bg-success";
-                  } else {
-                    bg = "bg-info";
-                  }
-                  break;
-                case 2:
-                  bg = "bg-danger";
-                  break;
+              if (currentLabel.isFrameLabel) {
+                if (currentLabel.option == 0) {
+                  bg = " bg-gray";
+                } else if (currentLabel.option == 1) {
+                  bg = " bg-success";
+                }
+              } else {
+                if (currentLabel.option == 0) {
+                  bg = " bg-success";
+                } else if (currentLabel.option == 1) {
+                  bg = " bg-info";
+                } else if (currentLabel.option == 2) {
+                  bg = " bg-danger";
+                }
               }
 
               return (
-                <div className={"small-label "+bg} key={index} style={{left: 76*index+"px"}}>{(currentLabel.isFrameLabels?"Frame":"Object")+currentLabel.id}</div>
+                <div className={"small-label"+bg} key={index} style={{left: 76*index+"px"}}>{(currentLabel.isFrameLabel?"Frame":"Object")+currentLabel.id}</div>
               );
             })
           }
-            <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
 
+            <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
             <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>

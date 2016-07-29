@@ -220,7 +220,8 @@ export default class FrameLabel extends React.Component {
 
 FrameLabel.propTypes = {
   id: React.PropTypes.number.isRequired,
-  numFrames: React.PropTypes.number.isRequired
+  numFrames: React.PropTypes.number.isRequired,
+  currentFrame: React.PropTypes.number.isRequired
 };
 
 FrameLabel.defaultProps = {

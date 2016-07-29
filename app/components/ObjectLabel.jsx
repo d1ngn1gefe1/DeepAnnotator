@@ -152,8 +152,8 @@ export default class ObjectLabel extends React.Component {
     var intervals = self.getIntervals();
 
     return (
-      <div className={"label-info object-label-info")}>
-        <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabelInfo.bind(self, self.props.id)}>
+      <div className={"label-info object-label-info"}>
+        <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabel.bind(self, self.props.id)}>
           <span aria-hidden="true">&times;</span>
         </button>
         <p>{"Object "+self.props.id}</p>
@@ -213,7 +213,8 @@ export default class ObjectLabel extends React.Component {
 
 ObjectLabel.propTypes = {
   id: React.PropTypes.number.isRequired,
-  numFrames: React.PropTypes.number.isRequired
+  numFrames: React.PropTypes.number.isRequired,
+  currentFrame: React.PropTypes.number.isRequired
 };
 
 ObjectLabel.defaultProps = {
