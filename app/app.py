@@ -37,8 +37,9 @@ def get_video_info():
     s = Session()
     videos = s.query(Video).all()
 
-    ids = [ video.video_id for video in videos ]
-    return json.dumps({'id': ids})
+    data = [ {'videoId': video.video_id, 'playlistName': video.playlist_name,
+             'label': video.label} for video in videos ]
+    return json.dumps({'data': data})
 
 
 @app.route("/saveLabel", methods=["POST"])
