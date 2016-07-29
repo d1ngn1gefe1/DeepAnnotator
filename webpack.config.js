@@ -16,6 +16,9 @@ var config = {
           presets: ["react", "es2015"]
         }
       },
+      { test: /node_modules\/videojs-framebyframe\/.+\.js$/,
+          loader: "imports?videojs=video.js"
+      },
       {
         test: /\.css$/,
         loader: "style-loader!css-loader"

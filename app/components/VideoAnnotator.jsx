@@ -2,7 +2,7 @@ import React from "react";
 import videojs from "video.js";
 import "videojs-playlist";
 import "videojs-playlist-ui";
-import "./videojs.framebyframe.js";
+import "videojs-framebyframe"
 import "video.js/dist/video-js.min.css";
 import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
 import boundProperties from "./video/bound-properties.js";
