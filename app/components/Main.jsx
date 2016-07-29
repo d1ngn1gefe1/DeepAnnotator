@@ -11,8 +11,6 @@ import VideoAnnotator from "./VideoAnnotator.jsx";
 import VideoGrid from "./VideoGrid.jsx";
 
 import "../css/bootstrap.css";
-import "../css/video-js.css";
-import "../css/videojs-playlist-ui.vertical.css"
 import "../css/nouislider.css"
 import "../css/less/annotator.less";
 import "../css/less/freelancer.less";

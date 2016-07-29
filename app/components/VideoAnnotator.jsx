@@ -3,6 +3,8 @@ import videojs from "video.js";
 import "videojs-playlist";
 import "videojs-playlist-ui";
 import "./videojs.framebyframe.js";
+import "video.js/dist/video-js.min.css";
+import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
 import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
