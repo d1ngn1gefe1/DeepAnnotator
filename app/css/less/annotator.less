@@ -111,7 +111,7 @@
       }
 
       .btn-gray {
-        .button-variant(#fff; @gray-dark; darken(@gray-dark, 15%));
+        .button-variant(#fff; @gray-light; darken(@gray-light, 15%));
       }
     }
 
@@ -174,6 +174,17 @@
       margin: 1px;
     }
 
+    .small-label-frame {
+      position: absolute;
+      width: 75px;
+      height: 25px;
+      top: 0px;
+      right: 0px;
+      color: white;
+      z-index: 5;
+      margin: 1px;
+    }
+
     .bg-success {
       border-style: solid;
       background-color: @color-success;
@@ -194,8 +205,8 @@
 
     .bg-gray {
       border-style: solid;
-      border-color: darken(@gray-dark, 20%);
-      background-color: @gray-dark;
+      border-color: darken(@gray-light, 20%);
+      background-color: @gray-light;
     }
   }
 }

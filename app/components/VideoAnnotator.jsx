@@ -1,6 +1,4 @@
 import React from "react";
-import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
-import LabelInfo from "./LabelInfo.jsx";
 import videojs from "video.js";
 import "videojs-playlist";
 import "videojs-playlist-ui";
@@ -9,6 +7,9 @@ import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from "react-modal-bootstrap"
+import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
+import FrameLabel from "./FrameLabel.jsx";
+import ObjectLabel from "./ObjectLabel.jsx";
 
 var HEIGHT = 240;
 var WIDTH = 320;
@@ -25,6 +26,8 @@ export default class VideoAnnotator extends React.Component {
     this.state = {
       labelInfoLists: [],
       currentLabels: [],
+      currentFrame: -1,
+      numFrames: 0,
       currentItem: -1,
       isOpen: false
     };
@@ -34,7 +37,6 @@ export default class VideoAnnotator extends React.Component {
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
-    this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
     this.handleCloseLabelInfo = this.handleCloseLabelInfo.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleNotSaved = this.handleNotSaved.bind(this);
@@ -77,6 +79,7 @@ export default class VideoAnnotator extends React.Component {
       preload: "auto",
       height: HEIGHT*SCALING,
       width: WIDTH*SCALING,
+      autoplay: false,
       plugins: {
         framebyframe: {
           fps: 5,
@@ -108,9 +111,9 @@ export default class VideoAnnotator extends React.Component {
           isOpen: true
         });
       } else {
-        self.setState({
-          labelInfoLists: [],
-          currentLabels: [],
+        self.setState({option
+          currentFrame: -1,
+          numFrames: 0,
           currentItem: currentItem,
           isOpen: false
         });
@@ -120,16 +123,17 @@ export default class VideoAnnotator extends React.Component {
 
     self.player.on("durationchange", function() {
       console.log("durationchange");
-      self.numFrames = Math.round(self.player.duration()*FPS);
-      console.log("total frames: ", self.numFrames);
+      self.state.numFrames = Math.round(self.player.duration()*FPS);
+      console.log("total frames: ", self.state.numFrames);
     });
 
     self.player.on("timeupdate", function() {
       var currentLabels = [];
       var update = false;
+      var currentFrame = self.getCurrentFrame();
 
       for (var i = 0; i < self.state.labelInfoLists.length; i++) {
-        var option = self.refs["labelInfo"+i].getCurrentOption(self.handleGetCurrentFrame());
+        var option = self.refs["labelInfo"+i].getCurrentOption(currentFrame);
 
         currentLabels.push({
           id: i,
@@ -151,7 +155,12 @@ export default class VideoAnnotator extends React.Component {
 
       if (update) {
         self.setState({
-          currentLabels: currentLabels
+          currentLabels: currentLabels,
+          currentFrame: currentFrame
+        });
+      } else {
+        self.setState({
+          currentFrame: currentFrame
         });
       }
     });
@@ -194,7 +203,7 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
-  handleGetCurrentFrame() {
+  getCurrentFrame() {
     var self = this;
     return Math.round(self.player.currentTime()*FPS);
   }
@@ -269,7 +278,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render!");
+    console.log("VideoAnnotator render!!");
     var self = this;
 
     return (
@@ -292,7 +301,7 @@ export default class VideoAnnotator extends React.Component {
             {
               self.state.labelInfoLists.map(function(labelInfo, index) {
                 return (
-                  <LabelInfo key={labelInfo.key} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} getCurrentFrame={self.handleGetCurrentFrame} closeLabelInfo={self.handleCloseLabelInfo} notSaved={self.handleNotSaved} numFrames={self.numFrames} />
+                  <LabelInfo key={labelInfo.key} id={index} ref={"labelInfo"+index} isFrameLabels={labelInfo.isFrameLabels} currentFrame={self.state.currentFrame} closeLabelInfo={self.handleCloseLabelInfo} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} />
                 );
               })
             }
@@ -329,6 +338,8 @@ export default class VideoAnnotator extends React.Component {
               );
             })
           }
+            <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
+
             <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>
