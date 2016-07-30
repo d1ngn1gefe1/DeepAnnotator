@@ -70,6 +70,7 @@ export default class VideoAnnotator extends React.Component {
            serverData: data.data
          });
          console.log("Json:", self.state.serverData);
+         self.initLabeledVideos();
        });
 
     var playlist = [];
@@ -173,6 +174,33 @@ export default class VideoAnnotator extends React.Component {
         currentFrame: currentFrame
       });
     });
+  }
+
+  initLabeledVideos() {
+      var self = this;
+      var serverData = self.state.serverData;
+      var labelInfoList = self.state.labelInfoList;
+
+      for (var i = 0; i < serverData.length; i++) {
+        if (self.playlistName == serverData[i].playlistName) {
+          var videoId = serverData[i].videoId;
+          var frameLabel = JSON.parse(serverData[i].frameLabel)['label'];
+          var objectLabel = JSON.parse(serverData[i].frameLabel)['label'];
+
+          if (frameLabel.length > 0) {
+            labelInfoList.push({
+              isFrameLabel: true,
+              key: self.currentKey++
+            })
+          } else {
+            labelInfoList.push({
+              isFrameLabel: false,
+              key: self.currentKey++
+            })
+          }
+          console.log('labelInfoList:', labelInfoList);
+        }
+      }
   }
 
   handleCancel() {
