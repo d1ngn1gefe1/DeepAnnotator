@@ -1,7 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import { render } from "react-dom";
+import ReactDOM, { render } from "react-dom";
 import { Router, Route, hashHistory } from "react-router";
+import "jquery"
+import "bootstrap"
+import "bootstrap/dist/css/bootstrap.min.css"
 import About from "./About.jsx";
 import Contact from "./Contact.jsx";
 import Footer from "./Footer.jsx";
@@ -10,7 +12,6 @@ import Navigation from "./Navigation.jsx";
 import VideoAnnotator from "./VideoAnnotator.jsx";
 import VideoGrid from "./VideoGrid.jsx";
 
-import "../css/bootstrap.css";
 import "../css/nouislider.css"
 import "../css/less/annotator.less";
 import "../css/less/freelancer.less";

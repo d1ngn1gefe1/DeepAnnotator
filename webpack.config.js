@@ -1,4 +1,3 @@
-var path = require("path");
 
 var config = {
   entry: __dirname + "/app/components/Main.jsx",
@@ -16,8 +15,13 @@ var config = {
           presets: ["react", "es2015"]
         }
       },
-      { test: /node_modules\/videojs-framebyframe\/.+\.js$/,
-          loader: "imports?videojs=video.js"
+      {
+        test: /node_modules\/videojs-framebyframe\/.+\.js$/,
+        loader: "imports?videojs=video.js"
+      },
+      {
+        test: /node_modules\/bootstrap\/.+\.js$/,
+        loader: "imports?jQuery=jquery,$=jquery"
       },
       {
         test: /\.css$/,

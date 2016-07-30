@@ -8,6 +8,9 @@
  * http://ReactiveRaven.github.com/jqBootstrapValidation/
  */
 
+ import $ from 'jquery';
+ import jQuery from 'jquery';
+
 (function( $ ){
 
 	var createdElements = [];
@@ -478,7 +481,7 @@
                 // How many errors did we find?
                 if (settings.options.semanticallyStrict && errorsFound.length === 1) {
                   // Only one? Being strict? Just output it.
-                  $helpBlock.html(errorsFound[0] + 
+                  $helpBlock.html(errorsFound[0] +
                     ( settings.options.prependExistingHelpBlock ? $helpBlock.data("original-contents") : "" ));
                 } else {
                   // Multiple? Being sloppy? Glue them together into an UL.

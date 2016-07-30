@@ -1,3 +1,7 @@
+
+import $ from 'jquery';
+import jQuery from 'jquery';
+
 $(function() {
 
     $("#contactForm input,#contactForm textarea").jqBootstrapValidation({
@@ -9,7 +13,7 @@ $(function() {
             // Prevent spam click and default submit behaviour
             $("#btnSubmit").attr("disabled", true);
             event.preventDefault();
-            
+
             // get values from FORM
             var name = $("input#name").val();
             var email = $("input#email").val();

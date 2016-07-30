@@ -1,10 +1,15 @@
 // Freelancer Theme JavaScript
 
+import $ from 'jquery';
+import jQuery from 'jquery';
+
 (function($) {
     "use strict"; // Start of use strict
 
     // jQuery for page scrolling feature - requires jQuery Easing plugin
+    console.log("hello?")
     $('.page-scroll a').bind('click', function(event) {
+        console.log("hello!")
         var $anchor = $(this);
         $('html, body').stop().animate({
             scrollTop: ($($anchor.attr('href')).offset().top - 50)
@@ -28,6 +33,7 @@
         offset: {
             top: 100
         }
+
     })
 
     // Floating label headings for the contact form
