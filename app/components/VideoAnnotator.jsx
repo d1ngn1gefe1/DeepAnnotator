@@ -28,6 +28,7 @@ export default class VideoAnnotator extends React.Component {
     this.state = {
       labelInfoList: [],
       currentLabels: [],
+      serverData: [],
       currentFrame: 0,
       numFrames: 0,
       currentItem: 0,
@@ -60,14 +61,18 @@ export default class VideoAnnotator extends React.Component {
     console.log("VideoAnnotator componentDidMount");
     var self = this;
 
-    console.log(this.props.url)
+    console.log(this.props.url);
     fetch(this.props.url, {method: "post"})
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(err => console.error(this.props.url, err.toString()))
+      .then(function(response) {
+        return response.json(); })
+      .then(function(data) {
+         self.setState({
+           serverData: data.data
+         });
+         console.log("Json:", self.state.serverData);
+       });
 
     var playlist = [];
-
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
         "sources": [{
