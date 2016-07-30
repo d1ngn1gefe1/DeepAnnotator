@@ -1,5 +1,5 @@
 import React from "react";
-import Nouislider from "./NouisliderWrapper.jsx";
+import Nouislider from "./slider/NouisliderWrapper.jsx";
 
 export default class ObjectLabel extends React.Component {
   // similar to componentWillMount in ES5

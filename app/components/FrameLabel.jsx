@@ -1,5 +1,5 @@
 import React from "react";
-import Nouislider from "./NouisliderWrapper.jsx";
+import Nouislider from "./slider//NouisliderWrapper.jsx";
 
 export default class FrameLabel extends React.Component {
   // similar to componentWillMount in ES5
@@ -191,10 +191,6 @@ export default class FrameLabel extends React.Component {
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();
-
-    console.log(handles);
-    console.log(intervals);
-    console.log(self.state.labels);
 
     return (
       <div className={"label-info frame-label-info"}>
