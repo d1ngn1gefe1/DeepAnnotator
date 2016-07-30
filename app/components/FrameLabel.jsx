@@ -37,6 +37,12 @@ export default class FrameLabel extends React.Component {
     return this.state.labels;
   }
 
+  setLabels(labels) {
+    this.setState({
+      labels: labels,
+    });
+  }
+
   mergeIntervals(intervals) {
     // Test if the given set has at least one interval
     if (intervals.length <= 1) {

@@ -70,7 +70,6 @@ export default class VideoAnnotator extends React.Component {
            serverData: data.data
          });
          console.log("Json:", self.state.serverData);
-         self.initLabeledVideos();
        });
 
     var playlist = [];
@@ -111,6 +110,7 @@ export default class VideoAnnotator extends React.Component {
 
     self.player.on("loadstart", function() {
       console.log("loadstart, is saved: ", self.isSaved);
+      self.initLabeledVideos();
 
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
@@ -179,28 +179,37 @@ export default class VideoAnnotator extends React.Component {
   initLabeledVideos() {
       var self = this;
       var serverData = self.state.serverData;
-      var labelInfoList = self.state.labelInfoList;
+      var labelInfoList = Array();
+      var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+      console.log("Src currentItem", currentItem);
 
       for (var i = 0; i < serverData.length; i++) {
-        if (self.playlistName == serverData[i].playlistName) {
+        if (self.playlistName == serverData[i].playlistName &&
+            currentItem == serverData[i].videoId) {
           var videoId = serverData[i].videoId;
           var frameLabel = JSON.parse(serverData[i].frameLabel)['label'];
-          var objectLabel = JSON.parse(serverData[i].frameLabel)['label'];
+          var objectLabel = JSON.parse(serverData[i].objectLabel)['label'];
+          console.log("Frame label:", frameLabel);
+          console.log("Object label:", objectLabel);
 
           if (frameLabel.length > 0) {
             labelInfoList.push({
               isFrameLabel: true,
               key: self.currentKey++
-            })
+            });
           } else {
             labelInfoList.push({
               isFrameLabel: false,
               key: self.currentKey++
-            })
+            });
           }
           console.log('labelInfoList:', labelInfoList);
         }
       }
+
+      self.setState({
+        labelInfoList: labelInfoList,
+      });
   }
 
   handleCancel() {
@@ -217,7 +226,7 @@ export default class VideoAnnotator extends React.Component {
     var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
     self.setState({
-      labelInfoList: [],
+      // labelInfoList: [],
       currentLabels: [],
       currentFrame: 0,
       currentItem: currentItem,
