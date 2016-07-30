@@ -35,6 +35,12 @@ export default class ObjectLabel extends React.Component {
     return this.state.labels;
   }
 
+  setLabels(labels) {
+    this.setState({
+      labels: labels,
+    });
+  }
+
   handleClick(option) {
     var self = this;
 
