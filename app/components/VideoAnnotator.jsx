@@ -248,16 +248,25 @@ export default class VideoAnnotator extends React.Component {
 
   handleSave() {
     var self = this;
-    var data = [];
+    var frameData = [];
+    var objectData = [];
+    var frameData;
+    var objectData;
 
     for (var i = 0; i < self.state.labelInfoList.length; i++) {
       var labels = self.refs["label"+i].getLabels();
-      data.push(labels);
+      console.log(self.state.labelInfoList[i]);
+      if (self.state.labelInfoList[i]['isFrameLabel']) {
+        frameData.push(labels);
+      } else {
+        objectData.push(labels);
+      }
     }
 
     // Send data to server
-    var label = {label: data}
-    fetch(this.props.urlFrame, {
+    var frameLabel = {label: frameData};
+    var objectLabel = {label: objectData};
+    fetch(this.props.urlLabel, {
       method: "post",
       headers: {
         "Accept": "application/json",
@@ -266,14 +275,12 @@ export default class VideoAnnotator extends React.Component {
       body: JSON.stringify({
         videoId: self.state.currentItem,
         playlistName: self.playlistName,
-        label: JSON.stringify(label), })
+        frameLabel: JSON.stringify(frameLabel),
+        objectLabel: JSON.stringify(objectLabel),})
     })
       .then(response => response.text())
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()));
-
-    console.log("saved");
-    console.log(data);
   }
 
   handleNotSaved() {
@@ -388,5 +395,5 @@ AnnotatorNavigation.propTypes = {
 
 VideoAnnotator.defaultProps = {
   url: "/videoInfo",
-  urlFrame: "/saveLabel"
+  urlLabel: "/saveLabel"
 };
