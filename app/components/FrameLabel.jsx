@@ -192,10 +192,6 @@ export default class FrameLabel extends React.Component {
     var handles = self.getHandles();
     var intervals = self.getIntervals();
 
-    console.log(handles);
-    console.log(intervals);
-    console.log(self.state.labels);
-
     return (
       <div className={"label-info frame-label-info"}>
         <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabel.bind(self, self.props.id)}>
