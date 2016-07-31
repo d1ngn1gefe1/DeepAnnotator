@@ -89,8 +89,7 @@ gulp.task('dev', ['browserSync', 'webpack'], function() {
     gulp.watch('app/components/*.js', ['webpack']);
     gulp.watch('app/components/*.jsx', ['webpack']);
     gulp.watch('app/css/*.css', ['webpack']);
-    gulp.watch('app/less/*.less', ['webpack']);
-    gulp.watch('app/less/*.scss', ['webpack']);
+    gulp.watch('app/css/*.scss', ['webpack']);
     // Reloads the browser whenever HTML or JS files change
     gulp.watch('public/*.html', browserSync.reload);
     gulp.watch('public/*.js', browserSync.reload);

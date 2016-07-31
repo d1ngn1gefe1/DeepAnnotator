@@ -3,8 +3,6 @@ import videojs from "video.js";
 import "videojs-playlist";
 import "videojs-playlist-ui";
 import "videojs-framebyframe"
-import "video.js/dist/video-js.min.css";
-import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
 import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
@@ -12,6 +10,9 @@ import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
 import ObjectLabel from "./ObjectLabel.jsx";
+
+import "video.js/dist/video-js.min.css";
+import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
 
 var HEIGHT = 240;
 var WIDTH = 320;
@@ -181,6 +182,7 @@ export default class VideoAnnotator extends React.Component {
       var serverData = self.state.serverData;
       var labelInfoList = Array();
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+      console.log("Src currentItem", currentItem);
 
       for (var i = 0; i < serverData.length; i++) {
         if (self.playlistName == serverData[i].playlistName &&
@@ -192,20 +194,15 @@ export default class VideoAnnotator extends React.Component {
           console.log("Object label:", objectLabel);
 
           if (frameLabel.length > 0) {
-            for (var i = 0; i < frameLabel.length; i++) {
-              labelInfoList.push({
-                isFrameLabel: true,
-                key: self.currentKey++
-              });
-            }
-          }
-          if (objectLabel.length > 0) {
-            for (var i = 0; i < objectLabel.length; i++) {
-              labelInfoList.push({
-                isFrameLabel: false,
-                key: self.currentKey++
-              });
-            }
+            labelInfoList.push({
+              isFrameLabel: true,
+              key: self.currentKey++
+            });
+          } else {
+            labelInfoList.push({
+              isFrameLabel: false,
+              key: self.currentKey++
+            });
           }
           console.log('labelInfoList:', labelInfoList);
         }

@@ -3,7 +3,6 @@ import ReactDOM, { render } from "react-dom";
 import { Router, Route, hashHistory } from "react-router";
 import "jquery"
 import "bootstrap"
-import "bootstrap/dist/css/bootstrap.min.css"
 import About from "./About.jsx";
 import Contact from "./Contact.jsx";
 import Footer from "./Footer.jsx";
@@ -12,12 +11,9 @@ import Navigation from "./Navigation.jsx";
 import VideoAnnotator from "./VideoAnnotator.jsx";
 import VideoGrid from "./VideoGrid.jsx";
 
+import "font-awesome-loader"
+import "../css/main.scss";
 import "../css/nouislider.css"
-import "../css/less/annotator.less";
-import "../css/less/freelancer.less";
-import "../css/less/mixins.less";
-import "../css/less/variables.less";
-import "../css/scss/main.scss";
 
 class Main extends React.Component {
   render() {

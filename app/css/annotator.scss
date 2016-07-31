@@ -1,0 +1,164 @@
+@import "./variables";
+
+.video-annotator {
+  padding: 0px;
+
+  .main-preview-player {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .video-js {
+    width: 100%;
+    height: 100%
+  }
+
+  .control-panel {
+    background-color: $gray-even-darker;
+    overflow: auto;
+    padding: 0px;
+
+    .control-panel-buttons {
+      padding: 15px;
+      width: 100%;
+      margin: 0px;
+      background-color: $gray-darkest;
+
+      .btn {
+        margin: 0px 15px 0px 0px;
+      }
+
+      .btn-frame {
+        .button-variant(#fff; $theme-primary; darken($theme-primary, 15%));
+      }
+
+      .btn-object {
+        .button-variant(#fff; $theme-success; darken($theme-success, 15%));
+      }
+
+      .btn-save {
+
+      }
+    }
+
+    .label-info {
+      padding: 10px;
+      margin: 1px 10px 1px 10px;
+
+      p {
+        color: white;
+      }
+
+      .btn-group {
+        width: 100%;
+      }
+
+      .progress {
+        margin: 10px 10px 10px 0px;
+        background-color: $gray;
+      }
+
+      .close {
+        color: white;
+      }
+
+      .btn-gray {
+        .button-variant(#fff; $gray-light; darken($gray-light, 15%));
+      }
+    }
+
+    .frame-label-info {
+      background-color: $theme-primary;
+      border-style: solid;
+      border-color: darken($theme-primary, 20%);
+    }
+
+    .object-label-info {
+      background-color: $theme-success;
+      border-style: solid;
+      border-color: darken($theme-success, 20%);
+    }
+
+    .label-slider {
+      margin: 15px 10px 40px 10px;
+      position: relative;
+
+      .slider-connect {
+        position: absolute;
+        top: 0;
+        height: 100%;
+      }
+
+      .slider-success {
+        background-color: $color-success;
+      }
+
+      .slider-info {
+        background-color: $color-info;
+      }
+
+      .slider-danger {
+        background-color: $color-danger;
+      }
+
+      .slider-left {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+      }
+
+      .slider-right {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+      }
+    }
+  }
+
+  .videojs-wrapper {
+    padding: 0px;
+
+    .small-label {
+      position: absolute;
+      width: 75px;
+      height: 25px;
+      top: 0px;
+      color: white;
+      z-index: 5;
+      margin: 1px;
+    }
+
+    .small-label-frame {
+      position: absolute;
+      width: 75px;
+      height: 25px;
+      top: 0px;
+      right: 0px;
+      color: white;
+      z-index: 5;
+      margin: 1px;
+    }
+
+    .bg-success {
+      border-style: solid;
+      background-color: $color-success;
+      border-color: darken($color-success, 20%);
+    }
+
+    .bg-info {
+      border-style: solid;
+      background-color: $color-info;
+      border-color: darken($color-info, 20%);
+    }
+
+    .bg-danger {
+      border-style: solid;
+      border-color: darken($color-danger, 20%);
+      background-color: $color-danger;
+    }
+
+    .bg-gray {
+      border-style: solid;
+      border-color: darken($gray-light, 20%);
+      background-color: $gray-light;
+    }
+  }
+}
