@@ -1,8 +1,4 @@
 header nav {
-  @extend .navbar;
-
-  @extend .navbar-default;
-
   min-height: $nav-height;
   background-color: $background-secondary;
   border-bottom: 2px solid $dark-gray;

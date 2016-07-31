@@ -1,10 +1,15 @@
 
 var config = {
-  entry: __dirname + "/app/components/Main.jsx",
+  entry: [
+    "bootstrap-loader",
+    __dirname + "/app/components/Main.jsx"
+  ],
+
   output: {
     path: __dirname + "/public/static/js",
     filename: "bundle.js"
   },
+
   module: {
     loaders: [
       {
@@ -28,23 +33,34 @@ var config = {
         loader: "style-loader!css-loader"
       },
       {
-        test: /\.less$/,
-        loader: "style!css!less"
-      },
-      {
         test: /\.scss$/,
-        loader: "style!css!sass"
+        loader: "style-loader!css-loader!sass-loader!sass-resources"
       },
       {
-        test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url-loader?limit=100000@name=[name][ext]&name=./[hash].[ext]"
+        test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        // Limiting the size of the woff fonts breaks font-awesome ONLY for the extract text plugin
+        // loader: "url?limit=10000"
+        loader: "url"
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
+        loader: "file"
       },
       {
         test: /\.json$/,
         loader: "json"
+      },
+      {
+        test: /bootstrap-sass\/assets\/javascripts\//,
+        loader: "imports?jQuery=jquery,$=jquery"
       }
     ]
-  }
+  },
+
+  sassResources: [
+    "./app/css/resources.scss",
+    "./app/css/variables.scss"
+  ],
 };
 
 module.exports = config;
