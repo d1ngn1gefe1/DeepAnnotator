@@ -101,8 +101,6 @@ export default class VideoAnnotator extends React.Component {
     });
 
     self.player.on("loadstart", function() {
-      console.log("loadstart 2, is saved: ", self.isSaved);
-
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
       if (currentItem == self.state.currentItem) {
@@ -182,6 +180,7 @@ export default class VideoAnnotator extends React.Component {
          });
          console.log("Load Json:", self.state.serverData);
          self.initLabeledVideos();
+         self.isSaved = true;
        });
   }
 
