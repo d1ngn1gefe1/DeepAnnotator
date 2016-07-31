@@ -62,17 +62,6 @@ export default class VideoAnnotator extends React.Component {
     console.log("VideoAnnotator componentDidMount");
     var self = this;
 
-    console.log(this.props.url);
-    fetch(this.props.url, {method: "post"})
-      .then(function(response) {
-        return response.json(); })
-      .then(function(data) {
-         self.setState({
-           serverData: data.data
-         });
-         console.log("Json:", self.state.serverData);
-       });
-
     var playlist = [];
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
@@ -111,7 +100,7 @@ export default class VideoAnnotator extends React.Component {
 
     self.player.on("loadstart", function() {
       console.log("loadstart, is saved: ", self.isSaved);
-      self.initLabeledVideos();
+      self.getVideoInfo();
 
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
@@ -175,6 +164,22 @@ export default class VideoAnnotator extends React.Component {
         currentFrame: currentFrame
       });
     });
+  }
+
+  getVideoInfo() {
+    console.log(this.props.url);
+
+    var self = this;
+    fetch(this.props.url, {method: "post"})
+      .then(function(response) {
+        return response.json(); })
+      .then(function(data) {
+         self.setState({
+           serverData: data.data
+         });
+         console.log("Load Json:", self.state.serverData);
+         self.initLabeledVideos();
+       });
   }
 
   initLabeledVideos() {
