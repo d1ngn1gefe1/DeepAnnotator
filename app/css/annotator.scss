@@ -29,11 +29,11 @@
       }
 
       .btn-frame {
-        .button-variant(#fff; $theme-primary; darken($theme-primary, 15%));
+        @include button-variant(#fff, $theme-primary, darken($theme-primary, 15%));
       }
 
       .btn-object {
-        .button-variant(#fff; $theme-success; darken($theme-success, 15%));
+        @include button-variant(#fff, $theme-success, darken($theme-success, 15%));
       }
 
       .btn-save {
@@ -63,7 +63,7 @@
       }
 
       .btn-gray {
-        .button-variant(#fff; $gray-light; darken($gray-light, 15%));
+        @include button-variant(#fff, $gray-light, darken($gray-light, 15%));
       }
     }
 

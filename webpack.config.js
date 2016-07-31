@@ -4,10 +4,12 @@ var config = {
     "bootstrap-loader",
     __dirname + "/app/components/Main.jsx"
   ],
+
   output: {
     path: __dirname + "/public/static/js",
     filename: "bundle.js"
   },
+
   module: {
     loaders: [
       {
@@ -32,7 +34,7 @@ var config = {
       },
       {
         test: /\.scss$/,
-        loader: "style-loader!css-loader!sass-loader"
+        loader: "style-loader!css-loader!sass-loader!sass-resources"
       },
       {
         test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -42,7 +44,7 @@ var config = {
       },
       {
         test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
-        loader: 'file'
+        loader: "file"
       },
       {
         test: /\.json$/,
@@ -53,7 +55,12 @@ var config = {
         loader: "imports?jQuery=jquery,$=jquery"
       }
     ]
-  }
+  },
+
+  sassResources: [
+    "./app/css/resources.scss",
+    "./app/css/variables.scss"
+  ],
 };
 
 module.exports = config;
