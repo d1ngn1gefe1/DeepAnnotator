@@ -1,5 +1,3 @@
-@import "./variables";
-
 .video-annotator {
   padding: 0px;
 
@@ -77,6 +75,23 @@
       background-color: $color-object;
       border-style: solid;
       border-color: darken($color-object, 20%);
+    }
+
+    .label-header {
+      width: 90%;
+      margin: 0 0 10px 0;
+
+      .label-text {
+        padding: 4px 0 4px 0;
+        margin: 0px;
+      }
+
+      .label-select {
+      }
+
+      .Select-menu-outer {
+        z-index: 100;
+      }
     }
 
     .label-slider {
