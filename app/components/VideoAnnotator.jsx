@@ -171,8 +171,7 @@ export default class VideoAnnotator extends React.Component {
       var self = this;
       var serverData = self.state.serverData;
       var playlist = document.getElementsByClassName("vjs-playlist")[0];
-      console.log("Current playlist 0:", playlist);
-      console.log("Playlist length:", playlist.childNodes.length);
+      console.log("Current playlist:", playlist);
 
       for (var i = 0; i < serverData.length; i++) {
         if (self.playlistName == serverData[i].playlistName) {
@@ -183,16 +182,17 @@ export default class VideoAnnotator extends React.Component {
           if (frameLabel.length > 0) { count++; }
           if (objectLabel.length > 0) { count++; }
           if (count == 1) {
-            tag = "In Progress";
+            tag = "glyphicon glyphicon-pencil";
           } else if (count == 2) {
-            tag = "Completed";
+            tag = "glyphicon glyphicon-ok";
           }
-          
-          if (playlist.childNodes[serverData[i].videoId].childNodes.length <= 2) {
-            var textnode = document.createTextNode(tag);
-            playlist.childNodes[serverData[i].videoId].appendChild(textnode);
+
+          var index = serverData[i].videoId;
+          if (playlist.childNodes[index].childNodes.length <= 2) {
+            var span = document.createElement("span");
+            span.setAttribute('class', tag);
+            playlist.childNodes[index].appendChild(span);
           }
-          console.log("Cite:", playlist.childNodes[serverData[i].videoId]);
         }
       }
   }
