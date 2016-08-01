@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM, { render } from "react-dom";
 import { Router, Route, hashHistory } from "react-router";
-// import "jquery"
-// import "bootstrap"
 import "font-awesome-loader"
 import About from "./About.jsx";
 import Contact from "./Contact.jsx";

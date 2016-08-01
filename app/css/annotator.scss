@@ -4,8 +4,8 @@
   padding: 0px;
 
   .main-preview-player {
-    padding-left: 0px;
-    padding-right: 0px;
+    padding: 70px 0px 0px 0px;
+    margin: 0px;
   }
 
   .video-js {
@@ -29,11 +29,11 @@
       }
 
       .btn-frame {
-        @include button-variant(#fff, $theme-primary, darken($theme-primary, 15%));
+        @include button-variant(#fff, $color-frame, darken($color-frame, 15%));
       }
 
       .btn-object {
-        @include button-variant(#fff, $theme-success, darken($theme-success, 15%));
+        @include button-variant(#fff, $color-object, darken($color-object, 15%));
       }
 
       .btn-save {
@@ -68,15 +68,15 @@
     }
 
     .frame-label-info {
-      background-color: $theme-primary;
+      background-color: $color-frame;
       border-style: solid;
-      border-color: darken($theme-primary, 20%);
+      border-color: darken($color-frame, 20%);
     }
 
     .object-label-info {
-      background-color: $theme-success;
+      background-color: $color-object;
       border-style: solid;
-      border-color: darken($theme-success, 20%);
+      border-color: darken($color-object, 20%);
     }
 
     .label-slider {
