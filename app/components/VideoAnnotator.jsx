@@ -30,9 +30,11 @@ export default class VideoAnnotator extends React.Component {
       labelInfoList: [],
       currentLabels: [],
       serverData: [],
+      initFrameLabels: [],
+      initObjectLabels: [],
       currentFrame: 0,
       numFrames: 0,
-      currentItem: 0,
+      currentItem: -1,
       isOpen: false,
       isPlaying: false
     };
@@ -99,9 +101,6 @@ export default class VideoAnnotator extends React.Component {
     });
 
     self.player.on("loadstart", function() {
-      console.log("loadstart, is saved: ", self.isSaved);
-      self.getVideoInfo();
-
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
       if (currentItem == self.state.currentItem) {
@@ -111,16 +110,18 @@ export default class VideoAnnotator extends React.Component {
           isOpen: true
         });
       } else {
+        self.isSaved = true;
         self.setState({
           labelInfoList: [],
           currentLabels: [],
           currentFrame: 0,
-          numFrames: 0,
           currentItem: currentItem,
           isOpen: false,
           isPlaying: false
         });
-        console.log("currentItem: ", currentItem);
+        // Reinitialize labels from server when saved and go to next video or
+        // load page for the first time
+        self.getVideoInfo();
       }
     });
 
@@ -179,6 +180,7 @@ export default class VideoAnnotator extends React.Component {
          });
          console.log("Load Json:", self.state.serverData);
          self.initLabeledVideos();
+         self.isSaved = true;
        });
   }
 
@@ -186,24 +188,29 @@ export default class VideoAnnotator extends React.Component {
       var self = this;
       var serverData = self.state.serverData;
       var labelInfoList = Array();
+      var frameLabel = Array();
+      var objectLabel = Array();
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
       console.log("Src currentItem", currentItem);
 
       for (var i = 0; i < serverData.length; i++) {
         if (self.playlistName == serverData[i].playlistName &&
             currentItem == serverData[i].videoId) {
-          var videoId = serverData[i].videoId;
-          var frameLabel = JSON.parse(serverData[i].frameLabel)['label'];
-          var objectLabel = JSON.parse(serverData[i].objectLabel)['label'];
+          frameLabel.push.apply(frameLabel,
+            JSON.parse(serverData[i].frameLabel)['label']);
+          objectLabel.push.apply(objectLabel,
+            JSON.parse(serverData[i].objectLabel)['label']);
           console.log("Frame label:", frameLabel);
           console.log("Object label:", objectLabel);
 
-          if (frameLabel.length > 0) {
+          for (var j = 0; j < frameLabel.length; j++) {
             labelInfoList.push({
               isFrameLabel: true,
               key: self.currentKey++
             });
-          } else {
+          }
+
+          for (var k = 0; k < objectLabel.length; k++) {
             labelInfoList.push({
               isFrameLabel: false,
               key: self.currentKey++
@@ -215,7 +222,29 @@ export default class VideoAnnotator extends React.Component {
 
       self.setState({
         labelInfoList: labelInfoList,
+        initFrameLabels: frameLabel,
+        initObjectLabels: objectLabel,
       });
+
+      self.initLabels();
+  }
+
+  initLabels() {
+    var self = this;
+    var initFrameLabels = self.state.initFrameLabels;
+    var initObjectLabels = self.state.initObjectLabels;
+
+    for (var i = 0; i < initFrameLabels.length; i++) {
+      self.refs["label"+i].setLabels(initFrameLabels[i]);
+      console.log('Frame labels:', self.refs["label"+i]);
+    }
+
+    var offset = initFrameLabels.length;
+    for (var i = 0; i < initObjectLabels.length; i++) {
+      var index = offset + i;
+      self.refs["label"+index].setLabels(initObjectLabels[i]);
+      console.log('Object labels:', self.refs["label"+index]);
+    }
   }
 
   handleCancel() {
@@ -232,7 +261,6 @@ export default class VideoAnnotator extends React.Component {
     var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
     self.setState({
-      // labelInfoList: [],
       currentLabels: [],
       currentFrame: 0,
       currentItem: currentItem,
@@ -241,6 +269,9 @@ export default class VideoAnnotator extends React.Component {
     });
     self.isSaved = true;
     console.log("currentItem: ", currentItem);
+
+    // Not saved but still want to go to the next video
+    self.getVideoInfo();
   }
 
   handleCloseLabel(id) {
@@ -329,9 +360,12 @@ export default class VideoAnnotator extends React.Component {
       .then(response => response.text())
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()));
+
+    self.isSaved = true;
   }
 
   handleNotSaved() {
+    console.log('handleNotSaved');
     this.isSaved = false;
   }
 
