@@ -277,7 +277,7 @@ section {
   position: relative;
   margin-bottom: 0;
   padding-bottom: 0.5em;
-  border-bottom: 1px solid #gray-lighter;
+  border-bottom: 1px solid $gray-lighter;
   input, textarea {
     z-index: 1;
     position: relative;
@@ -357,15 +357,10 @@ footer {
   }
 }
 
-// .btn-primary {
-    //   @include button-variant(white, $theme-primary, $theme-primary);
-//   font-weight: 700;
-// }
-//
-// .btn-success {
-//   @include button-variant(white, $theme-secondary, $theme-secondary);
-//   font-weight: 700;
-// }
+.btn-send {
+	@include button-variant(white, $theme-secondary, $theme-secondary);
+	font-weight: 700;
+}
 
 .btn-social {
   display: inline-block;
