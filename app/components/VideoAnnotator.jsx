@@ -187,8 +187,11 @@ export default class VideoAnnotator extends React.Component {
           } else if (count == 2) {
             tag = "Completed";
           }
-          var textnode = document.createTextNode(tag);
-          playlist.childNodes[serverData[i].videoId].appendChild(textnode);
+          
+          if (playlist.childNodes[serverData[i].videoId].childNodes.length <= 2) {
+            var textnode = document.createTextNode(tag);
+            playlist.childNodes[serverData[i].videoId].appendChild(textnode);
+          }
           console.log("Cite:", playlist.childNodes[serverData[i].videoId]);
         }
       }
