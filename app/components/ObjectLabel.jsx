@@ -153,7 +153,7 @@ export default class ObjectLabel extends React.Component {
     return intervals;
   }
 
-  handleSelect(value) {
+  handleSelect(select) {
     console.log("selected value", select);
 
     this.setState({
