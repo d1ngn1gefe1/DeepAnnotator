@@ -238,6 +238,8 @@ export default class VideoAnnotator extends React.Component {
             var span = document.createElement("span");
             span.setAttribute("class", tag);
             playlist.childNodes[index].appendChild(span);
+          } else {
+            playlist.childNodes[index].childNodes[2].setAttribute("class", tag);
           }
         }
       }
