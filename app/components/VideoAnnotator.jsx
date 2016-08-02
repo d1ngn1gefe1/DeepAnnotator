@@ -209,7 +209,9 @@ export default class VideoAnnotator extends React.Component {
          console.log("Load Json:", self.state.serverData);
          self.initLabeledVideos();
          self.markLabeledVideos();
-         self.isSaved = true;
+         self.setState({
+           isSaved: true
+         });
        });
   }
 
