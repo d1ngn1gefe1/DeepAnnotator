@@ -60,8 +60,11 @@
     "bootstrap": "^3.3.6",
     "jquery": "^3.1.0",
     "lodash": "^4.13.1",
+    "office-ui-fabric": "^2.6.1",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
+    "react-fabric": "^0.4.1",
+    "react-fabricjs": "^0.1.2",
     "react-router": "^2.5.2"
   }
 }

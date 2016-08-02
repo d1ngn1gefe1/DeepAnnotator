@@ -7,6 +7,8 @@ import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from "react-modal-bootstrap"
+// import {Canvas, Image, Rect} from 'react-fabricjs';
+
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
 import ObjectLabel from "./ObjectLabel.jsx";
@@ -167,6 +169,24 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  getVideoInfo() {
+    console.log(this.props.url);
+
+    var self = this;
+    fetch(this.props.url, {method: "post"})
+      .then(function(response) {
+        return response.json(); })
+      .then(function(data) {
+         self.setState({
+           serverData: data.data
+         });
+         console.log("Load Json:", self.state.serverData);
+         self.initLabeledVideos();
+         self.markLabeledVideos();
+         self.isSaved = true;
+       });
+  }
+
   markLabeledVideos() {
       var self = this;
       var serverData = self.state.serverData;
@@ -195,24 +215,6 @@ export default class VideoAnnotator extends React.Component {
           }
         }
       }
-  }
-
-  getVideoInfo() {
-    console.log(this.props.url);
-
-    var self = this;
-    fetch(this.props.url, {method: "post"})
-      .then(function(response) {
-        return response.json(); })
-      .then(function(data) {
-         self.setState({
-           serverData: data.data
-         });
-         console.log("Load Json:", self.state.serverData);
-         self.initLabeledVideos();
-         self.markLabeledVideos();
-         self.isSaved = true;
-       });
   }
 
   initLabeledVideos() {
