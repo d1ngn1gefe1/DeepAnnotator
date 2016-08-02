@@ -5,6 +5,14 @@
 .video-annotator {
   padding: 0px;
 
+  .saved {
+    color: green;
+  }
+
+  .unsaved {
+    color: red;
+  }
+
   .main-preview-player {
     padding: 70px 0px 0px 0px;
     margin: 0px;
@@ -40,7 +48,7 @@
       }
 
       .btn-save {
-
+        @include button-variant(#fff, $gray, darken($gray, 15%));
       }
     }
 
