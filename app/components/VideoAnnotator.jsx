@@ -7,7 +7,7 @@ import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from "react-modal-bootstrap"
-// import {Canvas, Image, Rect} from 'react-fabricjs';
+import {Layer, Rect, Stage, Group} from "react-konva";
 
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
@@ -505,6 +505,12 @@ export default class VideoAnnotator extends React.Component {
 
           <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2" style={{height: HEIGHT*SCALING+"px"}}></ol>
         </section>
+
+        <Rect
+          x={10} y={10} width={50} height={50}
+          fill={"black"}
+          shadowBlur={10}
+        />
 
         <section className="details">
           <div className="bound-properties col-lg-4 col-md-4 col-sm-4"></div>
