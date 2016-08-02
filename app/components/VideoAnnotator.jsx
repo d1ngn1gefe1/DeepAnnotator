@@ -150,6 +150,7 @@ export default class VideoAnnotator extends React.Component {
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
         self.getVideoInfo();
+        self.drawObjects();
       }
     });
 
@@ -193,6 +194,39 @@ export default class VideoAnnotator extends React.Component {
         currentFrame: currentFrame
       });
     });
+  }
+
+  drawObjects() {
+    var stage = this.refs.stage.getStage();
+    var layer = this.refs.layer;
+    stage.add(layer);
+
+    var layerDom = document.getElementById("layer");
+    console.log("Layer:", layerDom);
+
+    // var rectX = stage.width / 2 - 50;
+    // var rectY = stage.height / 2 - 25;
+    //
+    // var box = new Rect({
+    //     x: rectX,
+    //     y: rectY,
+    //     width: 100,
+    //     height: 50,
+    //     fill: '#00D2FF',
+    //     stroke: 'black',
+    //     strokeWidth: 4,
+    //     draggable: true
+    // });
+
+    // // add cursor styling
+    // box.on('mouseover', function() {
+    //     document.body.style.cursor = 'pointer';
+    // });
+    // box.on('mouseout', function() {
+    //     document.body.style.cursor = 'default';
+    // });
+
+    // layer.add(box);
   }
 
   getVideoInfo() {
@@ -500,14 +534,8 @@ export default class VideoAnnotator extends React.Component {
           }
 
             <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
-            <Stage className="canvas" width={700} height={700}>
-              <Layer>
-                <Rect
-                  x={10} y={10} width={50} height={50}
-                  fill={"black"}
-                  shadowBlur={10}
-                  />
-              </Layer>
+            <Stage ref="stage" className="canvas" width={700} height={700}>
+              <Layer ref="layer" id="layer"></Layer>
             </Stage>
             <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
