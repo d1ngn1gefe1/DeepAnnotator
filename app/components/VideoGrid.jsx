@@ -18,7 +18,7 @@ export default class VideoGrid extends React.Component {
         <div className="container">
           <div className="row">
             <div className="col-lg-12 text-center">
-              <h2>Videos</h2>
+              <h2 className="h2-primary">Videos</h2>
               <hr className="star-primary"></hr>
             </div>
           </div>

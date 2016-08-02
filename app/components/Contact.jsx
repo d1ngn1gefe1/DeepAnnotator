@@ -7,7 +7,7 @@ export default class Contact extends React.Component {
           <div className="container">
               <div className="row">
                   <div className="col-lg-12 text-center">
-                      <h2>Your Feedback</h2>
+                      <h2 className="h2-primary">Your Feedback</h2>
                       <hr className="star-primary" />
                   </div>
               </div>

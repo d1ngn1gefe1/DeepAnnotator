@@ -52,6 +52,32 @@ export default class VideoAnnotator extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
     this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
+
+    this.selectOptions = [{
+    	label: "Alcohol Rub",
+    	options: [{
+    		label: "No attempt",
+    		value: "no attempt"
+    	}, {
+    		label: "Insufficient rub",
+    		value: "insufficient rub"
+    	}, {
+    		label: "Sufficient rub",
+    		value: "sufficient rub"
+    	}]
+    }, {
+    	label: "Soup and Water Wash",
+    	options: [{
+    		label: "No attempt",
+    		value: "no attempt"
+    	}, {
+    		label: "Insufficient rub",
+    		value: "insufficient rub"
+    	}, {
+    		label: "Sufficient rub",
+    		value: "sufficient rub"
+    	}]
+    }];
   }
 
   componentWillMount() {
@@ -87,10 +113,10 @@ export default class VideoAnnotator extends React.Component {
         framebyframe: {
           fps: 5,
           steps: [
-            { text: '-5', step: -5 },
-            { text: '-1', step: -1 },
-            { text: '+1', step: 1 },
-            { text: '+5', step: 5 },
+            { text: "-5", step: -5 },
+            { text: "-1", step: -1 },
+            { text: "+1", step: 1 },
+            { text: "+5", step: 5 },
           ]
         }
       }
@@ -195,8 +221,8 @@ export default class VideoAnnotator extends React.Component {
 
       for (var i = 0; i < serverData.length; i++) {
         if (self.playlistName == serverData[i].playlistName) {
-          var frameLabel = JSON.parse(serverData[i].frameLabel)['label'];
-          var objectLabel = JSON.parse(serverData[i].objectLabel)['label'];
+          var frameLabel = JSON.parse(serverData[i].frameLabel)["label"];
+          var objectLabel = JSON.parse(serverData[i].objectLabel)["label"];
           var count = 0;
           var tag = "";
           if (frameLabel.length > 0) { count++; }
@@ -210,7 +236,7 @@ export default class VideoAnnotator extends React.Component {
           var index = serverData[i].videoId;
           if (playlist.childNodes[index].childNodes.length <= 2) {
             var span = document.createElement("span");
-            span.setAttribute('class', tag);
+            span.setAttribute("class", tag);
             playlist.childNodes[index].appendChild(span);
           }
         }
@@ -230,9 +256,9 @@ export default class VideoAnnotator extends React.Component {
         if (self.playlistName == serverData[i].playlistName &&
             currentItem == serverData[i].videoId) {
           frameLabel.push.apply(frameLabel,
-            JSON.parse(serverData[i].frameLabel)['label']);
+            JSON.parse(serverData[i].frameLabel)["label"]);
           objectLabel.push.apply(objectLabel,
-            JSON.parse(serverData[i].objectLabel)['label']);
+            JSON.parse(serverData[i].objectLabel)["label"]);
           console.log("Frame label:", frameLabel);
           console.log("Object label:", objectLabel);
 
@@ -249,7 +275,7 @@ export default class VideoAnnotator extends React.Component {
               key: self.currentKey++
             });
           }
-          console.log('labelInfoList:', labelInfoList);
+          console.log("labelInfoList:", labelInfoList);
         }
       }
 
@@ -269,14 +295,14 @@ export default class VideoAnnotator extends React.Component {
 
     for (var i = 0; i < initFrameLabels.length; i++) {
       self.refs["label"+i].setLabels(initFrameLabels[i]);
-      console.log('Frame labels:', self.refs["label"+i]);
+      console.log("Frame labels:", self.refs["label"+i]);
     }
 
     var offset = initFrameLabels.length;
     for (var i = 0; i < initObjectLabels.length; i++) {
       var index = offset + i;
       self.refs["label"+index].setLabels(initObjectLabels[i]);
-      console.log('Object labels:', self.refs["label"+index]);
+      console.log("Object labels:", self.refs["label"+index]);
     }
   }
 
@@ -368,7 +394,7 @@ export default class VideoAnnotator extends React.Component {
     for (var i = 0; i < self.state.labelInfoList.length; i++) {
       var labels = self.refs["label"+i].getLabels();
       console.log(self.state.labelInfoList[i]);
-      if (self.state.labelInfoList[i]['isFrameLabel']) {
+      if (self.state.labelInfoList[i]["isFrameLabel"]) {
         frameData.push(labels);
       } else {
         objectData.push(labels);
@@ -398,12 +424,12 @@ export default class VideoAnnotator extends React.Component {
   }
 
   handleNotSaved() {
-    console.log('handleNotSaved');
+    console.log("handleNotSaved");
     this.isSaved = false;
   }
 
   render() {
-    console.log("VideoAnnotator render!!");
+    console.log("VideoAnnotator render");
     var self = this;
 
     return (
@@ -427,11 +453,11 @@ export default class VideoAnnotator extends React.Component {
               self.state.labelInfoList.map(function(labelInfo, index) {
                 if (labelInfo.isFrameLabel) {
                   return (
-                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} />
+                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
                   );
                 } else {
                   return (
-                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} />
+                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
                   );
                 }
               })

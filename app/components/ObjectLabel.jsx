@@ -1,17 +1,19 @@
 import React from "react";
 import Nouislider from "./slider/NouisliderWrapper.jsx";
 
+import Select from "react-select-plus";
+import "react-select-plus/dist/react-select-plus.css";
+
 export default class ObjectLabel extends React.Component {
   // similar to componentWillMount in ES5
   constructor(props) {
     super(props);
 
     this.state = {
-      /*
-        label = [startFrame, endFrame, option]
-      */
       labels: []
     };
+
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
   componentDidMount() {
@@ -151,6 +153,14 @@ export default class ObjectLabel extends React.Component {
     return intervals;
   }
 
+  handleSelect(select) {
+    console.log("selected value", select);
+
+    this.setState({
+      select: select
+    });
+  }
+
   render() {
     console.log("ObjectLabel render");
     var self = this;
@@ -162,7 +172,11 @@ export default class ObjectLabel extends React.Component {
         <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabel.bind(self, self.props.id)}>
           <span aria-hidden="true">&times;</span>
         </button>
-        <p>{"Object "+self.props.id}</p>
+
+        <div className="label-header row">
+          <p className="label-text col-lg-4 col-md-4 col-sm-4">{"Object "+self.props.id}</p>
+          <Select className="label-select col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
+        </div>
 
         <div className="btn-group" data-toggle="buttons">
           <label className={"btn btn-success col-lg-4 col-md-4 col-sm-4"} onClick={self.handleClick.bind(self, 0)}>

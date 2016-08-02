@@ -38,8 +38,6 @@ var config = {
       },
       {
         test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        // Limiting the size of the woff fonts breaks font-awesome ONLY for the extract text plugin
-        // loader: "url?limit=10000"
         loader: "url"
       },
       {
@@ -58,8 +56,7 @@ var config = {
   },
 
   sassResources: [
-    "./app/css/resources.scss",
-    "./app/css/variables.scss"
+    "./app/css/resources.scss"
   ],
 };
 

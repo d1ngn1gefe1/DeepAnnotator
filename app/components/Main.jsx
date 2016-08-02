@@ -15,7 +15,6 @@ import "./theme/contact_me.js";
 import "./theme/freelancer.js";
 
 import "../css/main.scss";
-import "../css/nouislider.css"
 
 class Main extends React.Component {
   render() {
