@@ -10,7 +10,8 @@ export default class ObjectLabel extends React.Component {
     super(props);
 
     this.state = {
-      labels: []
+      labels: [],
+      select: null
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -33,13 +34,17 @@ export default class ObjectLabel extends React.Component {
     return -1; // error
   }
 
-  getLabels() {
-    return this.state.labels;
+  getData() {
+    var data = {}
+    data['labels'] = this.state.labels;
+    data['select'] = this.state.select;
+    return data;
   }
 
-  setLabels(labels) {
+  setData(data) {
     this.setState({
-      labels: labels,
+      labels: data["labels"],
+      select: data["select"]
     });
   }
 

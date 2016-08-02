@@ -11,6 +11,7 @@ export default class FrameLabel extends React.Component {
 
     this.state = {
       labels: [],
+      select: null,
       hasStarted: false
     };
 
@@ -34,13 +35,17 @@ export default class FrameLabel extends React.Component {
     return 0; // empty
   }
 
-  getLabels() {
-    return this.state.labels;
+  getData() {
+    var data = {}
+    data["labels"] = this.state.labels;
+    data["select"] = this.state.select;
+    return data;
   }
 
-  setLabels(labels) {
+  setData(data) {
     this.setState({
-      labels: labels,
+      labels: data["labels"],
+      select: data["select"]
     });
   }
 

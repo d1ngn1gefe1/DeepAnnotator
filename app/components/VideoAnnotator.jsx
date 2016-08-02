@@ -7,6 +7,8 @@ import boundProperties from "./video/bound-properties.js";
 import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from "react-modal-bootstrap"
+// import {Canvas, Image, Rect} from 'react-fabricjs';
+
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
 import ObjectLabel from "./ObjectLabel.jsx";
@@ -193,6 +195,24 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  getVideoInfo() {
+    console.log(this.props.url);
+
+    var self = this;
+    fetch(this.props.url, {method: "post"})
+      .then(function(response) {
+        return response.json(); })
+      .then(function(data) {
+         self.setState({
+           serverData: data.data
+         });
+         console.log("Load Json:", self.state.serverData);
+         self.initLabeledVideos();
+         self.markLabeledVideos();
+         self.isSaved = true;
+       });
+  }
+
   markLabeledVideos() {
       var self = this;
       var serverData = self.state.serverData;
@@ -221,24 +241,6 @@ export default class VideoAnnotator extends React.Component {
           }
         }
       }
-  }
-
-  getVideoInfo() {
-    console.log(this.props.url);
-
-    var self = this;
-    fetch(this.props.url, {method: "post"})
-      .then(function(response) {
-        return response.json(); })
-      .then(function(data) {
-         self.setState({
-           serverData: data.data,
-           isSaved: true
-         });
-         console.log("Load Json:", self.state.serverData);
-         self.initLabeledVideos();
-         self.markLabeledVideos();
-       });
   }
 
   initLabeledVideos() {
@@ -292,14 +294,14 @@ export default class VideoAnnotator extends React.Component {
     var initObjectLabels = self.state.initObjectLabels;
 
     for (var i = 0; i < initFrameLabels.length; i++) {
-      self.refs["label"+i].setLabels(initFrameLabels[i]);
+      self.refs["label"+i].setData(initFrameLabels[i]);
       console.log("Frame labels:", self.refs["label"+i]);
     }
 
     var offset = initFrameLabels.length;
     for (var i = 0; i < initObjectLabels.length; i++) {
       var index = offset + i;
-      self.refs["label"+index].setLabels(initObjectLabels[i]);
+      self.refs["label"+index].setData(initObjectLabels[i]);
       console.log("Object labels:", self.refs["label"+index]);
     }
   }
@@ -390,8 +392,8 @@ export default class VideoAnnotator extends React.Component {
     var objectData;
 
     for (var i = 0; i < self.state.labelInfoList.length; i++) {
-      var labels = self.refs["label"+i].getLabels();
-      console.log(self.state.labelInfoList[i]);
+      var labels = self.refs["label"+i].getData();
+      console.log("Save data:", labels);
       if (self.state.labelInfoList[i]["isFrameLabel"]) {
         frameData.push(labels);
       } else {
