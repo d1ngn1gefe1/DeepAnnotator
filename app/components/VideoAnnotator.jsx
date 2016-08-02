@@ -294,14 +294,14 @@ export default class VideoAnnotator extends React.Component {
     var initObjectLabels = self.state.initObjectLabels;
 
     for (var i = 0; i < initFrameLabels.length; i++) {
-      self.refs["label"+i].setLabels(initFrameLabels[i]);
+      self.refs["label"+i].setData(initFrameLabels[i]);
       console.log("Frame labels:", self.refs["label"+i]);
     }
 
     var offset = initFrameLabels.length;
     for (var i = 0; i < initObjectLabels.length; i++) {
       var index = offset + i;
-      self.refs["label"+index].setLabels(initObjectLabels[i]);
+      self.refs["label"+index].setData(initObjectLabels[i]);
       console.log("Object labels:", self.refs["label"+index]);
     }
   }
@@ -392,8 +392,8 @@ export default class VideoAnnotator extends React.Component {
     var objectData;
 
     for (var i = 0; i < self.state.labelInfoList.length; i++) {
-      var labels = self.refs["label"+i].getLabels();
-      console.log(self.state.labelInfoList[i]);
+      var labels = self.refs["label"+i].getData();
+      console.log("Save data:", labels);
       if (self.state.labelInfoList[i]["isFrameLabel"]) {
         frameData.push(labels);
       } else {
