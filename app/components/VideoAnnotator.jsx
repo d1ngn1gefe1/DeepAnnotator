@@ -209,7 +209,9 @@ export default class VideoAnnotator extends React.Component {
          console.log("Load Json:", self.state.serverData);
          self.initLabeledVideos();
          self.markLabeledVideos();
-         self.isSaved = true;
+         self.setState({
+           isSaved: true
+         });
        });
   }
 
@@ -238,6 +240,8 @@ export default class VideoAnnotator extends React.Component {
             var span = document.createElement("span");
             span.setAttribute("class", tag);
             playlist.childNodes[index].appendChild(span);
+          } else {
+            playlist.childNodes[index].childNodes[2].setAttribute("class", tag);
           }
         }
       }
