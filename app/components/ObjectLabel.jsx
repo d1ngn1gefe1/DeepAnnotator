@@ -36,8 +36,8 @@ export default class ObjectLabel extends React.Component {
 
   getData() {
     var data = {}
-    data['labels'] = this.state.labels;
-    data['select'] = this.state.select;
+    data["labels"] = this.state.labels;
+    data["select"] = this.state.select;
     return data;
   }
 
@@ -105,7 +105,7 @@ export default class ObjectLabel extends React.Component {
     var labels = self.state.labels;
     var handles = self.refs["Nouislider"].slider.get();
 
-    if (typeof handles === 'string') {
+    if (typeof handles === "string") {
       labels[0][0] = 0;
       labels[0][1] = self.props.numFrames-1;
     } else {

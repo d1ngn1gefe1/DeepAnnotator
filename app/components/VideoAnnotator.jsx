@@ -445,7 +445,7 @@ export default class VideoAnnotator extends React.Component {
         <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)}/>
 
         <section className="main-preview-player row row-eq-height clearfix">
-          <div className="control-panel col-lg-4 col-md-4 col-sm-4" style={{height: HEIGHT*SCALING+"px"}}>
+          <div className="control-panel col-lg-4 col-md-4 col-sm-4" style={{height: (HEIGHT*SCALING+30)+"px"}}>
             <div className="row control-panel-buttons">
               <button type="button" className="btn btn-frame new-frame-labels" onClick={self.handleNewFrameLabels}>
                 <span className="glyphicon glyphicon-plus-sign"></span> Frame Labels
@@ -500,21 +500,23 @@ export default class VideoAnnotator extends React.Component {
           }
 
             <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
-            <Stage className="canvas" width={700} height={700}>
+
+            <Stage width={WIDTH*SCALING} height={HEIGHT*SCALING} className="canvas-wrapper">
               <Layer>
                 <Rect
-                  x={10} y={10} width={50} height={50}
-                  fill={"black"}
+                  x={200} y={200} width={50} height={50}
+                  fill={"red"}
                   shadowBlur={10}
                   />
               </Layer>
             </Stage>
+
             <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>
           </div>
 
-          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2" style={{height: HEIGHT*SCALING+"px"}}></ol>
+          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2" style={{height: (HEIGHT*SCALING+30)+"px"}}></ol>
         </section>
 
         <section className="details">
