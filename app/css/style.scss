@@ -2,6 +2,10 @@
   color: $theme-primary;
 }
 
+#app {
+  overflow: auto;
+}
+
 .video-annotator {
   padding: 0px;
 
@@ -28,6 +32,8 @@
     overflow-y: overlay;
     overflow-x: hidden;
     padding: 0px 10px 0px 5px;
+    height: $height*$scaling+30;
+    min-width: 500px;
 
     .control-panel-buttons {
       padding: 15px;
@@ -141,11 +147,17 @@
     }
   }
 
+  .vjs-playlist {
+    height: $height*$scaling+30;
+  }
+
   .videojs-wrapper {
     padding: 0px;
+    height: $height*$scaling;
+    min-width: $width*$scaling;
 
     .vjs-control-bar {
-      top: 480px;
+      top: $height*$scaling;
       display: flex;
       background-color: $gray-even-darker;
     }

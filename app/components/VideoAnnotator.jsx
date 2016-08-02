@@ -16,6 +16,7 @@ import ObjectLabel from "./ObjectLabel.jsx";
 import "video.js/dist/video-js.min.css";
 import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
 
+// don't change these!
 var HEIGHT = 240;
 var WIDTH = 320;
 var SCALING = 2;
@@ -106,8 +107,6 @@ export default class VideoAnnotator extends React.Component {
     self.player = videojs("player", {
       control: true,
       preload: "auto",
-      height: HEIGHT*SCALING,
-      width: WIDTH*SCALING,
       autoplay: false,
       plugins: {
         framebyframe: {
@@ -479,7 +478,7 @@ export default class VideoAnnotator extends React.Component {
         <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)}/>
 
         <section className="main-preview-player row row-eq-height clearfix">
-          <div className="control-panel col-lg-4 col-md-4 col-sm-4" style={{height: (HEIGHT*SCALING+30)+"px"}}>
+          <div className="control-panel col-lg-4 col-md-4 col-sm-4">
             <div className="row control-panel-buttons">
               <button type="button" className="btn btn-frame new-frame-labels" onClick={self.handleNewFrameLabels}>
                 <span className="glyphicon glyphicon-plus-sign"></span> Frame Labels
@@ -506,7 +505,7 @@ export default class VideoAnnotator extends React.Component {
             }
           </div>
 
-          <div className="videojs-wrapper col-lg-6 col-md-6 col-sm-6" style={{height: HEIGHT*SCALING+"px"}}>
+          <div className="videojs-wrapper col-lg-6 col-md-6 col-sm-6">
           {
             self.state.currentLabels.map(function(currentLabel, index) {
               var bg;
@@ -550,7 +549,7 @@ export default class VideoAnnotator extends React.Component {
             </video>
           </div>
 
-          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2" style={{height: (HEIGHT*SCALING+30)+"px"}}></ol>
+          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2"></ol>
         </section>
 
         <section className="details">
