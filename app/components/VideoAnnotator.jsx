@@ -36,11 +36,11 @@ export default class VideoAnnotator extends React.Component {
       numFrames: 0,
       currentItem: -1,
       isOpen: false,
-      isPlaying: false
+      isPlaying: false,
+      isSaved: true
     };
 
     this.currentKey = 0;
-    this.isSaved = true;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
@@ -131,19 +131,19 @@ export default class VideoAnnotator extends React.Component {
 
       if (currentItem == self.state.currentItem) {
         return;
-      } else if (!self.isSaved) {
+    } else if (!self.state.isSaved) {
         self.setState({
           isOpen: true
         });
       } else {
-        self.isSaved = true;
         self.setState({
           labelInfoList: [],
           currentLabels: [],
           currentFrame: 0,
           currentItem: currentItem,
           isOpen: false,
-          isPlaying: false
+          isPlaying: false,
+          isSaved: true
         });
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
@@ -232,12 +232,12 @@ export default class VideoAnnotator extends React.Component {
         return response.json(); })
       .then(function(data) {
          self.setState({
-           serverData: data.data
+           serverData: data.data,
+           isSaved: true
          });
          console.log("Load Json:", self.state.serverData);
          self.initLabeledVideos();
          self.markLabeledVideos();
-         self.isSaved = true;
        });
   }
 
@@ -322,9 +322,9 @@ export default class VideoAnnotator extends React.Component {
       currentFrame: 0,
       currentItem: currentItem,
       isOpen: false,
-      isPlaying: false
+      isPlaying: false,
+      isSaved: true
     });
-    self.isSaved = true;
     console.log("currentItem: ", currentItem);
 
     // Not saved but still want to go to the next video
@@ -340,8 +340,8 @@ export default class VideoAnnotator extends React.Component {
 
     self.setState({
       labelInfoList: labelInfoList,
+      isSaved: false
     });
-    self.isSaved = false;
   }
 
   handleGetCurrentFrame() {
@@ -377,9 +377,9 @@ export default class VideoAnnotator extends React.Component {
     self.currentKey += 1;
 
     self.setState({
-      labelInfoList: labelInfoList
+      labelInfoList: labelInfoList,
+      isSaved: false
     });
-    self.isSaved = false;
   }
 
   handleSave() {
@@ -418,12 +418,18 @@ export default class VideoAnnotator extends React.Component {
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()));
 
-    self.isSaved = true;
+    self.setState({
+      isSaved: true
+    });
   }
 
   handleNotSaved() {
     console.log("handleNotSaved");
-    this.isSaved = false;
+    var self = this;
+
+    self.setState({
+      isSaved: false
+    });
   }
 
   render() {
@@ -444,7 +450,7 @@ export default class VideoAnnotator extends React.Component {
                 <span className="glyphicon glyphicon-plus-sign"></span> Object Labels
               </button>
               <button type="button" className="btn btn-save save" onClick={self.handleSave}>
-                <span className="glyphicon glyphicon glyphicon-floppy-disk"></span> Save
+                <span className="glyphicon glyphicon glyphicon-floppy-disk"></span> Save <span className={self.state.isSaved?"saved":"unsaved"}>●</span>
               </button>
             </div>
             {
