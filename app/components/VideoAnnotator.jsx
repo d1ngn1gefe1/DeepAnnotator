@@ -519,15 +519,6 @@ export default class VideoAnnotator extends React.Component {
                       console.log("Box here");
                       return (
                         <Box key={labelInfo.key} />
-                        // <Rect
-                        //   x={200}
-                        //   y={200}
-                        //   width={50}
-                        //   height={50}
-                        //   fill={"red"}
-                        //   shadowBlur={10}
-                        //   draggable={true}
-                        //  />
                       );
                     }
                   })

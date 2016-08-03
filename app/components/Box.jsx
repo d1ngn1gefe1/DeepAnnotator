@@ -16,13 +16,13 @@ export default class Box extends React.Component {
   }
 
   render() {
-    console.log("Box info:", this.state.box);
+    var self = this;
     return (
       <Rect
-        x={this.state.box.x}
-        y={this.state.box.y}
-        width={this.state.box.width}
-        height={this.state.height}
+        x={self.state.box.x}
+        y={self.state.box.y}
+        width={self.state.box.width}
+        height={self.state.box.height}
         fill={"red"}
         shadowBlur={10}
         draggable={true}
