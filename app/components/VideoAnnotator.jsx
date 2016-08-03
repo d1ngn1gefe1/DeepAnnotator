@@ -12,6 +12,7 @@ import {Layer, Rect, Stage, Group} from "react-konva";
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
 import ObjectLabel from "./ObjectLabel.jsx";
+import Box from "./Box.jsx";
 
 import "video.js/dist/video-js.min.css";
 import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
@@ -202,30 +203,6 @@ export default class VideoAnnotator extends React.Component {
 
     var layerDom = document.getElementById("layer");
     console.log("Layer:", layerDom);
-
-    // var rectX = stage.width / 2 - 50;
-    // var rectY = stage.height / 2 - 25;
-    //
-    // var box = new Rect({
-    //     x: rectX,
-    //     y: rectY,
-    //     width: 100,
-    //     height: 50,
-    //     fill: '#00D2FF',
-    //     stroke: 'black',
-    //     strokeWidth: 4,
-    //     draggable: true
-    // });
-
-    // // add cursor styling
-    // box.on('mouseover', function() {
-    //     document.body.style.cursor = 'pointer';
-    // });
-    // box.on('mouseout', function() {
-    //     document.body.style.cursor = 'default';
-    // });
-
-    // layer.add(box);
   }
 
   getVideoInfo() {
@@ -534,13 +511,27 @@ export default class VideoAnnotator extends React.Component {
 
             <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
 
-            <Stage width={WIDTH*SCALING} height={HEIGHT*SCALING} className="canvas-wrapper">
-              <Layer>
-                <Rect
-                  x={200} y={200} width={50} height={50}
-                  fill={"red"}
-                  shadowBlur={10}
-                  />
+            <Stage ref="stage" width={WIDTH*SCALING} height={HEIGHT*SCALING} className="canvas-wrapper">
+              <Layer ref="layer">
+                {
+                  self.state.labelInfoList.map(function(labelInfo, index) {
+                    if (!labelInfo.isFrameLabel) {
+                      console.log("Box here");
+                      return (
+                        <Box key={labelInfo.key} />
+                        // <Rect
+                        //   x={200}
+                        //   y={200}
+                        //   width={50}
+                        //   height={50}
+                        //   fill={"red"}
+                        //   shadowBlur={10}
+                        //   draggable={true}
+                        //  />
+                      );
+                    }
+                  })
+                }
               </Layer>
             </Stage>
 
