@@ -19,7 +19,7 @@ export default class FrameLabel extends React.Component {
   }
 
   componentDidMount() {
-    this.handleClick();
+    this.handleClick(true, true);
   }
 
   getCurrentOption(currentFrame) {
@@ -89,9 +89,9 @@ export default class FrameLabel extends React.Component {
     return stack;
   }
 
-  handleClick(startButton) {
+  handleClick(isStartButton, init=false) {
     var self = this;
-    if (self.state.hasStarted == startButton) {
+    if (self.state.hasStarted == isStartButton) {
       return;
     }
 
@@ -126,11 +126,18 @@ export default class FrameLabel extends React.Component {
       }
     }
 
-    self.setState({
-      labels: labels,
-      hasStarted: !self.state.hasStarted
-    });
-    self.props.notSaved();
+
+    if (init) {
+      self.setState({
+        labels: labels
+      });
+    } else {
+      self.setState({
+        labels: labels,
+        hasStarted: !self.state.hasStarted
+      });
+      self.props.notSaved();
+    }
   }
 
   handleOnChange() {
@@ -205,6 +212,8 @@ export default class FrameLabel extends React.Component {
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();
+
+    console.log(self.props.isPlaying, self.state.hasStarted);
 
     return (
       <div className={"label-info frame-label-info"}>
