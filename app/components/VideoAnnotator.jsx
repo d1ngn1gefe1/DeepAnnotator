@@ -41,7 +41,8 @@ export default class VideoAnnotator extends React.Component {
       currentItem: -1,
       isOpen: false,
       isPlaying: false,
-      isSaved: true
+      isSaved: true,
+      labelToBoxData: []
     };
 
     this.currentKey = 0;
@@ -52,7 +53,6 @@ export default class VideoAnnotator extends React.Component {
     this.handleSave = this.handleSave.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
-    this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
 
     this.selectOptions = [{
     	label: "Alcohol Rub",
@@ -176,7 +176,7 @@ export default class VideoAnnotator extends React.Component {
 
     self.player.on("timeupdate", function() {
       var currentLabels = [];
-      var currentFrame = self.handleGetCurrentFrame();
+      var currentFrame = Math.round(self.player.currentTime()*FPS);
 
       for (var i = 0; i < self.state.labelInfos.length; i++) {
         var option = self.refs["label"+i].getCurrentOption(currentFrame);
@@ -354,11 +354,6 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
-  handleGetCurrentFrame() {
-    var self = this;
-    return Math.round(self.player.currentTime()*FPS);
-  }
-
   handleNewFrameLabels() {
     console.log("new frame labels");
     var self = this;
@@ -467,11 +462,19 @@ export default class VideoAnnotator extends React.Component {
               self.state.labelInfos.map(function(labelInfo, index) {
                 if (labelInfo.isFrameLabel) {
                   return (
-                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)} saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                    <FrameLabel key={labelInfo.key} id={index}
+                      ref={"label"+index} currentFrame={self.state.currentFrame}
+                      closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
+                      saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
+                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
                   );
                 } else {
                   return (
-                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)} saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                    <ObjectLabel key={labelInfo.key} id={index}
+                      ref={"label"+index} currentFrame={self.state.currentFrame}
+                      closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
+                      saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
+                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
                   );
                 }
               })
@@ -512,9 +515,8 @@ export default class VideoAnnotator extends React.Component {
               {
                 self.state.labelInfos.map(function(labelInfo, index) {
                   if (!labelInfo.isFrameLabel) {
-                    console.log("Box here");
                     return (
-                      <Box key={labelInfo.key} />
+                      <Box key={labelInfo.key} currentFrame={self.state.currentFrame} labelToBoxDatum={self.refs["label"+index]?self.refs["label"+index].state:null}/>
                     );
                   }
                 })
@@ -560,8 +562,8 @@ export default class VideoAnnotator extends React.Component {
   }
 }
 
-AnnotatorNavigation.propTypes = {
-  description: React.PropTypes.string.isRequired
+VideoAnnotator.propTypes = {
+  description: React.PropTypes.string
 };
 
 VideoAnnotator.defaultProps = {

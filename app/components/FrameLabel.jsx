@@ -100,7 +100,7 @@ export default class FrameLabel extends React.Component {
       return;
     }
 
-    var currentFrame = self.props.getCurrentFrame();
+    var currentFrame = self.props.currentFrame;
     var labels = self.state.labels;
 
     if (self.state.hasStarted) {

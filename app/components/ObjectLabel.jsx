@@ -10,6 +10,9 @@ export default class ObjectLabel extends React.Component {
     super(props);
 
     this.state = {
+      /*
+        labels is a list of label = [startFrame, endFrame, option]
+      */
       labels: [],
       select: null
     };
@@ -52,7 +55,7 @@ export default class ObjectLabel extends React.Component {
   handleClick(option) {
     var self = this;
 
-    var currentFrame = self.props.getCurrentFrame();
+    var currentFrame = self.props.currentFrame;
     var labels = self.state.labels;
 
     if (labels.length == 0) {
