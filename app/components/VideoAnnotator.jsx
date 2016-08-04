@@ -36,6 +36,7 @@ export default class VideoAnnotator extends React.Component {
       serverData: [],
       initFrameLabels: [],
       initObjectLabels: [],
+      initBoxes: [],
       currentFrame: 0,
       numFrames: 0,
       currentItem: -1,
@@ -258,6 +259,7 @@ export default class VideoAnnotator extends React.Component {
       var labelInfos = Array();
       var frameLabel = Array();
       var objectLabel = Array();
+      var bboxes = Array();
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
       console.log("Src currentItem", currentItem);
 
@@ -268,8 +270,11 @@ export default class VideoAnnotator extends React.Component {
             JSON.parse(serverData[i].frameLabel)["label"]);
           objectLabel.push.apply(objectLabel,
             JSON.parse(serverData[i].objectLabel)["label"]);
+          bboxes.push.apply(bboxes,
+            JSON.parse(serverData[i].bboxes)["label"]);
           console.log("Frame label:", frameLabel);
           console.log("Object label:", objectLabel);
+          console.log("Bounding boxes:", bboxes);
 
           for (var j = 0; j < frameLabel.length; j++) {
             labelInfos.push({
@@ -292,6 +297,7 @@ export default class VideoAnnotator extends React.Component {
         labelInfos: labelInfos,
         initFrameLabels: frameLabel,
         initObjectLabels: objectLabel,
+        initBoxes: bboxes
       });
 
       self.initLabels();
@@ -301,6 +307,7 @@ export default class VideoAnnotator extends React.Component {
     var self = this;
     var initFrameLabels = self.state.initFrameLabels;
     var initObjectLabels = self.state.initObjectLabels;
+    var initBoxes = self.state.initBoxes;
 
     for (var i = 0; i < initFrameLabels.length; i++) {
       self.refs["label"+i].setData(initFrameLabels[i]);
@@ -311,7 +318,9 @@ export default class VideoAnnotator extends React.Component {
     for (var i = 0; i < initObjectLabels.length; i++) {
       var index = offset + i;
       self.refs["label"+index].setData(initObjectLabels[i]);
+      self.refs["box"+index].setData(initBoxes[i]);
       console.log("Object labels:", self.refs["label"+index]);
+      console.log("Bounding box:", self.refs["box"+index]);
     }
   }
 
@@ -390,10 +399,9 @@ export default class VideoAnnotator extends React.Component {
 
   handleSave() {
     var self = this;
-    var frameData = [];
-    var objectData = [];
-    var frameData;
-    var objectData;
+    var frameData = Array();
+    var objectData = Array();
+    var bboxData = Array();
 
     for (var i = 0; i < self.state.labelInfos.length; i++) {
       var labels = self.refs["label"+i].getData();
@@ -401,13 +409,16 @@ export default class VideoAnnotator extends React.Component {
       if (self.state.labelInfos[i]["isFrameLabel"]) {
         frameData.push(labels);
       } else {
+        var b = self.refs["box"+i].getData();
         objectData.push(labels);
+        bboxData.push(b);
       }
     }
 
     // Send data to server
     var frameLabel = {label: frameData};
     var objectLabel = {label: objectData};
+    var bboxes = {label: bboxData};
     fetch(this.props.urlLabel, {
       method: "post",
       headers: {
@@ -418,7 +429,9 @@ export default class VideoAnnotator extends React.Component {
         videoId: self.state.currentItem,
         playlistName: self.playlistName,
         frameLabel: JSON.stringify(frameLabel),
-        objectLabel: JSON.stringify(objectLabel),})
+        objectLabel: JSON.stringify(objectLabel),
+        bboxes: JSON.stringify(bboxes)
+      })
     })
       .then(response => response.text())
       .then(data => console.log(data))

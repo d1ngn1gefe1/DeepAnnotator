@@ -23,30 +23,25 @@ export default class Box extends React.Component {
 
   componentDidMount() {
     var self = this;
-
-    // console.log(self.refs.anchor1.getAbsoluteZIndex());
-    // console.log(self.refs.anchor2.getAbsoluteZIndex());
-    // console.log(self.refs.rect.getAbsoluteZIndex());
-    // console.log(self.refs.anchor1.getZIndex());
-    // console.log(self.refs.anchor2.getZIndex());
-    // console.log(self.refs.rect.getZIndex());
-    //
-    // self.refs.anchor1.setZIndex(1);
-    // self.refs.anchor2.setZIndex(1);
-    // self.refs.rect.setZIndex(0);
-    //
-    // console.log(self.refs.anchor1.getAbsoluteZIndex());
-    // console.log(self.refs.anchor2.getAbsoluteZIndex());
-    // console.log(self.refs.rect.getAbsoluteZIndex());
-    // console.log(self.refs.anchor1.getZIndex());
-    // console.log(self.refs.anchor2.getZIndex());
-    // console.log(self.refs.rect.getZIndex());
   }
 
   componentWillUpdate() {
     var self = this;
-
     self.bbox = self.getCurrentBbox();
+  }
+
+  getData() {
+    var self = this;
+    var data = {
+      bboxes: self.state.bboxes
+    }
+    return data;
+  }
+
+  setData(data) {
+    this.setState({
+      bboxes: data["bboxes"]
+    })
   }
 
   handleMouseEnterAnchor(id) {
