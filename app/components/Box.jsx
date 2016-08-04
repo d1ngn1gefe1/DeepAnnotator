@@ -1,5 +1,5 @@
 import React from "react";
-import {Group, Rect, Circle} from "react-konva";
+import {Group, Rect, Circle, Text} from "react-konva";
 
 export default class Box extends React.Component {
   constructor(props) {
@@ -10,12 +10,15 @@ export default class Box extends React.Component {
       /*
         bboxes is a list of bbox = [x1, y1, x2, x2, currentFrame]
       */
-      bboxes: [[50, 50, 100, 100, 0]],
+      bboxes: [[100, 100, 200, 200, 0]],
       strokeWidth1: 2,
       strokeWidth2: 2,
       strokeWidth3: 2,
       strokeWidth4: 2
     };
+
+    self.bbox = self.getCurrentBbox();
+    self.colors = ["#449d44", "#5bc0de", "#d9534f"];
   }
 
   componentDidMount() {
@@ -38,6 +41,12 @@ export default class Box extends React.Component {
     // console.log(self.refs.anchor1.getZIndex());
     // console.log(self.refs.anchor2.getZIndex());
     // console.log(self.refs.rect.getZIndex());
+  }
+
+  componentWillUpdate() {
+    var self = this;
+
+    self.bbox = self.getCurrentBbox();
   }
 
   handleMouseEnterAnchor(id) {
@@ -168,7 +177,8 @@ export default class Box extends React.Component {
     self.setState({
       bboxes: bboxes
     });
-    console.log(bboxes);
+    self.bbox = self.getCurrentBbox();
+    // console.log(bboxes);
   }
 
   handleDragMoveRect() {
@@ -201,7 +211,8 @@ export default class Box extends React.Component {
     self.setState({
       bboxes: bboxes
     });
-    console.log(bboxes);
+    self.bbox = self.getCurrentBbox();
+    // console.log(bboxes);
   }
 
   getCurrentBbox() {
@@ -234,17 +245,24 @@ export default class Box extends React.Component {
   render() {
     var self = this;
 
-    var bbox = self.getCurrentBbox();
-
     return (
       <Group>
+        <Text
+          text={"Object"+self.props.id}
+          x={Math.min(self.bbox[0], self.bbox[2])+10}
+          y={Math.min(self.bbox[1], self.bbox[3])}
+          fill={"#fff"}
+          fontSize={14}
+          fontFamily={"Lato"}
+        />
+
         <Rect
           ref="rect"
-          x={bbox[0]}
-          y={bbox[1]}
-          width={bbox[2]-bbox[0]}
-          height={bbox[3]-bbox[1]}
-          fill={"blue"}
+          x={self.bbox[0]}
+          y={self.bbox[1]}
+          width={self.bbox[2]-self.bbox[0]}
+          height={self.bbox[3]-self.bbox[1]}
+          fill={self.colors[self.props.currentOption]}
           opacity={0.2}
           shadowBlur={10}
           draggable={true}
@@ -253,7 +271,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor1"
-          x={bbox[0]} y={bbox[1]} radius={8} strokeWidth={self.state.strokeWidth1}
+          x={self.bbox[0]} y={self.bbox[1]} radius={8} strokeWidth={self.state.strokeWidth1}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 0)}
@@ -263,7 +281,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor2"
-          x={bbox[0]} y={bbox[3]} radius={8} strokeWidth={self.state.strokeWidth2}
+          x={self.bbox[0]} y={self.bbox[3]} radius={8} strokeWidth={self.state.strokeWidth2}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 1)}
@@ -273,7 +291,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor3"
-          x={bbox[2]} y={bbox[3]} radius={8} strokeWidth={self.state.strokeWidth3}
+          x={self.bbox[2]} y={self.bbox[3]} radius={8} strokeWidth={self.state.strokeWidth3}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 2)}
@@ -283,7 +301,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor4"
-          x={bbox[2]} y={bbox[1]} radius={8} strokeWidth={self.state.strokeWidth4}
+          x={self.bbox[2]} y={self.bbox[1]} radius={8} strokeWidth={self.state.strokeWidth4}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 3)}

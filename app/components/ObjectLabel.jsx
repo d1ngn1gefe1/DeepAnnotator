@@ -173,7 +173,6 @@ export default class ObjectLabel extends React.Component {
   }
 
   render() {
-    console.log("ObjectLabel render");
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();

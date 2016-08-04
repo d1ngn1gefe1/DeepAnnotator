@@ -94,8 +94,6 @@ export default class FrameLabel extends React.Component {
   handleClick(isStartButton) {
     var self = this;
 
-    console.log(self.state.hasStarted, self.props.isPlaying)
-
     if (self.state.hasStarted == isStartButton) {
       return;
     }
@@ -208,7 +206,6 @@ export default class FrameLabel extends React.Component {
   }
 
   render() {
-    console.log("FrameLabel render");
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();

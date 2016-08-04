@@ -174,6 +174,7 @@ export default class VideoAnnotator extends React.Component {
       });
     });
 
+    // TODO
     self.player.on("timeupdate", function() {
       var currentLabels = [];
       var currentFrame = Math.round(self.player.currentTime()*FPS);
@@ -438,8 +439,9 @@ export default class VideoAnnotator extends React.Component {
   }
 
   render() {
-    console.log("VideoAnnotator render");
     var self = this;
+    console.log("render");
+    var numFrameLabels = 0;
 
     return (
       <div className="container-fluid video-annotator">
@@ -482,32 +484,6 @@ export default class VideoAnnotator extends React.Component {
           </div>
 
           <div className="videojs-wrapper col-lg-6 col-md-6 col-sm-6">
-          {
-            self.state.currentLabels.map(function(currentLabel, index) {
-              var bg;
-
-              if (currentLabel.isFrameLabel) {
-                if (currentLabel.option == 0) {
-                  bg = " bg-gray";
-                } else if (currentLabel.option == 1) {
-                  bg = " bg-danger";
-                }
-              } else {
-                if (currentLabel.option == 0) {
-                  bg = " bg-success";
-                } else if (currentLabel.option == 1) {
-                  bg = " bg-info";
-                } else if (currentLabel.option == 2) {
-                  bg = " bg-danger";
-                }
-              }
-
-              return (
-                <div className={"small-label"+bg} key={index} style={{left: 76*index+"px"}}>{(currentLabel.isFrameLabel?"Frame":"Object")+currentLabel.id}</div>
-              );
-            })
-          }
-
             <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
 
             <Stage ref="stage" width={WIDTH*SCALING} height={HEIGHT*SCALING} className="canvas-wrapper">
@@ -516,13 +492,39 @@ export default class VideoAnnotator extends React.Component {
                 self.state.labelInfos.map(function(labelInfo, index) {
                   if (!labelInfo.isFrameLabel) {
                     return (
-                      <Box key={labelInfo.key} currentFrame={self.state.currentFrame} labelToBoxDatum={self.refs["label"+index]?self.refs["label"+index].state:null}/>
+                      <Box key={labelInfo.key} ref={"box"+index} id={index} currentFrame={self.state.currentFrame} currentOption={(self.state.currentLabels[index])?self.state.currentLabels[index].option:0}/>
                     );
                   }
                 })
               }
               </Layer>
             </Stage>
+
+            {
+              self.state.currentLabels.map(function(currentLabel, index) {
+                var bg;
+
+                if (currentLabel.isFrameLabel) {
+                  numFrameLabels++;
+                  if (currentLabel.option == 0) {
+                    bg = " bg-gray";
+                  } else if (currentLabel.option == 1) {
+                    bg = " bg-danger";
+                  }
+                  return (
+                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame"+currentLabel.id}</div>
+                  );
+                } else {
+                  if (currentLabel.option == 0) {
+                    bg = " bg-success";
+                  } else if (currentLabel.option == 1) {
+                    bg = " bg-info";
+                  } else if (currentLabel.option == 2) {
+                    bg = " bg-danger";
+                  }
+                }
+              })
+            }
 
             <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
