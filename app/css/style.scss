@@ -156,6 +156,10 @@
     height: $height*$scaling;
     min-width: $width*$scaling;
 
+    .vjs-big-play-button {
+      z-index: 10;
+    }
+
     .vjs-control-bar {
       top: $height*$scaling;
       display: flex;

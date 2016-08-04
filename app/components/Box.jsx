@@ -1,5 +1,5 @@
-import React from 'react';
-import {Group, Rect, Circle} from 'react-konva';
+import React from "react";
+import {Group, Rect, Circle} from "react-konva";
 
 export default class Box extends React.Component {
   constructor(props) {
@@ -18,9 +18,23 @@ export default class Box extends React.Component {
   componentDidMount() {
     var self = this;
 
-    self.refs.anchor1.setZIndex(10);
-    self.refs.anchor2.setZIndex(10);
-    self.refs.rect.setZIndex(-1);
+    // console.log(self.refs.anchor1.getAbsoluteZIndex());
+    // console.log(self.refs.anchor2.getAbsoluteZIndex());
+    // console.log(self.refs.rect.getAbsoluteZIndex());
+    // console.log(self.refs.anchor1.getZIndex());
+    // console.log(self.refs.anchor2.getZIndex());
+    // console.log(self.refs.rect.getZIndex());
+    //
+    // self.refs.anchor1.setZIndex(1);
+    // self.refs.anchor2.setZIndex(1);
+    // self.refs.rect.setZIndex(0);
+    //
+    // console.log(self.refs.anchor1.getAbsoluteZIndex());
+    // console.log(self.refs.anchor2.getAbsoluteZIndex());
+    // console.log(self.refs.rect.getAbsoluteZIndex());
+    // console.log(self.refs.anchor1.getZIndex());
+    // console.log(self.refs.anchor2.getZIndex());
+    // console.log(self.refs.rect.getZIndex());
   }
 
   handleMouseEnterAnchor(id) {
@@ -88,6 +102,7 @@ export default class Box extends React.Component {
 
   render() {
     var self = this;
+    
     return (
       <Group>
         <Circle

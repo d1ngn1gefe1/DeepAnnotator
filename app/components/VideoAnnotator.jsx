@@ -31,7 +31,7 @@ export default class VideoAnnotator extends React.Component {
     super(props, defaultProps);
 
     this.state = {
-      labelInfoList: [],
+      labelInfos: [],
       currentLabels: [],
       serverData: [],
       initFrameLabels: [],
@@ -139,7 +139,7 @@ export default class VideoAnnotator extends React.Component {
         });
       } else {
         self.setState({
-          labelInfoList: [],
+          labelInfos: [],
           currentLabels: [],
           currentFrame: 0,
           currentItem: currentItem,
@@ -179,12 +179,12 @@ export default class VideoAnnotator extends React.Component {
       var currentLabels = [];
       var currentFrame = self.handleGetCurrentFrame();
 
-      for (var i = 0; i < self.state.labelInfoList.length; i++) {
+      for (var i = 0; i < self.state.labelInfos.length; i++) {
         var option = self.refs["label"+i].getCurrentOption(currentFrame);
 
         currentLabels.push({
           id: i,
-          isFrameLabel: self.state.labelInfoList[i].isFrameLabel,
+          isFrameLabel: self.state.labelInfos[i].isFrameLabel,
           option: option // 0 - 1 for frame labels, 0 - 2 for object labels
         });
       }
@@ -258,7 +258,7 @@ export default class VideoAnnotator extends React.Component {
   initLabeledVideos() {
       var self = this;
       var serverData = self.state.serverData;
-      var labelInfoList = Array();
+      var labelInfos = Array();
       var frameLabel = Array();
       var objectLabel = Array();
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
@@ -275,24 +275,24 @@ export default class VideoAnnotator extends React.Component {
           console.log("Object label:", objectLabel);
 
           for (var j = 0; j < frameLabel.length; j++) {
-            labelInfoList.push({
+            labelInfos.push({
               isFrameLabel: true,
               key: self.currentKey++
             });
           }
 
           for (var k = 0; k < objectLabel.length; k++) {
-            labelInfoList.push({
+            labelInfos.push({
               isFrameLabel: false,
               key: self.currentKey++
             });
           }
-          console.log("labelInfoList:", labelInfoList);
+          console.log("labelInfos:", labelInfos);
         }
       }
 
       self.setState({
-        labelInfoList: labelInfoList,
+        labelInfos: labelInfos,
         initFrameLabels: frameLabel,
         initObjectLabels: objectLabel,
       });
@@ -348,12 +348,12 @@ export default class VideoAnnotator extends React.Component {
   handleCloseLabel(id) {
     console.log("close", id);
     var self = this;
-    var labelInfoList = self.state.labelInfoList;
+    var labelInfos = self.state.labelInfos;
 
-    labelInfoList.splice(id, 1);
+    labelInfos.splice(id, 1);
 
     self.setState({
-      labelInfoList: labelInfoList,
+      labelInfos: labelInfos,
       isSaved: false
     });
   }
@@ -366,32 +366,32 @@ export default class VideoAnnotator extends React.Component {
   handleNewFrameLabels() {
     console.log("new frame labels");
     var self = this;
-    var labelInfoList = self.state.labelInfoList;
+    var labelInfos = self.state.labelInfos;
 
-    labelInfoList.push({
+    labelInfos.push({
       isFrameLabel: true,
       key: self.currentKey
     });
     self.currentKey += 1;
 
     self.setState({
-      labelInfoList: labelInfoList
+      labelInfos: labelInfos
     });
   }
 
   handleNewObjectLabels() {
     console.log("new object labels");
     var self = this;
-    var labelInfoList = self.state.labelInfoList;
+    var labelInfos = self.state.labelInfos;
 
-    labelInfoList.push({
+    labelInfos.push({
       isFrameLabel: false,
       key: self.currentKey
     });
     self.currentKey += 1;
 
     self.setState({
-      labelInfoList: labelInfoList,
+      labelInfos: labelInfos,
       isSaved: false
     });
   }
@@ -403,10 +403,10 @@ export default class VideoAnnotator extends React.Component {
     var frameData;
     var objectData;
 
-    for (var i = 0; i < self.state.labelInfoList.length; i++) {
+    for (var i = 0; i < self.state.labelInfos.length; i++) {
       var labels = self.refs["label"+i].getData();
       console.log("Save data:", labels);
-      if (self.state.labelInfoList[i]["isFrameLabel"]) {
+      if (self.state.labelInfos[i]["isFrameLabel"]) {
         frameData.push(labels);
       } else {
         objectData.push(labels);
@@ -468,7 +468,7 @@ export default class VideoAnnotator extends React.Component {
               </button>
             </div>
             {
-              self.state.labelInfoList.map(function(labelInfo, index) {
+              self.state.labelInfos.map(function(labelInfo, index) {
                 if (labelInfo.isFrameLabel) {
                   return (
                     <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
@@ -512,17 +512,17 @@ export default class VideoAnnotator extends React.Component {
             <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
 
             <Stage ref="stage" width={WIDTH*SCALING} height={HEIGHT*SCALING} className="canvas-wrapper">
-              <Layer ref="layer">
-                {
-                  self.state.labelInfoList.map(function(labelInfo, index) {
-                    if (!labelInfo.isFrameLabel) {
-                      console.log("Box here");
-                      return (
-                        <Box key={labelInfo.key} />
-                      );
-                    }
-                  })
-                }
+              <Layer ref="layer" id="layer">
+              {
+                self.state.labelInfos.map(function(labelInfo, index) {
+                  if (!labelInfo.isFrameLabel) {
+                    console.log("Box here");
+                    return (
+                      <Box key={labelInfo.key} />
+                    );
+                  }
+                })
+              }
               </Layer>
             </Stage>
 
