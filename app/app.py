@@ -38,8 +38,8 @@ def get_video_info():
     videos = s.query(Video).all()
 
     data = [ {'videoId': video.video_id, 'playlistName': video.playlist_name,
-             'frameLabel': video.frame_label, 'objectLabel': video.object_label}
-              for video in videos ]
+             'frameLabel': video.frame_label, 'objectLabel': video.object_label,
+             'bboxes': video.bboxes} for video in videos ]
     return json.dumps({'data': data})
 
 
@@ -54,14 +54,16 @@ def save_label():
     playlist_name = request.json['playlistName']
     frame_label = request.json['frameLabel']
     object_label = request.json['objectLabel']
+    bboxes = request.json['bboxes']
 
     if s.query(Video).get((video_id, playlist_name)) is None:
-        s.add(Video(video_id, playlist_name, frame_label, object_label))
+        s.add(Video(video_id, playlist_name, frame_label, object_label, bboxes))
     else:
         video = s.query(Video).filter_by(
         video_id=video_id).filter_by(
         playlist_name=playlist_name).update(
-            dict(frame_label=frame_label, object_label=object_label))
+            dict(frame_label=frame_label, object_label=object_label,
+                 bboxes=bboxes))
     s.commit()
 
     return json.dumps({'video_id': video_id, 'playlist_name': playlist_name,
