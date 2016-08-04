@@ -46,6 +46,7 @@ export default class ObjectLabel extends React.Component {
       labels: data["labels"],
       select: data["select"]
     });
+    this.props.saved();
   }
 
   handleClick(option) {
@@ -159,11 +160,13 @@ export default class ObjectLabel extends React.Component {
   }
 
   handleSelect(select) {
+    var self = this;
     console.log("selected value", select);
 
-    this.setState({
+    self.setState({
       select: select
     });
+    self.props.notSaved();
   }
 
   render() {

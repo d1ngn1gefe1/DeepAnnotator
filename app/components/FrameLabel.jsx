@@ -45,8 +45,10 @@ export default class FrameLabel extends React.Component {
   setData(data) {
     this.setState({
       labels: data["labels"],
-      select: data["select"]
+      select: data["select"],
+      hasStarted: false
     });
+    this.props.saved();
   }
 
   mergeIntervals(intervals) {
@@ -89,8 +91,11 @@ export default class FrameLabel extends React.Component {
     return stack;
   }
 
-  handleClick(isStartButton, init=false) {
+  handleClick(isStartButton) {
     var self = this;
+
+    console.log(self.state.hasStarted, self.props.isPlaying)
+
     if (self.state.hasStarted == isStartButton) {
       return;
     }
@@ -126,18 +131,11 @@ export default class FrameLabel extends React.Component {
       }
     }
 
-
-    if (init) {
-      self.setState({
-        labels: labels
-      });
-    } else {
-      self.setState({
-        labels: labels,
-        hasStarted: !self.state.hasStarted
-      });
-      self.props.notSaved();
-    }
+    self.setState({
+      labels: labels,
+      hasStarted: !self.state.hasStarted
+    });
+    self.props.notSaved();
   }
 
   handleOnChange() {
@@ -200,11 +198,13 @@ export default class FrameLabel extends React.Component {
   }
 
   handleSelect(select) {
+    var self = this;
     console.log("selected value", select);
 
-    this.setState({
+    self.setState({
       select: select
     });
+    self.props.notSaved();
   }
 
   render() {
@@ -212,8 +212,6 @@ export default class FrameLabel extends React.Component {
     var self = this;
     var handles = self.getHandles();
     var intervals = self.getIntervals();
-
-    console.log(self.props.isPlaying, self.state.hasStarted);
 
     return (
       <div className={"label-info frame-label-info"}>

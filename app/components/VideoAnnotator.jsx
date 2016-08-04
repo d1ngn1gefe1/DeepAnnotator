@@ -50,7 +50,6 @@ export default class VideoAnnotator extends React.Component {
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
     this.handleCloseLabel = this.handleCloseLabel.bind(this);
     this.handleSave = this.handleSave.bind(this);
-    this.handleNotSaved = this.handleNotSaved.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
     this.handleGetCurrentFrame = this.handleGetCurrentFrame.bind(this);
@@ -434,12 +433,12 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
-  handleNotSaved() {
-    console.log("handleNotSaved");
+  handleIsSaved(isSaved) {
+    console.log("handleIsSaved");
     var self = this;
 
     self.setState({
-      isSaved: false
+      isSaved: isSaved
     });
   }
 
@@ -468,11 +467,11 @@ export default class VideoAnnotator extends React.Component {
               self.state.labelInfos.map(function(labelInfo, index) {
                 if (labelInfo.isFrameLabel) {
                   return (
-                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                    <FrameLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)} saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
                   );
                 } else {
                   return (
-                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleNotSaved} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                    <ObjectLabel key={labelInfo.key} id={index} ref={"label"+index} getCurrentFrame={self.handleGetCurrentFrame} closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)} saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames} isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
                   );
                 }
               })
