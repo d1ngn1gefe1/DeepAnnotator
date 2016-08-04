@@ -24,12 +24,12 @@ export default class ObjectLabel extends React.Component {
     this.handleClick(0);
   }
 
-  getCurrentOption(currentFrame) {
+  getCurrentOption() {
     var self = this;
 
     for (var i = 0; i < self.state.labels.length; i++) {
       var label = self.state.labels[i];
-      if (currentFrame >= label[0] && currentFrame < label[1]) {
+      if (self.props.currentFrame >= label[0] && self.props.currentFrame < label[1]) {
         return label[2];
       }
     }
