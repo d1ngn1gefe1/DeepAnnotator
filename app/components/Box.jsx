@@ -11,7 +11,9 @@ export default class Box extends React.Component {
       x2: 100,
       y2: 100,
       strokeWidth1: 2,
-      strokeWidth2: 2
+      strokeWidth2: 2,
+      strokeWidth3: 2,
+      strokeWidth4: 2
     };
   }
 
@@ -49,6 +51,14 @@ export default class Box extends React.Component {
       self.setState({
         strokeWidth2: 4
       });
+    } else if (id == 2) {
+      self.setState({
+        strokeWidth3: 4
+      });
+    } else if (id == 3) {
+      self.setState({
+        strokeWidth4: 4
+      });
     }
   }
 
@@ -58,7 +68,9 @@ export default class Box extends React.Component {
 
     self.setState({
       strokeWidth1: 2,
-      strokeWidth2: 2
+      strokeWidth2: 2,
+      strokeWidth3: 2,
+      strokeWidth4: 2
     });
   }
 
@@ -74,11 +86,25 @@ export default class Box extends React.Component {
         y1: y1
       });
     } else if (id == 1) {
-      var x2 = self.refs.anchor2.getAttr("x");
+      var x1 = self.refs.anchor2.getAttr("x");
       var y2 = self.refs.anchor2.getAttr("y");
+      self.setState({
+        x1: x1,
+        y2: y2
+      });
+    } else if (id == 2) {
+      var x2 = self.refs.anchor3.getAttr("x");
+      var y2 = self.refs.anchor3.getAttr("y");
       self.setState({
         x2: x2,
         y2: y2
+      });
+    } else if (id == 3) {
+      var x2 = self.refs.anchor4.getAttr("x");
+      var y1 = self.refs.anchor4.getAttr("y");
+      self.setState({
+        x2: x2,
+        y1: y1
       });
     }
   }
@@ -102,9 +128,22 @@ export default class Box extends React.Component {
 
   render() {
     var self = this;
-    
+
     return (
       <Group>
+        <Rect
+          ref="rect"
+          x={self.state.x1}
+          y={self.state.y1}
+          width={self.state.x2-self.state.x1}
+          height={self.state.y2-self.state.y1}
+          fill={"blue"}
+          opacity={0.2}
+          shadowBlur={10}
+          draggable={true}
+          onDragMove={this.handleDragMoveRect.bind(self)}
+        />
+
         <Circle
           ref="anchor1"
           x={self.state.x1} y={self.state.y1} radius={8} strokeWidth={self.state.strokeWidth1}
@@ -117,7 +156,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor2"
-          x={self.state.x2} y={self.state.y2} radius={8} strokeWidth={self.state.strokeWidth2}
+          x={self.state.x1} y={self.state.y2} radius={8} strokeWidth={self.state.strokeWidth2}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 1)}
@@ -125,17 +164,24 @@ export default class Box extends React.Component {
           onDragMove={this.handleDragMoveAnchor.bind(self, 1)}
         />
 
-        <Rect
-          ref="rect"
-          x={self.state.x1}
-          y={self.state.y1}
-          width={self.state.x2-self.state.x1}
-          height={self.state.y2-self.state.y1}
-          fill={"blue"}
-          opacity={0.2}
-          shadowBlur={10}
+        <Circle
+          ref="anchor3"
+          x={self.state.x2} y={self.state.y2} radius={8} strokeWidth={self.state.strokeWidth3}
+          fill="#ddd" stroke="#666"
           draggable={true}
-          onDragMove={this.handleDragMoveRect.bind(self)}
+          onMouseEnter={this.handleMouseEnterAnchor.bind(self, 2)}
+          onMouseLeave={this.handleMouseLeaveAnchor.bind(self, 2)}
+          onDragMove={this.handleDragMoveAnchor.bind(self, 2)}
+        />
+
+        <Circle
+          ref="anchor4"
+          x={self.state.x2} y={self.state.y1} radius={8} strokeWidth={self.state.strokeWidth4}
+          fill="#ddd" stroke="#666"
+          draggable={true}
+          onMouseEnter={this.handleMouseEnterAnchor.bind(self, 3)}
+          onMouseLeave={this.handleMouseLeaveAnchor.bind(self, 3)}
+          onDragMove={this.handleDragMoveAnchor.bind(self, 3)}
         />
       </Group>
     );
