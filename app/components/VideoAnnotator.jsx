@@ -108,6 +108,7 @@ export default class VideoAnnotator extends React.Component {
       control: true,
       preload: "auto",
       autoplay: false,
+      muted: true,
       plugins: {
         framebyframe: {
           fps: 5,
@@ -510,22 +511,23 @@ export default class VideoAnnotator extends React.Component {
                 var bg;
 
                 if (currentLabel.isFrameLabel) {
-                  numFrameLabels++;
                   if (currentLabel.option == 0) {
+                    numFrameLabels++;
                     bg = " bg-gray";
                   } else if (currentLabel.option == 1) {
+                    numFrameLabels++;
                     bg = " bg-danger";
                   }
                   return (
-                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame"+index}</div>
+                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame Label"+index}</div>
                   );
                 } else {
-                  if (currentLabel.option == 0) {
-                    bg = " bg-success";
-                  } else if (currentLabel.option == 1) {
+                  if (currentLabel.option == 1) {
+                    numFrameLabels++;
                     bg = " bg-info";
-                  } else if (currentLabel.option == 2) {
-                    bg = " bg-danger";
+                    return (
+                      <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Object Label "+index}</div>
+                    );
                   }
                 }
               })

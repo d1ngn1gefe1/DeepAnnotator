@@ -59,7 +59,8 @@ export default class ObjectLabel extends React.Component {
     var labels = self.state.labels;
 
     if (labels.length == 0) {
-      labels.push([0, self.props.numFrames-1, option])
+      labels.push([0, self.props.currentFrame-1, 1])
+      labels.push([self.props.currentFrame, self.props.numFrames-1, option])
     } else {
       for (var i = 0; i < labels.length; i++) {
         if (labels[i][0] == currentFrame) { // same frame, update option

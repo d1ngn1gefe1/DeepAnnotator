@@ -313,6 +313,12 @@ export default class Box extends React.Component {
     var self = this;
     console.log(self.props.currentOption);
 
+    if (self.props.currentOption == 1) { // out of frame
+      return (
+        <Group></Group>
+      );
+    }
+
     return (
       <Group>
         <Rect
@@ -329,7 +335,7 @@ export default class Box extends React.Component {
         />
 
         <Text
-          text={"Object"+self.props.id}
+          text={"Object Label "+self.props.id}
           x={Math.min(self.bbox[0], self.bbox[2])+10}
           y={Math.min(self.bbox[1], self.bbox[3])+10}
           fill={"#fff"}
