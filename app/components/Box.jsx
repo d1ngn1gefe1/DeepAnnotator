@@ -1,6 +1,11 @@
 import React from "react";
 import {Group, Rect, Circle, Text} from "react-konva";
 
+// don't change these!
+var HEIGHT = 240;
+var WIDTH = 320;
+var SCALING = 2;
+
 export default class Box extends React.Component {
   constructor(props) {
     super(props);
@@ -79,6 +84,24 @@ export default class Box extends React.Component {
     });
   }
 
+  fixAnchor(x1, y1, x2, y2) {
+    x1 = Math.min(Math.max(x1, 0), WIDTH*SCALING);
+    y1 = Math.min(Math.max(y1, 0), HEIGHT*SCALING);
+    x2 = Math.min(Math.max(x2, 0), WIDTH*SCALING);
+    y2 = Math.min(Math.max(y2, 0), HEIGHT*SCALING);
+
+    return [x1, y1, x2, y2];
+  }
+
+  fixRect(x1, y1, x2, y2) {
+    x1 = Math.min(Math.max(x1, 0), WIDTH*SCALING);
+    y1 = Math.min(Math.max(y1, 0), HEIGHT*SCALING);
+    x2 = Math.min(Math.max(x2, 0), WIDTH*SCALING);
+    y2 = Math.min(Math.max(y2, 0), HEIGHT*SCALING);
+
+    return [x1, y1, x2, y2];
+  }
+
   handleDragMoveAnchor(id) {
     var self = this;
     console.log("drag move anchor");
@@ -111,6 +134,11 @@ export default class Box extends React.Component {
           y2 = bboxes[i][3];
         }
 
+        var coor = self.fixAnchor(x1, y1, x2, y2);
+        x1 = coor[0];
+        y1 = coor[1];
+        x2 = coor[2];
+        y2 = coor[3];
         bboxes[i][0] = x1;
         bboxes[i][1] = y1;
         bboxes[i][2] = x2;
@@ -139,6 +167,11 @@ export default class Box extends React.Component {
           y2 = bboxes[i][3];
         }
 
+        var coor = self.fixAnchor(x1, y1, x2, y2);
+        x1 = coor[0];
+        y1 = coor[1];
+        x2 = coor[2];
+        y2 = coor[3];
         bboxes.splice(i, 0, [x1, y1, x2, y2, self.props.currentFrame]);
         break;
       } else if (i == bboxes.length-1) {
@@ -164,6 +197,11 @@ export default class Box extends React.Component {
           y2 = bboxes[i][3];
         }
 
+        var coor = self.fixAnchor(x1, y1, x2, y2);
+        x1 = coor[0];
+        y1 = coor[1];
+        x2 = coor[2];
+        y2 = coor[3];
         bboxes.push([x1, y1, x2, y2, self.props.currentFrame]);
         break;
       }
@@ -182,23 +220,29 @@ export default class Box extends React.Component {
 
     var bboxes = self.state.bboxes;
 
-    var x = self.refs.rect.getAttr("x");
-    var y = self.refs.rect.getAttr("y");
-    var width = self.refs.rect.getAttr("width");
-    var height = self.refs.rect.getAttr("height");
+    var x1 = self.refs.rect.getAttr("x");
+    var y1 = self.refs.rect.getAttr("y");
+    var x2 = x1+self.refs.rect.getAttr("width");
+    var y2 = y1+self.refs.rect.getAttr("height");
+
+    var coor = self.fixRect(x1, y1, x2, y2);
+    x1 = coor[0];
+    y1 = coor[1];
+    x2 = coor[2];
+    y2 = coor[3];
 
     for (var i = 0; i < bboxes.length; i++) {
       if (bboxes[i][4] == self.props.currentFrame) {
-        bboxes[i][0] = x;
-        bboxes[i][1] = y;
-        bboxes[i][2] = x+width;
-        bboxes[i][3] = y+height;
+        bboxes[i][0] = x1;
+        bboxes[i][1] = y1;
+        bboxes[i][2] = x2;
+        bboxes[i][3] = y2;
         break;
       } else if (bboxes[i][4] > self.props.currentFrame) {
-        bboxes.splice(i, 0, [x, y, x+width, y+height, self.props.currentFrame]);
+        bboxes.splice(i, 0, [x1, y1, x2, y2, self.props.currentFrame]);
         break;
       } else if (i == bboxes.length-1) {
-        bboxes.push([x, y, x+width, y+height, self.props.currentFrame]);
+        bboxes.push([x1, y1, x2, y2, self.props.currentFrame]);
         break;
       }
     }
@@ -258,7 +302,7 @@ export default class Box extends React.Component {
         <Text
           text={"Object"+self.props.id}
           x={Math.min(self.bbox[0], self.bbox[2])+10}
-          y={Math.min(self.bbox[1], self.bbox[3]+10)}
+          y={Math.min(self.bbox[1], self.bbox[3])+10}
           fill={"#fff"}
           fontSize={14}
           fontFamily={"Lato"}
@@ -266,7 +310,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor1"
-          x={self.bbox[0]} y={self.bbox[1]} radius={5} strokeWidth={self.state.strokeWidth1}
+          x={self.bbox[0]} y={self.bbox[1]} radius={6} strokeWidth={self.state.strokeWidth1}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 0)}
@@ -276,7 +320,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor2"
-          x={self.bbox[0]} y={self.bbox[3]} radius={5} strokeWidth={self.state.strokeWidth2}
+          x={self.bbox[0]} y={self.bbox[3]} radius={6} strokeWidth={self.state.strokeWidth2}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 1)}
@@ -286,7 +330,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor3"
-          x={self.bbox[2]} y={self.bbox[3]} radius={5} strokeWidth={self.state.strokeWidth3}
+          x={self.bbox[2]} y={self.bbox[3]} radius={6} strokeWidth={self.state.strokeWidth3}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 2)}
@@ -296,7 +340,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor4"
-          x={self.bbox[2]} y={self.bbox[1]} radius={5} strokeWidth={self.state.strokeWidth4}
+          x={self.bbox[2]} y={self.bbox[1]} radius={6} strokeWidth={self.state.strokeWidth4}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 3)}
