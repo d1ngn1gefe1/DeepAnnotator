@@ -229,7 +229,9 @@ export default class VideoAnnotator extends React.Component {
       console.log("Current playlist:", playlist);
 
       for (var i = 0; i < serverData.length; i++) {
-        if (self.playlistName == serverData[i].playlistName) {
+        if (self.playlistName == serverData[i].playlistName &&
+            serverData[i].videoId >= self.start &&
+            serverData[i].videoId < self.end) {
           var frameLabel = JSON.parse(serverData[i].frameLabel)["label"];
           var objectLabel = JSON.parse(serverData[i].objectLabel)["label"];
           var count = 0;
@@ -321,7 +323,8 @@ export default class VideoAnnotator extends React.Component {
     self.setState({
       isOpen: false
     });
-    self.player.playlist.currentItem(self.state.currentItem);
+    // Need to subtract self.start to get correct index in playlist
+    self.player.playlist.currentItem(self.state.currentItem - self.start);
   }
 
   handleOK() {
