@@ -94,12 +94,40 @@ export default class Box extends React.Component {
   }
 
   fixRect(x1, y1, x2, y2) {
-    x1 = Math.min(Math.max(x1, 0), WIDTH*SCALING);
-    y1 = Math.min(Math.max(y1, 0), HEIGHT*SCALING);
-    x2 = Math.min(Math.max(x2, 0), WIDTH*SCALING);
-    y2 = Math.min(Math.max(y2, 0), HEIGHT*SCALING);
+    var self = this;
 
-    return [x1, y1, x2, y2];
+    var x = [x1, x2];
+    var y = [y1, y2];
+    self.adjustCoord(x, Math.abs(x1-x2), WIDTH*SCALING, false);
+    self.adjustCoord(x, Math.abs(x1-x2), WIDTH*SCALING, true);
+    self.adjustCoord(y, Math.abs(y1-y2), HEIGHT*SCALING, false);
+    self.adjustCoord(y, Math.abs(y1-y2), HEIGHT*SCALING, true);
+
+    return [x[0], y[0], x[1], y[1]];
+  }
+
+  adjustCoord(c, dist, max, reverse) {
+    if (reverse) {
+      var c1 = c[1];
+      var c2 = c[0];
+    } else {
+      var c1 = c[0];
+      var c2 = c[1];
+    }
+    if (c1 < 0) {
+      c1 = 0;
+      c2 = dist;
+    } else if (c1 > max) {
+      c1 = max;
+      c2 = max - dist;
+    }
+    if (reverse) {
+      c[1] = c1;
+      c[0] = c2;
+    } else {
+      c[0] = c1;
+      c[1] = c2;
+    }
   }
 
   handleDragMoveAnchor(id) {
