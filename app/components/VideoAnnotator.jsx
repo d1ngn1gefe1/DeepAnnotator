@@ -184,6 +184,9 @@ export default class VideoAnnotator extends React.Component {
     var self = this;
 
     for (var i = 0; i < self.state.labelInfos.length; i++) {
+      if (!self.refs["label"+i]) {
+        continue;
+      }
       var option = self.refs["label"+i].getCurrentOption();
 
       self.currentLabels[i] = {
