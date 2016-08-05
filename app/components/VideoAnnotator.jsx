@@ -200,13 +200,20 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
-  drawObjects() {
-    var stage = this.refs.stage.getStage();
-    var layer = this.refs.layer;
-    stage.add(layer);
+  componentWillUpdate() {
+    var self = this;
 
-    var layerDom = document.getElementById("layer");
-    console.log("Layer:", layerDom);
+    for (var i = 0; i < self.state.labelInfos.length; i++) {
+      if (!self.refs["label"+i]) {
+        continue;
+      }
+      var option = self.refs["label"+i].getCurrentOption();
+
+      self.currentLabels[i] = {
+        isFrameLabel: self.state.labelInfos[i].isFrameLabel,
+        option: option // 0 - 1 for frame labels, 0 - 2 for object labels
+      };
+    }
   }
 
   getVideoInfo() {
