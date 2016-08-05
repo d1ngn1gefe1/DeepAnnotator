@@ -23,7 +23,7 @@ export default class Box extends React.Component {
     };
 
     self.bbox = self.getCurrentBbox();
-    self.colors = ["#449d44", "#5bc0de", "#d9534f"];
+    self.colors = ["#777777", "#449d44", "#5bc0de", "#d9534f"];
   }
 
   componentDidMount() {
@@ -311,6 +311,7 @@ export default class Box extends React.Component {
 
   render() {
     var self = this;
+    console.log(self.props.currentOption);
 
     return (
       <Group>
@@ -320,7 +321,7 @@ export default class Box extends React.Component {
           y={self.bbox[1]}
           width={self.bbox[2]-self.bbox[0]}
           height={self.bbox[3]-self.bbox[1]}
-          fill={self.colors[self.props.currentOption]}
+          fill={self.colors[self.props.currentOption+1]}
           opacity={0.2}
           shadowBlur={10}
           draggable={true}
