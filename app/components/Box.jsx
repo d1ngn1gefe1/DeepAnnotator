@@ -242,15 +242,6 @@ export default class Box extends React.Component {
 
     return (
       <Group>
-        <Text
-          text={"Object"+self.props.id}
-          x={Math.min(self.bbox[0], self.bbox[2])+10}
-          y={Math.min(self.bbox[1], self.bbox[3])}
-          fill={"#fff"}
-          fontSize={14}
-          fontFamily={"Lato"}
-        />
-
         <Rect
           ref="rect"
           x={self.bbox[0]}
@@ -264,9 +255,18 @@ export default class Box extends React.Component {
           onDragMove={this.handleDragMoveRect.bind(self)}
         />
 
+        <Text
+          text={"Object"+self.props.id}
+          x={Math.min(self.bbox[0], self.bbox[2])+10}
+          y={Math.min(self.bbox[1], self.bbox[3]+10)}
+          fill={"#fff"}
+          fontSize={14}
+          fontFamily={"Lato"}
+        />
+
         <Circle
           ref="anchor1"
-          x={self.bbox[0]} y={self.bbox[1]} radius={8} strokeWidth={self.state.strokeWidth1}
+          x={self.bbox[0]} y={self.bbox[1]} radius={5} strokeWidth={self.state.strokeWidth1}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 0)}
@@ -276,7 +276,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor2"
-          x={self.bbox[0]} y={self.bbox[3]} radius={8} strokeWidth={self.state.strokeWidth2}
+          x={self.bbox[0]} y={self.bbox[3]} radius={5} strokeWidth={self.state.strokeWidth2}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 1)}
@@ -286,7 +286,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor3"
-          x={self.bbox[2]} y={self.bbox[3]} radius={8} strokeWidth={self.state.strokeWidth3}
+          x={self.bbox[2]} y={self.bbox[3]} radius={5} strokeWidth={self.state.strokeWidth3}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 2)}
@@ -296,7 +296,7 @@ export default class Box extends React.Component {
 
         <Circle
           ref="anchor4"
-          x={self.bbox[2]} y={self.bbox[1]} radius={8} strokeWidth={self.state.strokeWidth4}
+          x={self.bbox[2]} y={self.bbox[1]} radius={5} strokeWidth={self.state.strokeWidth4}
           fill="#ddd" stroke="#666"
           draggable={true}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 3)}

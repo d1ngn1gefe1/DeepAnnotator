@@ -163,6 +163,7 @@
     .vjs-control-bar {
       top: $height*$scaling;
       display: flex;
+      opacity: 1 !important;
       background-color: $gray-even-darker;
     }
 
