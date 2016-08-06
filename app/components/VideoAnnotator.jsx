@@ -451,7 +451,7 @@ export default class VideoAnnotator extends React.Component {
 
     return (
       <div className="container-fluid video-annotator">
-        <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)}/>
+        <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)} />
 
         <section className="main-preview-player row row-eq-height clearfix">
           <div className="control-panel col-lg-4 col-md-4 col-sm-4">
@@ -482,7 +482,8 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
+                    />
                   );
                 }
               })
@@ -498,7 +499,11 @@ export default class VideoAnnotator extends React.Component {
                 self.state.labelInfos.map(function(labelInfo, index) {
                   if (!labelInfo.isFrameLabel) {
                     return (
-                      <Box key={labelInfo.key} ref={"box"+index} id={index} currentFrame={self.state.currentFrame} currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}/>
+                      <Box key={labelInfo.key} ref={"box"+index} id={index}
+                        notSaved={self.handleIsSaved.bind(self, false)}
+                        currentFrame={self.state.currentFrame}
+                        currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}
+                      />
                     );
                   }
                 })
@@ -519,14 +524,14 @@ export default class VideoAnnotator extends React.Component {
                     bg = " bg-danger";
                   }
                   return (
-                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame Label"+index}</div>
+                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame "+index}</div>
                   );
                 } else {
                   if (currentLabel.option == 1) {
                     numFrameLabels++;
                     bg = " bg-info";
                     return (
-                      <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Object Label "+index}</div>
+                      <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Object "+index}</div>
                     );
                   }
                 }
