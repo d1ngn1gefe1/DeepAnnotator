@@ -109,7 +109,6 @@ export default class VideoAnnotator extends React.Component {
       control: true,
       preload: "auto",
       autoplay: false,
-      muted: true,
       plugins: {
         framebyframe: {
           fps: 5,
@@ -150,7 +149,6 @@ export default class VideoAnnotator extends React.Component {
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
         self.getVideoInfo();
-        self.drawObjects();
       }
     });
 
@@ -180,6 +178,10 @@ export default class VideoAnnotator extends React.Component {
         currentFrame: currentFrame
       });
     });
+
+    window.onbeforeunload = function(e) {
+      console.log("Leaving!!!!!!");
+    }
   }
 
   componentWillUpdate() {
@@ -196,15 +198,6 @@ export default class VideoAnnotator extends React.Component {
         option: option // 0 - 1 for frame labels, 0 - 2 for object labels
       };
     }
-  }
-
-  drawObjects() {
-    var stage = this.refs.stage.getStage();
-    var layer = this.refs.layer;
-    stage.add(layer);
-
-    var layerDom = document.getElementById("layer");
-    console.log("Layer:", layerDom);
   }
 
   getVideoInfo() {
@@ -245,12 +238,15 @@ export default class VideoAnnotator extends React.Component {
           } else if (count == 2) {
             tag = "glyphicon glyphicon-ok";
           }
-
+          console.log("Mark video", serverData[i].videoId);
+          console.log("Count:", count);
           var index = serverData[i].videoId;
           if (playlist.childNodes[index].childNodes.length <= 2) {
             var span = document.createElement("span");
             span.setAttribute("class", tag);
             playlist.childNodes[index].appendChild(span);
+          } else {
+            playlist.childNodes[index].childNodes[2].setAttribute("class", tag);
           }
         }
       }
@@ -439,8 +435,9 @@ export default class VideoAnnotator extends React.Component {
         objectLabel: JSON.stringify(objectLabel),
         bboxes: JSON.stringify(bboxes)
       })
-    })
-      .then(response => response.text())
+    }).then(function(response) {
+        self.getVideoInfo();
+        return response.text(); })
       .then(data => console.log(data))
       .catch(err => console.error(this.props.url, err.toString()));
 
@@ -464,7 +461,7 @@ export default class VideoAnnotator extends React.Component {
 
     return (
       <div className="container-fluid video-annotator">
-        <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)} />
+        <AnnotatorNavigation description={self.playlistName+", "+self.start+" - "+(self.end-1)}/>
 
         <section className="main-preview-player row row-eq-height clearfix">
           <div className="control-panel col-lg-4 col-md-4 col-sm-4">
@@ -495,8 +492,7 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
-                    />
+                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
                   );
                 }
               })
@@ -512,11 +508,7 @@ export default class VideoAnnotator extends React.Component {
                 self.state.labelInfos.map(function(labelInfo, index) {
                   if (!labelInfo.isFrameLabel) {
                     return (
-                      <Box key={labelInfo.key} ref={"box"+index} id={index}
-                        notSaved={self.handleIsSaved.bind(self, false)}
-                        currentFrame={self.state.currentFrame}
-                        currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}
-                      />
+                      <Box key={labelInfo.key} ref={"box"+index} id={index} currentFrame={self.state.currentFrame} currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}/>
                     );
                   }
                 })
@@ -529,23 +521,22 @@ export default class VideoAnnotator extends React.Component {
                 var bg;
 
                 if (currentLabel.isFrameLabel) {
+                  numFrameLabels++;
                   if (currentLabel.option == 0) {
-                    numFrameLabels++;
                     bg = " bg-gray";
                   } else if (currentLabel.option == 1) {
-                    numFrameLabels++;
                     bg = " bg-danger";
                   }
                   return (
-                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame "+index}</div>
+                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame"+index}</div>
                   );
                 } else {
-                  if (currentLabel.option == 1) {
-                    numFrameLabels++;
+                  if (currentLabel.option == 0) {
+                    bg = " bg-success";
+                  } else if (currentLabel.option == 1) {
                     bg = " bg-info";
-                    return (
-                      <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Object "+index}</div>
-                    );
+                  } else if (currentLabel.option == 2) {
+                    bg = " bg-danger";
                   }
                 }
               })
