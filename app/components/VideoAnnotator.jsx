@@ -179,6 +179,30 @@ export default class VideoAnnotator extends React.Component {
         currentFrame: currentFrame
       });
     });
+
+    window.onkeydown = function(e) {
+      console.log("key", e);
+
+      if (e.keyCode == 37) { // left
+        self.player.pause();
+        var dist = 5.0/FPS;
+        self.player.currentTime(self.player.currentTime()-dist);
+      } else if (e.keyCode == 39) { // right
+        self.player.pause();
+        var dist = 5.0/FPS;
+        self.player.currentTime(self.player.currentTime()+dist);
+      } else if (e.keyCode == 32) { // space
+        if (self.state.isPlaying) {
+          self.player.pause();
+        } else {
+          self.player.play();
+        }
+        return false;
+      } else if(e.ctrlKey && e.keyCode == 83) {
+        self.handlesave();
+        return false;
+      }
+    };
   }
 
   componentWillUpdate() {

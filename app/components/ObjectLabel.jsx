@@ -100,7 +100,7 @@ export default class ObjectLabel extends React.Component {
     self.props.notSaved();
   }
 
-  handleOnChange() {
+  handleChange() {
     var self = this;
 
     if (self.refs["Nouislider"] === null) {
@@ -209,7 +209,7 @@ export default class ObjectLabel extends React.Component {
             margin={1}
             start={handles}
             animate={false}
-            onChange={self.handleOnChange.bind(this)}
+            onChange={self.handleChange.bind(this)}
             disabled={self.props.isPlaying}
             tooltips
           />

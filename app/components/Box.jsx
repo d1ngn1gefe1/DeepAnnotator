@@ -311,7 +311,6 @@ export default class Box extends React.Component {
 
   render() {
     var self = this;
-    console.log(self.props.currentOption);
 
     if (self.props.currentOption == 1) { // out of frame
       return (
