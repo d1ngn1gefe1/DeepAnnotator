@@ -53,6 +53,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleSave = this.handleSave.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
+    this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
 
     this.selectOptions = [{
     	label: "Alcohol Rub",
@@ -199,7 +200,7 @@ export default class VideoAnnotator extends React.Component {
         }
         return false;
       } else if(e.ctrlKey && e.keyCode == 83) {
-        self.handlesave();
+        self.handleSave();
         return false;
       }
     };
@@ -469,6 +470,13 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  handleSetCurrentFrame(currentFrame) {
+    console.log("current frame", currentFrame);
+    var self = this;
+
+    self.player.currentTime(Math.round(currentFrame/FPS));
+  }
+
   render() {
     var self = this;
     var numFrameLabels = 0;
@@ -498,7 +506,9 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
+                      setCurrentFrame={self.handleSetCurrentFrame}
+                    />
                   );
                 } else {
                   return (
@@ -507,6 +517,7 @@ export default class VideoAnnotator extends React.Component {
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
+                      setCurrentFrame={self.handleSetCurrentFrame}
                     />
                   );
                 }

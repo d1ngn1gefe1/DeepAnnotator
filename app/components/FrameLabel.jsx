@@ -140,7 +140,7 @@ export default class FrameLabel extends React.Component {
     var self = this;
 
     if (self.refs["Nouislider"] === null) {
-      return
+      return;
     }
 
     var labels = self.state.labels;
@@ -156,6 +156,23 @@ export default class FrameLabel extends React.Component {
       labels: labels
     });
     self.props.notSaved();
+  }
+
+  handleSlide(handles) {
+    var self = this;
+
+    if (self.refs["Nouislider"] === null) {
+      return;
+    }
+
+    var labels = self.state.labels;
+
+    for (var i = 0; i < labels.length; i++) {
+      if (parseInt(handles[i]) != labels[i][0]) {
+        self.props.setCurrentFrame(parseInt(handles[i]))
+        return;
+      }
+    }
   }
 
   getHandles() {
@@ -238,7 +255,8 @@ export default class FrameLabel extends React.Component {
             margin={1}
             start={handles}
             animate={false}
-            onChange={self.handleChange.bind(this)}
+            onChange={self.handleChange.bind(self)}
+            onSlide={self.handleSlide.bind(self)}
             disabled={self.state.hasStarted || self.props.isPlaying}
             tooltips
           />
