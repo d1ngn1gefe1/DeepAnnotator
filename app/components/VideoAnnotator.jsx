@@ -54,6 +54,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleSave = this.handleSave.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
+    this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
 
     this.selectOptions = [{
     	label: "Alcohol Rub",
@@ -182,6 +183,30 @@ export default class VideoAnnotator extends React.Component {
     window.onbeforeunload = function(e) {
       console.log("Leaving!!!!!!");
     }
+
+    window.onkeydown = function(e) {
+      console.log("key", e);
+
+      if (e.keyCode == 37) { // left
+        self.player.pause();
+        var dist = 5.0/FPS;
+        self.player.currentTime(self.player.currentTime()-dist);
+      } else if (e.keyCode == 39) { // right
+        self.player.pause();
+        var dist = 5.0/FPS;
+        self.player.currentTime(self.player.currentTime()+dist);
+      } else if (e.keyCode == 32) { // space
+        if (self.state.isPlaying) {
+          self.player.pause();
+        } else {
+          self.player.play();
+        }
+        return false;
+      } else if(e.ctrlKey && e.keyCode == 83) {
+        self.handleSave();
+        return false;
+      }
+    };
   }
 
   componentWillUpdate() {
@@ -455,6 +480,13 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  handleSetCurrentFrame(currentFrame) {
+    console.log("current frame", currentFrame);
+    var self = this;
+
+    self.player.currentTime(Math.round(currentFrame/FPS));
+  }
+
   render() {
     var self = this;
     var numFrameLabels = 0;
@@ -484,7 +516,9 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
+                      setCurrentFrame={self.handleSetCurrentFrame}
+                    />
                   );
                 } else {
                   return (
@@ -492,7 +526,9 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions} />
+                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
+                      setCurrentFrame={self.handleSetCurrentFrame}
+                    />
                   );
                 }
               })

@@ -100,7 +100,7 @@ export default class ObjectLabel extends React.Component {
     self.props.notSaved();
   }
 
-  handleOnChange() {
+  handleChange() {
     var self = this;
 
     if (self.refs["Nouislider"] === null) {
@@ -133,6 +133,23 @@ export default class ObjectLabel extends React.Component {
       labels: labels
     });
     self.props.notSaved();
+  }
+
+  handleSlide(handles) {
+    var self = this;
+
+    if (self.refs["Nouislider"] === null) {
+      return
+    }
+
+    var labels = self.state.labels;
+
+    for (var i = 0; i < labels.length; i++) {
+      if (parseInt(handles[i]) != labels[i][0]) {
+        self.props.setCurrentFrame(parseInt(handles[i]))
+        return;
+      }
+    }
   }
 
   getHandles() {
@@ -209,7 +226,8 @@ export default class ObjectLabel extends React.Component {
             margin={1}
             start={handles}
             animate={false}
-            onChange={self.handleOnChange.bind(this)}
+            onChange={self.handleChange.bind(self)}
+            onSlide={self.handleSlide.bind(self)}
             disabled={self.props.isPlaying}
             tooltips
           />
