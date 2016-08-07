@@ -180,9 +180,10 @@ export default class VideoAnnotator extends React.Component {
       });
     });
 
-    window.onbeforeunload = function(e) {
-      console.log("Leaving!!!!!!");
-    }
+    window.onpopstate = function() {
+      console.log("Back button pressed!");
+      window.location.href = "/";
+    };
 
     window.onkeydown = function(e) {
       console.log("key", e);
