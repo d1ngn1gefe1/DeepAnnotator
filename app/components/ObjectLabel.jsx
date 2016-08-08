@@ -14,10 +14,31 @@ export default class ObjectLabel extends React.Component {
         labels is a list of label = [startFrame, endFrame, option]
       */
       labels: [],
-      select: null
+      select: null,
+      textVal: "",
+      selectOptions: [{
+        options: [{
+          label: "Table",
+          value: "Table"
+        }, {
+          label: "Chair",
+          value: "Chair"
+        }, {
+          label: "Bed",
+          value: "Bed"
+        }, {
+          label: "Doctor",
+          value: "Doctor"
+        }, {
+          label: "Nurse",
+          value: "Nurse"
+        }]
+      }]
     };
 
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleTextChange = this.handleTextChange.bind(this);
+    this.handleAddText = this.handleAddText.bind(this);
   }
 
   componentDidMount() {
@@ -190,6 +211,37 @@ export default class ObjectLabel extends React.Component {
     self.props.notSaved();
   }
 
+  handleAddText() {
+    var self = this;
+
+    var selectOptions = self.state.selectOptions;
+    var textVal = self.state.textVal;
+
+    console.log("Click", textVal);
+
+    selectOptions[0].options.push({
+      label: textVal,
+      value: textVal
+    });
+    console.log("Menu:", selectOptions);
+
+    self.setState({
+      selectOptions: selectOptions
+    });
+
+    self.props.notSaved();
+  }
+
+  handleTextChange(event) {
+    var self = this;
+    var text = event.target.value;
+    console.log("text value", self.state.textVal);
+
+    self.setState({
+      textVal: text
+    });
+  }
+
   render() {
     var self = this;
     var handles = self.getHandles();
@@ -203,7 +255,13 @@ export default class ObjectLabel extends React.Component {
 
         <div className="label-header row">
           <p className="label-text col-lg-4 col-md-4 col-sm-4">{"Object "+self.props.id}</p>
-          <Select className="label-select col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
+          <form className="form-inline" role="form">
+            <div className = "form-group">
+              <input type="text" className="form-control" id="name" placeholder="Add New Class" value={self.state.textVal} onChange={self.handleTextChange} />
+            </div>
+            <button type="button" className="btn btn-default" onClick={self.handleAddText}>Add Class</button>
+          </form>
+          <Select className="label-select col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.state.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
         </div>
 
         <div className="btn-group" data-toggle="buttons">

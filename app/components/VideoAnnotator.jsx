@@ -237,7 +237,7 @@ export default class VideoAnnotator extends React.Component {
          self.setState({
            serverData: data.data
          });
-         console.log("Load Json:", self.state.serverData);
+         console.log("Load Json test:", self.state.serverData);
          self.initLabeledVideos();
          self.markLabeledVideos();
        });
@@ -264,8 +264,7 @@ export default class VideoAnnotator extends React.Component {
           } else if (count == 2) {
             tag = "glyphicon glyphicon-ok";
           }
-          console.log("Mark video", serverData[i].videoId);
-          console.log("Count:", count);
+
           var index = serverData[i].videoId;
           if (playlist.childNodes[index].childNodes.length <= 2) {
             var span = document.createElement("span");
