@@ -42,7 +42,25 @@ export default class VideoAnnotator extends React.Component {
       isOpen: false,
       isPlaying: false,
       isSaved: true,
-      labelToBoxData: []
+      labelToBoxData: [],
+      objSelectOptions: [{
+        options: [{
+          label: "Table",
+          value: "Table"
+        }, {
+          label: "Chair",
+          value: "Chair"
+        }, {
+          label: "Bed",
+          value: "Bed"
+        }, {
+          label: "Doctor",
+          value: "Doctor"
+        }, {
+          label: "Nurse",
+          value: "Nurse"
+        }]
+      }]
     };
 
     this.currentKey = 0;
@@ -55,6 +73,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
     this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
+    this.updateObjSelectOptions = this.updateObjSelectOptions.bind(this);
 
     this.selectOptions = [{
     	label: "Alcohol Rub",
@@ -487,6 +506,14 @@ export default class VideoAnnotator extends React.Component {
     self.player.currentTime(Math.round(currentFrame/FPS));
   }
 
+  updateObjSelectOptions(objSelectOptions) {
+    var self = this;
+
+    self.setState({
+      objSelectOptions: objSelectOptions
+    });
+  }
+
   render() {
     var self = this;
     var numFrameLabels = 0;
@@ -526,7 +553,8 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
+                      isPlaying={self.state.isPlaying} selectOptions={self.state.objSelectOptions}
+                      updateObjSelectOptions={self.updateObjSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                     />
                   );

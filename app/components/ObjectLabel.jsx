@@ -15,25 +15,7 @@ export default class ObjectLabel extends React.Component {
       */
       labels: [],
       select: null,
-      textVal: "",
-      selectOptions: [{
-        options: [{
-          label: "Table",
-          value: "Table"
-        }, {
-          label: "Chair",
-          value: "Chair"
-        }, {
-          label: "Bed",
-          value: "Bed"
-        }, {
-          label: "Doctor",
-          value: "Doctor"
-        }, {
-          label: "Nurse",
-          value: "Nurse"
-        }]
-      }]
+      textVal: ""
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -213,10 +195,9 @@ export default class ObjectLabel extends React.Component {
 
   handleAddText() {
     var self = this;
+    var selectOptions = self.props.selectOptions;
 
-    var selectOptions = self.state.selectOptions;
     var textVal = self.state.textVal;
-
     console.log("Click", textVal);
 
     selectOptions[0].options.push({
@@ -224,12 +205,7 @@ export default class ObjectLabel extends React.Component {
       value: textVal
     });
     console.log("Menu:", selectOptions);
-
-    self.setState({
-      selectOptions: selectOptions
-    });
-
-    self.props.notSaved();
+    self.props.updateObjSelectOptions(selectOptions);
   }
 
   handleTextChange(event) {
@@ -255,13 +231,15 @@ export default class ObjectLabel extends React.Component {
 
         <div className="label-header row">
           <p className="label-text col-lg-4 col-md-4 col-sm-4">{"Object "+self.props.id}</p>
-          <form className="form-inline" role="form">
-            <div className = "form-group">
-              <input type="text" className="form-control" id="name" placeholder="Add New Class" value={self.state.textVal} onChange={self.handleTextChange} />
-            </div>
-            <button type="button" className="btn btn-default" onClick={self.handleAddText}>Add Class</button>
-          </form>
-          <Select className="label-select col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.state.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
+          <div className="input-group">
+            <input type="text" className="form-control" id="name" placeholder="Add New Class" value={self.state.textVal} onChange={self.handleTextChange} />
+            <span className="input-group-btn">
+              <button type="button" className="btn btn-default" onClick={self.handleAddText}>
+                <span className="glyphicon glyphicon-plus-sign"></span> Add Class
+              </button>
+            </span>
+          </div>
+          <Select className="label-select col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
         </div>
 
         <div className="btn-group" data-toggle="buttons">
