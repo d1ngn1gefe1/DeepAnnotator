@@ -13,6 +13,7 @@ import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
 import ObjectLabel from "./ObjectLabel.jsx";
 import Box from "./Box.jsx";
+import Nouislider from "./slider/NouisliderWrapper.jsx";
 
 import "video.js/dist/video-js.min.css";
 import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
@@ -60,7 +61,9 @@ export default class VideoAnnotator extends React.Component {
           label: "Nurse",
           value: "Nurse"
         }]
-      }]
+      }],
+      playbackRate: 1.0,
+      showAdvanced: false
     };
 
     this.currentKey = 0;
@@ -73,7 +76,9 @@ export default class VideoAnnotator extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOK = this.handleOK.bind(this);
     this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
-    this.updateObjSelectOptions = this.updateObjSelectOptions.bind(this);
+    this.handleUpdateObjSelectOptions = this.handleUpdateObjSelectOptions.bind(this);
+    this.handleChangePlaybackRate = this.handleChangePlaybackRate.bind(this);
+    this.handleShowAdvanced = this.handleShowAdvanced.bind(this);
 
     this.selectOptions = [{
     	label: "Alcohol Rub",
@@ -504,11 +509,29 @@ export default class VideoAnnotator extends React.Component {
     self.player.currentTime(currentFrame/FPS);
   }
 
-  updateObjSelectOptions(objSelectOptions) {
+  handleUpdateObjSelectOptions(objSelectOptions) {
     var self = this;
 
     self.setState({
       objSelectOptions: objSelectOptions
+    });
+  }
+
+  handleChangePlaybackRate(arg0, arg1, arg2) {
+    var self = this;
+    var playbackRate = arg2[0];
+
+    self.setState({
+      playbackRate: playbackRate
+    });
+    self.player.playbackRate(playbackRate);
+  }
+
+  handleShowAdvanced() {
+    var self = this;
+
+    self.setState({
+      showAdvanced: !self.state.showAdvanced
     });
   }
 
@@ -552,7 +575,7 @@ export default class VideoAnnotator extends React.Component {
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.state.objSelectOptions}
-                      updateObjSelectOptions={self.updateObjSelectOptions}
+                      updateObjSelectOptions={self.HandleUpdateObjSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                     />
                   );
@@ -570,7 +593,12 @@ export default class VideoAnnotator extends React.Component {
                 self.state.labelInfos.map(function(labelInfo, index) {
                   if (!labelInfo.isFrameLabel) {
                     return (
-                      <Box key={labelInfo.key} ref={"box"+index} id={index} currentFrame={self.state.currentFrame} currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}/>
+                      <Box key={labelInfo.key} ref={"box"+index} id={index}
+                        currentFrame={self.state.currentFrame}
+                        currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}
+                        notSaved={self.handleIsSaved.bind(self, false)}
+                        isPlaying={self.state.isPlaying}
+                      />
                     );
                   }
                 })
@@ -607,12 +635,39 @@ export default class VideoAnnotator extends React.Component {
             <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>
+
+            <div className="video-control">
+              <div className="playbackRate row">
+                <p className="col-lg-2 col-md-2 col-sm-2">{"Speed: "+self.state.playbackRate+"x"}</p>
+                <div className="playbackRateSlider col-lg-8 col-md-8 col-sm-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-2">
+                  <Nouislider
+                    ref={"Nouislider-playback-rate"}
+                    range={{min: 0, max: 5}}
+                    start={[self.state.playbackRate]}
+                    step={0.25}
+                    margin={0.25}
+                    animate={false}
+                    onSlide={self.handleChangePlaybackRate}
+                    pips={{
+                      mode: "values",
+                      values: [0, 1, 2, 3, 4, 5],
+                      density: 5
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="advanced-options row">
+                <button className="btn btn-default" onClick={self.handleShowAdvanced}>
+                  <span className="glyphicon glyphicon-list-alt"></span> Advanced Information
+                </button>
+              </div>
+            </div>
           </div>
 
           <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2"></ol>
         </section>
 
-        <section className="details">
+        <section className={self.state.showAdvanced?"details":"details details-hidden"}>
           <div className="bound-properties col-lg-4 col-md-4 col-sm-4"></div>
           <div className="media-properties col-lg-4 col-md-4 col-sm-4"></div>
           <div className="media-events col-lg-4 col-md-4 col-sm-4"></div>

@@ -40,7 +40,7 @@
     overflow-y: overlay;
     overflow-x: hidden;
     padding: 0px 10px 0px 5px;
-    height: $height*$scaling+30;
+    height: $height*$scaling+180;
     min-width: 500px;
 
     .control-panel-buttons {
@@ -161,7 +161,7 @@
   }
 
   .vjs-playlist {
-    height: $height*$scaling+30;
+    height: $height*$scaling+180;
   }
 
   .videojs-wrapper {
@@ -178,9 +178,53 @@
       display: flex;
       opacity: 1 !important;
       background-color: $gray-even-darker;
+      border-style: solid;
+      border-width: 1px;
+      border-color: $gray-darkest;
 
       .vjs-volume-menu-button {
         display: none;
+      }
+    }
+
+    .video-control {
+      background-color: $gray-even-darker;
+      position: absolute;
+      top: $height*$scaling+30;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: $gray-darkest;
+
+      .row {
+        margin: 0px;
+        padding: 10px 0px 10px 0px;
+      }
+
+      .playbackRate {
+        padding-bottom: 40px;
+
+        .playbackRateSlider {
+          float: left;
+
+          .noUi-value-horizontal {
+            top: 20px;
+          }
+        }
+
+        p {
+          color: white;
+          float: left;
+          padding: 0px;
+          margin: 0px;
+        }
+      }
+
+      .advanced-options {
+        text-align: center;
       }
     }
 
@@ -244,5 +288,9 @@
       border-color: darken($gray-light, 20%);
       background-color: $gray-light;
     }
+  }
+
+  .details-hidden {
+    display: none !important;
   }
 }

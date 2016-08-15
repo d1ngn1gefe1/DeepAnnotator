@@ -51,7 +51,6 @@ export default class Box extends React.Component {
 
   handleMouseEnterAnchor(id) {
     var self = this;
-    console.log("mouse enter");
 
     if (id == 0) {
       self.setState({
@@ -70,11 +69,16 @@ export default class Box extends React.Component {
         strokeWidth4: 4
       });
     }
+
+    if (self.props.isPlaying) {
+      document.body.style.cursor = "no-drop";
+    } else {
+      document.body.style.cursor = "pointer";
+    }
   }
 
   handleMouseLeaveAnchor(id) {
     var self = this;
-    console.log("mouse leave");
 
     self.setState({
       strokeWidth1: 2,
@@ -82,6 +86,21 @@ export default class Box extends React.Component {
       strokeWidth3: 2,
       strokeWidth4: 2
     });
+    document.body.style.cursor = "default";
+  }
+
+  handleMouseEnterRect() {
+    var self = this;
+
+    if (self.props.isPlaying) {
+      document.body.style.cursor = "no-drop";
+    } else {
+      document.body.style.cursor = "move";
+    }
+  }
+
+  handleMouseLeaveRect() {
+    document.body.style.cursor = "default";
   }
 
   fixAnchor(x1, y1, x2, y2) {
@@ -329,8 +348,10 @@ export default class Box extends React.Component {
           fill={self.colors[self.props.currentOption+1]}
           opacity={0.2}
           shadowBlur={10}
-          draggable={true}
+          draggable={!self.props.isPlaying}
           onDragMove={this.handleDragMoveRect.bind(self)}
+          onMouseEnter={this.handleMouseEnterRect.bind(self)}
+          onMouseLeave={this.handleMouseLeaveRect.bind(self)}
         />
 
         <Text
@@ -346,7 +367,7 @@ export default class Box extends React.Component {
           ref="anchor1"
           x={self.bbox[0]} y={self.bbox[1]} radius={6} strokeWidth={self.state.strokeWidth1}
           fill="#ddd" stroke="#666"
-          draggable={true}
+          draggable={!self.props.isPlaying}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 0)}
           onMouseLeave={this.handleMouseLeaveAnchor.bind(self, 0)}
           onDragMove={this.handleDragMoveAnchor.bind(self, 0)}
@@ -356,7 +377,7 @@ export default class Box extends React.Component {
           ref="anchor2"
           x={self.bbox[0]} y={self.bbox[3]} radius={6} strokeWidth={self.state.strokeWidth2}
           fill="#ddd" stroke="#666"
-          draggable={true}
+          draggable={!self.props.isPlaying}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 1)}
           onMouseLeave={this.handleMouseLeaveAnchor.bind(self, 1)}
           onDragMove={this.handleDragMoveAnchor.bind(self, 1)}
@@ -366,7 +387,7 @@ export default class Box extends React.Component {
           ref="anchor3"
           x={self.bbox[2]} y={self.bbox[3]} radius={6} strokeWidth={self.state.strokeWidth3}
           fill="#ddd" stroke="#666"
-          draggable={true}
+          draggable={!self.props.isPlaying}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 2)}
           onMouseLeave={this.handleMouseLeaveAnchor.bind(self, 2)}
           onDragMove={this.handleDragMoveAnchor.bind(self, 2)}
@@ -376,7 +397,7 @@ export default class Box extends React.Component {
           ref="anchor4"
           x={self.bbox[2]} y={self.bbox[1]} radius={6} strokeWidth={self.state.strokeWidth4}
           fill="#ddd" stroke="#666"
-          draggable={true}
+          draggable={!self.props.isPlaying}
           onMouseEnter={this.handleMouseEnterAnchor.bind(self, 3)}
           onMouseLeave={this.handleMouseLeaveAnchor.bind(self, 3)}
           onDragMove={this.handleDragMoveAnchor.bind(self, 3)}

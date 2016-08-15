@@ -110,6 +110,9 @@ export default class ObjectLabel extends React.Component {
     var labels = self.state.labels;
 
     if (index == 0) {
+      self.setState({
+        labels: labels
+      });
       return;
     }
 
