@@ -159,6 +159,7 @@ export default class FrameLabel extends React.Component {
   }
 
   handleSlide(handles) {
+    return;
     var self = this;
 
     if (self.refs["Nouislider"] === null) {

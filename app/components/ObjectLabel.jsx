@@ -139,6 +139,7 @@ export default class ObjectLabel extends React.Component {
   }
 
   handleSlide(handles) {
+    return;
     var self = this;
 
     if (self.refs["Nouislider"] === null) {
