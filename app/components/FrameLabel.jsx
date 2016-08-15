@@ -12,10 +12,13 @@ export default class FrameLabel extends React.Component {
     this.state = {
       labels: [],
       select: null,
-      hasStarted: false
+      hasStarted: false,
+      textVal: ""
     };
 
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleTextChange = this.handleTextChange.bind(this);
+    this.handleAddText = this.handleAddText.bind(this);
   }
 
   componentDidMount() {
@@ -197,6 +200,31 @@ export default class FrameLabel extends React.Component {
     self.props.notSaved();
   }
 
+  handleAddText() {
+    var self = this;
+    var selectOptions = self.props.selectOptions;
+
+    var textVal = self.state.textVal;
+    console.log("Click", textVal);
+
+    selectOptions[0].options.push({
+      label: textVal,
+      value: textVal
+    });
+    console.log("Menu:", selectOptions);
+    self.props.updateFrameSelectOptions(selectOptions);
+  }
+
+  handleTextChange(event) {
+    var self = this;
+    var text = event.target.value;
+    console.log("text value", self.state.textVal);
+
+    self.setState({
+      textVal: text
+    });
+  }
+
   render() {
     var self = this;
     var handles = self.getHandles();
@@ -210,6 +238,14 @@ export default class FrameLabel extends React.Component {
 
         <div className="label-header row">
           <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Frame "+self.props.id}</p>
+          <div className="label-add-class input-group col-lg-5 col-md-5 col-sm-5">
+            <input type="text" className="form-control" id="name" placeholder="New Class" value={self.state.textVal} onChange={self.handleTextChange} />
+            <span className="input-group-btn">
+              <button type="button" className="btn btn-default" onClick={self.handleAddText}>
+                <span className="glyphicon glyphicon-plus-sign"></span> Add Class
+              </button>
+            </span>
+          </div>
           <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
         </div>
 

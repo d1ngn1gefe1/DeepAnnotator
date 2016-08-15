@@ -62,6 +62,27 @@ export default class VideoAnnotator extends React.Component {
           value: "Nurse"
         }]
       }],
+      frameSelectOptions: [{
+      	options: [{
+      		label: "Alcohol Rub - No Attempt",
+      		value: "Alcohol Rub - No Attempt"
+      	}, {
+      		label: "Alcohol Rub - Insufficient Rub",
+      		value: "Alcohol Rub - Insufficient Rub"
+      	}, {
+      		label: "Alcohol Rub - Sufficient Rub",
+      		value: "Alcohol Rub - sufficient Rub"
+      	}, {
+      		label: "Soup and Water Wash - No Attempt",
+      		value: "Soup and Water Wash - No Attempt"
+      	}, {
+      		label: "Soup and Water Wash - Insufficient Rub",
+      		value: "Soup and Water Wash - Insufficient Rub"
+      	}, {
+      		label: "Soup and Water Wash - Sufficient Rub",
+      		value: "Soup and Water Wash - Sufficient Rub"
+      	}]
+      }],
       playbackRate: 1.0,
       showAdvanced: false
     };
@@ -77,6 +98,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleOK = this.handleOK.bind(this);
     this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
     this.handleUpdateObjSelectOptions = this.handleUpdateObjSelectOptions.bind(this);
+    this.handleUpdateFrameSelectOptions = this.handleUpdateFrameSelectOptions.bind(this);
     this.handleChangePlaybackRate = this.handleChangePlaybackRate.bind(this);
     this.handleShowAdvanced = this.handleShowAdvanced.bind(this);
 
@@ -517,6 +539,14 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  handleUpdateFrameSelectOptions(frameSelectOptions) {
+    var self = this;
+
+    self.setState({
+      frameSelectOptions: frameSelectOptions
+    });
+  }
+
   handleChangePlaybackRate(arg0, arg1, arg2) {
     var self = this;
     var playbackRate = arg2[0];
@@ -564,7 +594,8 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
+                      isPlaying={self.state.isPlaying} selectOptions={self.state.frameSelectOptions}
+                      updateFrameSelectOptions={self.handleUpdateFrameSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                     />
                   );
@@ -575,7 +606,7 @@ export default class VideoAnnotator extends React.Component {
                       closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
                       saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.state.objSelectOptions}
-                      updateObjSelectOptions={self.HandleUpdateObjSelectOptions}
+                      updateObjSelectOptions={self.handleUpdateObjSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                     />
                   );
