@@ -83,26 +83,26 @@ export default class VideoAnnotator extends React.Component {
     this.selectOptions = [{
     	label: "Alcohol Rub",
     	options: [{
-    		label: "No attempt",
-    		value: "no attempt"
+    		label: "Alcohol Rub - No Attempt",
+    		value: "Alcohol Rub - No Attempt"
     	}, {
-    		label: "Insufficient rub",
-    		value: "insufficient rub"
+    		label: "Alcohol Rub - Insufficient Rub",
+    		value: "Alcohol Rub - Insufficient Rub"
     	}, {
-    		label: "Sufficient rub",
-    		value: "sufficient rub"
+    		label: "Alcohol Rub - Sufficient Rub",
+    		value: "Alcohol Rub - sufficient Rub"
     	}]
     }, {
     	label: "Soup and Water Wash",
     	options: [{
-    		label: "No attempt",
-    		value: "no attempt"
+    		label: "Soup and Water Wash - No Attempt",
+    		value: "Soup and Water Wash - No Attempt"
     	}, {
-    		label: "Insufficient rub",
-    		value: "insufficient rub"
+    		label: "Soup and Water Wash - Insufficient Rub",
+    		value: "Soup and Water Wash - Insufficient Rub"
     	}, {
-    		label: "Sufficient rub",
-    		value: "sufficient rub"
+    		label: "Soup and Water Wash - Sufficient Rub",
+    		value: "Soup and Water Wash - Sufficient Rub"
     	}]
     }];
   }

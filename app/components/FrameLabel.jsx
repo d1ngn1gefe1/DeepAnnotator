@@ -209,8 +209,8 @@ export default class FrameLabel extends React.Component {
         </button>
 
         <div className="label-header row">
-          <p className="label-text col-lg-4 col-md-4 col-sm-4">{"Frame "+self.props.id}</p>
-          <Select className="label-select col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
+          <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Frame "+self.props.id}</p>
+          <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
         </div>
 
         <div className="btn-group" data-toggle="buttons">
