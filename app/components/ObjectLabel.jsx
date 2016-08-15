@@ -231,16 +231,16 @@ export default class ObjectLabel extends React.Component {
         </button>
 
         <div className="label-header row">
-          <p className="label-text col-lg-4 col-md-4 col-sm-4">{"Object "+self.props.id}</p>
-          <div className="input-group">
-            <input type="text" className="form-control" id="name" placeholder="Add New Class" value={self.state.textVal} onChange={self.handleTextChange} />
+          <p className="label-text col-lg-2 col-md-2 col-sm-2">{"Object "+self.props.id}</p>
+          <div className="label-add-class input-group col-lg-5 col-md-5 col-sm-5">
+            <input type="text" className="form-control" id="name" placeholder="New Class" value={self.state.textVal} onChange={self.handleTextChange} />
             <span className="input-group-btn">
               <button type="button" className="btn btn-default" onClick={self.handleAddText}>
                 <span className="glyphicon glyphicon-plus-sign"></span> Add Class
               </button>
             </span>
           </div>
-          <Select className="label-select col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
+          <Select className="label-select col-lg-5 col-md-5 col-sm-5" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
         </div>
 
         <div className="btn-group" data-toggle="buttons">
