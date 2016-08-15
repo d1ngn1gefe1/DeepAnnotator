@@ -24,7 +24,9 @@ export default class ObjectLabel extends React.Component {
   }
 
   componentDidMount() {
-    this.handleClick(0);
+    var self = this;
+
+    self.handleClick(0);
   }
 
   getCurrentOption() {
@@ -103,57 +105,23 @@ export default class ObjectLabel extends React.Component {
     self.props.notSaved();
   }
 
-  handleChange() {
+  handleChange(handles, index) {
     var self = this;
-
-    if (self.refs["Nouislider"] === null) {
-      return
-    }
-
     var labels = self.state.labels;
-    var handles = self.refs["Nouislider"].slider.get();
 
-    if (typeof handles === "string") {
-      labels[0][0] = 0;
-      labels[0][1] = self.props.numFrames-1;
-    } else {
-      // labels.length >= 2
-      for (var i = 0; i < labels.length; i++) {
-        if (i == 0) {
-          labels[0][0] = 0;
-          labels[0][1] = parseInt(handles[1])-1;
-        } else if (i == labels.length-1) {
-          labels[i][0] = parseInt(handles[i]);
-          labels[i][1] = self.props.numFrames-1;
-        } else {
-          labels[i][0] = parseInt(handles[i]);
-          labels[i][1] = parseInt(handles[i+1])-1;
-        }
-      }
+    if (index == 0) {
+      return;
     }
+
+    var value = parseInt(handles[index]);
+    labels[index][0] = value;
+    labels[index-1][1] = value-1;
 
     self.setState({
       labels: labels
     });
+    self.props.setCurrentFrame(value);
     self.props.notSaved();
-  }
-
-  handleSlide(handles) {
-    return;
-    var self = this;
-
-    if (self.refs["Nouislider"] === null) {
-      return
-    }
-
-    var labels = self.state.labels;
-
-    for (var i = 0; i < labels.length; i++) {
-      if (parseInt(handles[i]) != labels[i][0]) {
-        self.props.setCurrentFrame(parseInt(handles[i]))
-        return;
-      }
-    }
   }
 
   getHandles() {
@@ -264,7 +232,6 @@ export default class ObjectLabel extends React.Component {
             start={handles}
             animate={false}
             onChange={self.handleChange.bind(self)}
-            onSlide={self.handleSlide.bind(self)}
             disabled={self.props.isPlaying}
             tooltips
           />

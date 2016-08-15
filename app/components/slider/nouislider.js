@@ -1379,7 +1379,6 @@ function closure ( target, options, originalOptions ){
 		state = setHandle ( handles[0], positions[handleNumber], handles.length === 1 );
 
 		if ( handles.length > 1 ) {
-
 			state = setHandle ( handles[1], positions[handleNumber?0:1], false ) || state;
 
 			if ( state ) {
@@ -1422,8 +1421,8 @@ function closure ( target, options, originalOptions ){
 		removeClass(scope_Target, options.cssClasses.drag);
 
 		// Fire the change and set events.
-		fireEvent('set', handleNumber);
-		fireEvent('change', handleNumber);
+		fireEvent('set', data.handleNumber);
+		fireEvent('change', data.handleNumber);
 
 		// If this is a standard handle movement, fire the end event.
 		if ( data.handleNumber !== undefined ) {

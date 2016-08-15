@@ -491,7 +491,6 @@ export default class VideoAnnotator extends React.Component {
   }
 
   handleIsSaved(isSaved) {
-    console.log("handleIsSaved");
     var self = this;
 
     self.setState({
@@ -500,10 +499,9 @@ export default class VideoAnnotator extends React.Component {
   }
 
   handleSetCurrentFrame(currentFrame) {
-    console.log("current frame", currentFrame);
     var self = this;
 
-    self.player.currentTime(Math.round(currentFrame/FPS));
+    self.player.currentTime(currentFrame/FPS);
   }
 
   updateObjSelectOptions(objSelectOptions) {

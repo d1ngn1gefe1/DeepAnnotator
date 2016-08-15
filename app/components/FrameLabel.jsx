@@ -136,44 +136,18 @@ export default class FrameLabel extends React.Component {
     self.props.notSaved();
   }
 
-  handleChange() {
+  handleChange(handles, index) {
     var self = this;
-
-    if (self.refs["Nouislider"] === null) {
-      return;
-    }
-
     var labels = self.state.labels;
-    var handles = self.refs["Nouislider"].slider.get();
 
-    for (var i = 0; i < labels.length; i++) {
-      labels[i][0] = parseInt(handles[2*i]);
-      labels[i][1] = parseInt(handles[2*i+1]);
-    }
-    labels = self.mergeIntervals(labels);
+    var value = parseInt(handles[index]);
+    labels[Math.floor(index/2)][index%2] = value;
 
     self.setState({
       labels: labels
     });
+    self.props.setCurrentFrame(value);
     self.props.notSaved();
-  }
-
-  handleSlide(handles) {
-    return;
-    var self = this;
-
-    if (self.refs["Nouislider"] === null) {
-      return;
-    }
-
-    var labels = self.state.labels;
-
-    for (var i = 0; i < labels.length; i++) {
-      if (parseInt(handles[i]) != labels[i][0]) {
-        self.props.setCurrentFrame(parseInt(handles[i]))
-        return;
-      }
-    }
   }
 
   getHandles() {
@@ -257,7 +231,6 @@ export default class FrameLabel extends React.Component {
             start={handles}
             animate={false}
             onChange={self.handleChange.bind(self)}
-            onSlide={self.handleSlide.bind(self)}
             disabled={self.state.hasStarted || self.props.isPlaying}
             tooltips
           />
