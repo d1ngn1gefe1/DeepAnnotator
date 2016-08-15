@@ -27,7 +27,7 @@ export default class FrameLabel extends React.Component {
 
     for (var i = 0; i < self.state.labels.length; i++) {
       var label = self.state.labels[i];
-      if (self.props.currentFrame >= label[0] && self.props.currentFrame < label[1]) {
+      if (self.props.currentFrame >= label[0] && self.props.currentFrame <= label[1]) {
         return 1;
       }
     }
