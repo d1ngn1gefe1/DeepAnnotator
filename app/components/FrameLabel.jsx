@@ -12,7 +12,8 @@ export default class FrameLabel extends React.Component {
     this.state = {
       labels: [],
       select: null,
-      hasStarted: false
+      category: null,
+      hasStarted: false,
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -195,7 +196,8 @@ export default class FrameLabel extends React.Component {
     console.log("selected value", select);
 
     self.setState({
-      select: select
+      select: select,
+      category: select.value.split(" - ")[0]
     });
     self.props.isSaved(false);
   }
@@ -220,8 +222,10 @@ export default class FrameLabel extends React.Component {
         </button>
 
         <div className="label-header row">
-          <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Frame "+self.props.id}</p>
-          <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
+          <p className="label-text col-lg-2 col-md-2 col-sm-2">{"Frame "+self.props.id}</p>
+          <input type="text" className="label-category form-control col-lg-4 col-md-4 col-sm-4 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
+            placeholder="Category" value={self.state.category?self.state.category:""} readOnly />
+          <Select className="label-select col-lg-5 col-md-5 col-sm-5"
             name="form-field-name" options={self.props.selectOptions}
             onChange={self.handleSelect} value={self.state.select}
             searchable={true} clearable={true}

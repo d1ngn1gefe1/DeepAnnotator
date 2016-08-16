@@ -6,6 +6,10 @@
   overflow: auto;
 }
 
+body {
+  overflow-y: scroll;
+}
+
 .video-annotator {
   padding: 0px;
 
@@ -28,6 +32,7 @@
   .main-preview-player {
     padding: 70px 0px 0px 0px;
     margin: 0px;
+    overflow: hidden;
   }
 
   .video-js {
@@ -40,7 +45,7 @@
     overflow-y: overlay;
     overflow-x: hidden;
     padding: 0px 10px 0px 5px;
-    height: $height*$scaling+180;
+    height: $height*$scaling+360;
     min-width: 500px;
 
     .control-panel-buttons {
@@ -113,12 +118,13 @@
         margin: 0px;
       }
 
-      .label-add-class {
+      .label-select {
         float: left;
       }
 
-      .label-select {
+      .label-category {
         float: left;
+        width: 33.33%;
       }
 
       .Select-menu-outer {
@@ -161,7 +167,7 @@
   }
 
   .vjs-playlist {
-    height: $height*$scaling+180;
+    height: $height*$scaling+360;
   }
 
   .videojs-wrapper {
@@ -193,19 +199,19 @@
       top: $height*$scaling+30;
       left: 0;
       width: 100%;
-      height: 150px;
-      padding: 10px;
+      height: 330px;
       border-style: solid;
       border-width: 1px;
       border-color: $gray-darkest;
 
       .row {
-        margin: 0px;
         padding: 10px 0px 10px 0px;
       }
 
       .playbackRate {
-        padding-bottom: 40px;
+        padding: 10px 10px 40px 10px;
+        background-color: $gray-darker;
+        margin: 0px;
 
         .playbackRateSlider {
           float: left;
@@ -225,6 +231,104 @@
 
       .advanced-options {
         text-align: center;
+      }
+
+      .add-remove-class-frame {
+        padding: 10px;
+        margin: 0px;
+
+        p {
+          color: white;
+          float: left;
+          padding: 0px;
+          margin: 0px;
+        }
+
+        .wrapper {
+          padding: 0px;
+        }
+
+        .input-group-btn {
+          padding: 0px;
+        }
+
+        .add-category {
+
+        }
+
+        .add-class {
+          .class-select {
+            padding: 0px;
+          }
+
+          .Select-control {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+            border-width: 0px;
+            height: 34px;
+          }
+
+          .form-control {
+            width: 25%;
+          }
+        }
+
+        .remove-class {
+          width: 100%;
+
+          .Select-control {
+            border-radius: 0px;
+            border-width: 0px;
+            height: 34px;
+          }
+        }
+      }
+
+      .add-remove-class-object {
+        padding: 10px;
+        margin: 0px;
+        background-color: $gray-darker;
+
+        p {
+          color: white;
+          float: left;
+          padding: 0px;
+          margin: 0px;
+        }
+
+        .Select-control {
+          border-top-right-radius: 0px;
+          border-bottom-right-radius: 0px;
+          border-width: 0px;
+          height: 34px;
+        }
+      }
+
+      .add-class {
+        float: left;
+        padding: 0px;
+      }
+
+      .add-category {
+        float: left;
+      }
+
+      .remove-class {
+        float: left;
+
+        .form-control {
+          width: 25%;
+        }
+
+        .Select {
+          padding: 0px;
+        }
+      }
+
+      .Select-menu-outer {
+        z-index: 100;
+        top: initial;
+        bottom: 100%;
       }
     }
 
