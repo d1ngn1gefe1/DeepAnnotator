@@ -680,15 +680,12 @@ export default class VideoAnnotator extends React.Component {
                 var bg;
 
                 if (currentLabel.isFrameLabel) {
-                  numFrameLabels++;
-                  if (currentLabel.option == 0) {
-                    bg = " bg-gray";
-                  } else if (currentLabel.option == 1) {
-                    bg = " bg-danger";
+                  if (currentLabel.option == 1) {
+                    numFrameLabels++;
+                    return (
+                      <div className={"small-label bg-danger"} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame "+index}</div>
+                    );
                   }
-                  return (
-                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame"+index}</div>
-                  );
                 } else {
                   if (currentLabel.option == 0) {
                     bg = " bg-success";
