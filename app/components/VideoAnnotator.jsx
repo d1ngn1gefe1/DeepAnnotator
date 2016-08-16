@@ -588,7 +588,6 @@ export default class VideoAnnotator extends React.Component {
       categories[0].options.push({label: category, value: category});
     }
 
-    console.log(categories);
     return categories;
   }
 
