@@ -68,6 +68,7 @@ export default class VideoAnnotator extends React.Component {
 
     this.currentKey = 0;
     this.currentLabels = [];
+    this.isFocus = false;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
@@ -79,6 +80,8 @@ export default class VideoAnnotator extends React.Component {
     this.handleUpdateObjSelectOptions = this.handleUpdateObjSelectOptions.bind(this);
     this.handleChangePlaybackRate = this.handleChangePlaybackRate.bind(this);
     this.handleShowAdvanced = this.handleShowAdvanced.bind(this);
+    this.handleIsSaved = this.handleIsSaved.bind(this);
+    this.handleIsFocus = this.handleIsFocus.bind(this);
 
     this.selectOptions = [{
     	label: "Alcohol Rub",
@@ -210,8 +213,6 @@ export default class VideoAnnotator extends React.Component {
     };
 
     window.onkeydown = function(e) {
-      console.log("key", e);
-
       if (e.keyCode == 37) { // left
         self.player.pause();
         var dist = 5.0/FPS;
@@ -221,7 +222,9 @@ export default class VideoAnnotator extends React.Component {
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()+dist);
       } else if (e.keyCode == 32) { // space
-        if (self.state.isPlaying) {
+        if (self.isFocus) {
+          return true;
+        } else if (self.state.isPlaying) {
           self.player.pause();
         } else {
           self.player.play();
@@ -503,6 +506,12 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  handleIsFocus(isFocus) {
+    var self = this;
+
+    self.isFocus = isFocus;
+  }
+
   handleSetCurrentFrame(currentFrame) {
     var self = this;
 
@@ -562,21 +571,23 @@ export default class VideoAnnotator extends React.Component {
                   return (
                     <FrameLabel key={labelInfo.key} id={index}
                       ref={"label"+index} currentFrame={self.state.currentFrame}
-                      closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
-                      saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
+                      closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
+                      numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.selectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
+                      isFocus={self.handleIsFocus}
                     />
                   );
                 } else {
                   return (
                     <ObjectLabel key={labelInfo.key} id={index}
                       ref={"label"+index} currentFrame={self.state.currentFrame}
-                      closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
-                      saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
+                      closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
+                      numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.state.objSelectOptions}
                       updateObjSelectOptions={self.HandleUpdateObjSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
+                      isFocus={self.handleIsFocus}
                     />
                   );
                 }
@@ -596,7 +607,7 @@ export default class VideoAnnotator extends React.Component {
                       <Box key={labelInfo.key} ref={"box"+index} id={index}
                         currentFrame={self.state.currentFrame}
                         currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}
-                        notSaved={self.handleIsSaved.bind(self, false)}
+                        isSaved={self.handleIsSaved}
                         isPlaying={self.state.isPlaying}
                       />
                     );

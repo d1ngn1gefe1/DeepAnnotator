@@ -16,6 +16,9 @@ export default class FrameLabel extends React.Component {
     };
 
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
   }
 
   componentDidMount() {
@@ -48,7 +51,7 @@ export default class FrameLabel extends React.Component {
       select: data["select"],
       hasStarted: false
     });
-    this.props.saved();
+    this.props.isSaved(true);
   }
 
   mergeIntervals(intervals) {
@@ -133,7 +136,7 @@ export default class FrameLabel extends React.Component {
       labels: labels,
       hasStarted: !self.state.hasStarted
     });
-    self.props.notSaved();
+    self.props.isSaved(false);
   }
 
   handleChange(handles, index) {
@@ -147,7 +150,7 @@ export default class FrameLabel extends React.Component {
       labels: labels
     });
     self.props.setCurrentFrame(value);
-    self.props.notSaved();
+    self.props.isSaved(false);
   }
 
   getHandles() {
@@ -194,7 +197,15 @@ export default class FrameLabel extends React.Component {
     self.setState({
       select: select
     });
-    self.props.notSaved();
+    self.props.isSaved(false);
+  }
+
+  handleFocus() {
+    this.props.isFocus(true);
+  }
+
+  handleBlur() {
+    this.props.isFocus(false);
   }
 
   render() {
@@ -210,7 +221,12 @@ export default class FrameLabel extends React.Component {
 
         <div className="label-header row">
           <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Frame "+self.props.id}</p>
-          <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
+          <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
+            name="form-field-name" options={self.props.selectOptions}
+            onChange={self.handleSelect} value={self.state.select}
+            searchable={true} clearable={true}
+            onFocus={self.handleFocus} onBlur={self.handleBlur}
+          />
         </div>
 
         <div className="btn-group" data-toggle="buttons">
@@ -230,7 +246,7 @@ export default class FrameLabel extends React.Component {
             margin={1}
             start={handles}
             animate={false}
-            onChange={self.handleChange.bind(self)}
+            onChange={self.handleChange}
             disabled={self.state.hasStarted || self.props.isPlaying}
             tooltips
           />
