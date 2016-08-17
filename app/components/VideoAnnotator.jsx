@@ -90,8 +90,11 @@ export default class VideoAnnotator extends React.Component {
       		value: "Soup and Water Wash - Sufficient Rub"
       	}]
       }],
+      categories: null,
       playbackRate: 1.0,
       showAdvanced: false,
+      frameCatVal: "",
+      frameClassVal: "",
       frameCategoryRemove: null,
       frameCategoryAdd: null,
       frameSelect: null,
@@ -111,8 +114,9 @@ export default class VideoAnnotator extends React.Component {
     this.handleSaveModalOK = this.handleSaveModalOK.bind(this);
     this.handleInstructionsModalCancel = this.handleInstructionsModalCancel.bind(this);
     this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
-    this.handleUpdateobjectSelectOptions = this.handleUpdateobjectSelectOptions.bind(this);
-    this.handleUpdateFrameSelectOptions = this.handleUpdateFrameSelectOptions.bind(this);
+    this.handleAddObjectSelectOptions = this.handleAddObjectSelectOptions.bind(this);
+    this.handleAddFrameCategory = this.handleAddFrameCategory.bind(this);
+    this.handleAddFrameClass = this.handleAddFrameClass.bind(this);
     this.handleChangePlaybackRate = this.handleChangePlaybackRate.bind(this);
     this.handleShowAdvanced = this.handleShowAdvanced.bind(this);
     this.handleIsSaved = this.handleIsSaved.bind(this);
@@ -121,6 +125,10 @@ export default class VideoAnnotator extends React.Component {
     this.handleObjectSelect = this.handleObjectSelect.bind(this);
     this.handleOpenInstructionsModal = this.handleOpenInstructionsModal.bind(this);
     this.handleObjTextChange = this.handleObjTextChange.bind(this);
+    this.handleRemoveObjectSelectOptions = this.handleRemoveObjectSelectOptions.bind(this);
+    this.handleFrameCatChange = this.handleFrameCatChange.bind(this);
+    this.handleFrameClassChange = this.handleFrameClassChange.bind(this);
+    this.handleRemoveFrameClass = this.handleRemoveFrameClass.bind(this);
   }
 
   componentWillMount() {
@@ -134,6 +142,11 @@ export default class VideoAnnotator extends React.Component {
   componentDidMount() {
     console.log("VideoAnnotator componentDidMount");
     var self = this;
+
+    var categories = self.getCategories(self.state.frameSelectOptions);
+    self.setState({
+      categories: categories
+    })
 
     var playlist = [];
     for (var i = self.start; i < self.end; i++) {
@@ -550,14 +563,14 @@ export default class VideoAnnotator extends React.Component {
   handleObjTextChange(event) {
     var self = this;
     var text = event.target.value;
-    console.log("text value", self.state.objTextVal);
+    console.log("Text value", text);
 
     self.setState({
       objTextVal: text
     });
   }
 
-  handleUpdateobjectSelectOptions() {
+  handleAddObjectSelectOptions() {
     var self = this;
     var objectSelectOptions = self.state.objectSelectOptions;
     var textVal = self.state.objTextVal;
@@ -573,11 +586,136 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
-  handleUpdateFrameSelectOptions(frameSelectOptions) {
+  handleObjectSelect(select) {
     var self = this;
+    console.log("selected value", select.value);
+
+    self.setState({
+      objectSelect: select
+    });
+  }
+
+  handleRemoveObjectSelectOptions() {
+    var self = this;
+    var objectSelectOptions = self.state.objectSelectOptions;
+    var options = objectSelectOptions[0].options;
+    var textVal = self.state.objectSelect;
+
+    for (var i = 0; i < options.length; i++) {
+       if (options[i].value === textVal) {
+          options.splice(i, 1);
+          break;
+       }
+    }
+    console.log("Obj menu after remove:", objectSelectOptions);
+
+    self.setState({
+      objectSelectOptions: objectSelectOptions,
+      objectSelect: null
+    });
+  }
+
+  handleFrameCatChange(event) {
+    var self = this;
+    var text = event.target.value;
+    console.log("New Cat value", text);
+
+    self.setState({
+      frameCatVal: text
+    });
+  }
+
+  handleFrameClassChange(event) {
+    var self = this;
+    var text = event.target.value;
+    console.log("New Class value", text);
+
+    self.setState({
+      frameClassVal: text
+    });
+  }
+
+  handleAddFrameCategory() {
+    var self = this;
+    var frameSelectOptions = self.state.frameSelectOptions;
+    var textVal = self.state.frameCatVal;
+
+    var flag = false;
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+      if (frameSelectOptions[i].label === textVal) {
+        flag = true;
+        console.log("Frame category already exist!");
+        break;
+      }
+    }
+    console.log("Flag:", flag);
+
+    if (!flag) {
+      frameSelectOptions.push({
+        label: textVal,
+        options: Array()
+      });
+    }
+    console.log("Frame Menu:", frameSelectOptions);
+
+    var categories = self.getCategories(frameSelectOptions);
+    self.setState({
+      frameSelectOptions: frameSelectOptions,
+      categories: categories
+    });
+  }
+
+  handleAddFrameClass() {
+    var self = this;
+    var frameSelectOptions = self.state.frameSelectOptions;
+    var category = self.state.frameCategoryAdd.value;
+    var textVal = self.state.frameClassVal;
+
+    console.log("New category:", category);
+
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+       if (frameSelectOptions[i].label === category) {
+          frameSelectOptions[i].options.push({
+            label: textVal,
+            value: category + " - " + textVal
+          });
+          break;
+       }
+    }
+    console.log("Frame Menu:", frameSelectOptions);
 
     self.setState({
       frameSelectOptions: frameSelectOptions
+    });
+  }
+
+  handleRemoveFrameClass() {
+    var self = this;
+    var frameSelectOptions = self.state.frameSelectOptions;
+    var category = self.state.frameCategoryRemove;
+    var frameClass = self.state.frameSelect.label;
+
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+       if (frameSelectOptions[i].label === category) {
+          var options = frameSelectOptions[i].options;
+          for (var j = 0; j < options.length; j++) {
+            if (options[j].label === frameClass) {
+              options.splice(j, 1);
+              break;
+            }
+          }
+       }
+    }
+    console.log("Frame menu after remove:", frameSelectOptions);
+
+    var categories = self.getCategories(frameSelectOptions);
+    self.setState({
+      frameSelectOptions: frameSelectOptions,
+      frameSelect: null,
+      frameCategoryRemove: null,
+      frameCategoryAdd: null,
+      frameClassVal: "",
+      categories: categories
     });
   }
 
@@ -618,25 +756,16 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
-  getCategories() {
+  getCategories(frameSelectOptions) {
     var self = this;
     var categories = [{options: []}];
 
-    for (var i = 0; i < self.state.frameSelectOptions.length; i++) {
-      var category = self.state.frameSelectOptions[i].label;
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+      var category = frameSelectOptions[i].label;
       categories[0].options.push({label: category, value: category});
     }
 
     return categories;
-  }
-
-  handleObjectSelect(select) {
-    var self = this;
-    console.log("selected value", select);
-
-    self.setState({
-      objectSelect: select.value
-    });
   }
 
   handleOpenInstructionsModal() {
@@ -772,28 +901,28 @@ export default class VideoAnnotator extends React.Component {
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 frame-label-customize-control">
                   <div className="row">
                     <div className="input-group add-category col-lg-4 col-md-4 col-sm-4">
-                      <input type="text" className="form-control" id="name" placeholder="New Category"
+                      <input type="text" className="form-control" id="name" placeholder="New Category" value={self.state.frameCatVal} onChange={self.handleFrameCatChange}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default">
+                        <button type="button" className="btn btn-default" onClick={self.handleAddFrameCategory}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Category
                         </button>
                       </span>
                     </div>
                     <div className="input-group add-class col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                       <Select
-                        name="form-field-name" options={self.getCategories()}
+                        name="form-field-name" options={self.state.categories}
                         onChange={self.handleFrameSelectAdd} value={self.state.frameCategoryAdd}
                         searchable={true} clearable={false}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Category"
                       />
-                      <input type="text" className="form-control" id="name" placeholder="New Class"
+                      <input type="text" className="form-control" id="name" placeholder="New Class" value={self.state.frameClassVal} onChange={self.handleFrameClassChange}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default">
+                        <button type="button" className="btn btn-default" onClick={self.handleAddFrameClass}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
@@ -811,7 +940,7 @@ export default class VideoAnnotator extends React.Component {
                         placeholder="Class"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default">
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveFrameClass}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
@@ -830,7 +959,7 @@ export default class VideoAnnotator extends React.Component {
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleUpdateobjectSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleAddObjectSelectOptions}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
@@ -844,7 +973,7 @@ export default class VideoAnnotator extends React.Component {
                         placeholder="Class"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default">
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveObjectSelectOptions}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
