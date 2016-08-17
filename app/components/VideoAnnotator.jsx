@@ -42,7 +42,8 @@ export default class VideoAnnotator extends React.Component {
       currentFrame: 0,
       numFrames: 0,
       currentItem: -1,
-      isOpen: false,
+      isSaveModalOpen: false,
+      isInstructionsModalOpen: false,
       isPlaying: false,
       isSaved: true,
       labelToBoxData: [],
@@ -105,8 +106,9 @@ export default class VideoAnnotator extends React.Component {
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
     this.handleCloseLabel = this.handleCloseLabel.bind(this);
     this.handleSave = this.handleSave.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.handleOK = this.handleOK.bind(this);
+    this.handleSaveModalCancel = this.handleSaveModalCancel.bind(this);
+    this.handleSaveModalOK = this.handleSaveModalOK.bind(this);
+    this.handleInstructionsModalCancel = this.handleInstructionsModalCancel.bind(this);
     this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
     this.handleUpdateobjectSelectOptions = this.handleUpdateobjectSelectOptions.bind(this);
     this.handleUpdateFrameSelectOptions = this.handleUpdateFrameSelectOptions.bind(this);
@@ -116,6 +118,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleFrameSelectRemove = this.handleFrameSelectRemove.bind(this);
     this.handleFrameSelectAdd = this.handleFrameSelectAdd.bind(this);
     this.handleObjectSelect = this.handleObjectSelect.bind(this);
+    this.handleOpenInstructionsModal = this.handleOpenInstructionsModal.bind(this);
   }
 
   componentWillMount() {
@@ -171,14 +174,14 @@ export default class VideoAnnotator extends React.Component {
         return;
       } else if (!self.state.isSaved) {
         self.setState({
-          isOpen: true
+          isSaveModalOpen: true
         });
       } else {
         self.setState({
           labelInfos: [],
           currentFrame: 0,
           currentItem: currentItem,
-          isOpen: false,
+          isSaveModalOpen: false,
           isPlaying: false,
           isSaved: true
         });
@@ -222,10 +225,16 @@ export default class VideoAnnotator extends React.Component {
 
     window.onkeydown = function(e) {
       if (e.keyCode == 37) { // left
+        if (self.isFocus) {
+          return true;
+        }
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()-dist);
       } else if (e.keyCode == 39) { // right
+        if (self.isFocus) {
+          return true;
+        }
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()+dist);
@@ -238,7 +247,7 @@ export default class VideoAnnotator extends React.Component {
           self.player.play();
         }
         return false;
-      } else if(e.ctrlKey && e.keyCode == 83) {
+      } else if(e.ctrlKey && e.keyCode == 83) { // ctrl + s
         self.handleSave();
         return false;
       }
@@ -383,24 +392,24 @@ export default class VideoAnnotator extends React.Component {
     }
   }
 
-  handleCancel() {
+  handleSaveModalCancel() {
     var self = this;
 
     self.setState({
-      isOpen: false
+      isSaveModalOpen: false
     });
     // Need to subtract self.start to get correct index in playlist
     self.player.playlist.currentItem(self.state.currentItem - self.start);
   }
 
-  handleOK() {
+  handleSaveModalOK() {
     var self = this;
     var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
     self.setState({
       currentFrame: 0,
       currentItem: currentItem,
-      isOpen: false,
+      isSaveModalOpen: false,
       isPlaying: false,
       isSaved: true
     });
@@ -412,6 +421,14 @@ export default class VideoAnnotator extends React.Component {
 
     // Not saved but still want to go to the next video
     self.getVideoInfo();
+  }
+
+  handleInstructionsModalCancel() {
+    var self = this;
+
+    self.setState({
+      isInstructionsModalOpen: false
+    });
   }
 
   handleCloseLabel(id) {
@@ -515,9 +532,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   handleIsFocus(isFocus) {
-    var self = this;
-
-    self.isFocus = isFocus;
+    this.isFocus = isFocus;
   }
 
   handleSetCurrentFrame(currentFrame) {
@@ -597,6 +612,14 @@ export default class VideoAnnotator extends React.Component {
 
     self.setState({
       objectSelect: select.value
+    });
+  }
+
+  handleOpenInstructionsModal() {
+    var self = this;
+
+    self.setState({
+      isInstructionsModalOpen: true
     });
   }
 
@@ -727,7 +750,9 @@ export default class VideoAnnotator extends React.Component {
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 frame-label-customize-control">
                   <div className="row">
                     <div className="input-group add-category col-lg-4 col-md-4 col-sm-4">
-                      <input type="text" className="form-control" id="name" placeholder="New Category" />
+                      <input type="text" className="form-control" id="name" placeholder="New Category"
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                      />
                       <span className="input-group-btn">
                         <button type="button" className="btn btn-default">
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Category
@@ -742,7 +767,9 @@ export default class VideoAnnotator extends React.Component {
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Category"
                       />
-                      <input type="text" className="form-control" id="name" placeholder="New Class" />
+                      <input type="text" className="form-control" id="name" placeholder="New Class"
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                      />
                       <span className="input-group-btn">
                         <button type="button" className="btn btn-default">
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
@@ -776,7 +803,9 @@ export default class VideoAnnotator extends React.Component {
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 object-label-customize-control">
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
-                      <input type="text" className="form-control" id="name" placeholder="New Class" />
+                      <input type="text" className="form-control" id="name" placeholder="New Class"
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                      />
                       <span className="input-group-btn">
                         <button type="button" className="btn btn-default">
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
@@ -801,8 +830,11 @@ export default class VideoAnnotator extends React.Component {
                 </div>
               </div>
 
-              <div className="advanced-options row">
-                <button className="btn btn-default" onClick={self.handleShowAdvanced}>
+              <div className="options row">
+                <button className="btn btn-default col-lg-offset-1 col-md-offset-1 col-sm-offset-1" onClick={self.handleOpenInstructionsModal}>
+                  <span className="glyphicon glyphicon-info-sign"></span> Instructions
+                </button>
+                <button className="btn btn-default col-lg-offset-1 col-md-offset-1 col-sm-offset-1" onClick={self.handleShowAdvanced}>
                   <span className="glyphicon glyphicon-list-alt"></span> Advanced Information
                 </button>
               </div>
@@ -818,9 +850,28 @@ export default class VideoAnnotator extends React.Component {
           <div className="media-events col-lg-4 col-md-4 col-sm-4"></div>
         </section>
 
-        <Modal isOpen={self.state.isOpen} onRequestHide={self.handleCancel}>
+        <Modal isOpen={self.state.isInstructionsModalOpen} onRequestHide={self.handleInstructionsModalCancel}>
           <ModalHeader>
-            <ModalClose onClick={self.handleCancel}/>
+            <ModalClose onClick={self.handleInstructionsModalCancel}/>
+            <ModalTitle>Instructions</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <ModalTitle>Hotkeys</ModalTitle>
+            <p>Space: Toggle play/pause</p>
+            <p>Ctrl + S: Save</p>
+            <p>Left Arrow: Step backward for 5 frames</p>
+            <p>Right Arrow: Step forward for 5 frames</p>
+          </ModalBody>
+          <ModalFooter>
+            <button className="btn btn-default" onClick={self.handleInstructionsModalCancel}>
+              Close
+            </button>
+          </ModalFooter>
+        </Modal>
+
+        <Modal isOpen={self.state.isSaveModalOpen} onRequestHide={self.handleSaveModalCancel}>
+          <ModalHeader>
+            <ModalClose onClick={self.handleSaveModalCancel}/>
             <ModalTitle>Friendly Reminder</ModalTitle>
           </ModalHeader>
           <ModalBody>
@@ -828,10 +879,10 @@ export default class VideoAnnotator extends React.Component {
             <p>Press OK to continue, or Cancel to stay on the current page.</p>
           </ModalBody>
           <ModalFooter>
-            <button className="btn btn-default" onClick={self.handleCancel}>
+            <button className="btn btn-default" onClick={self.handleSaveModalCancel}>
               Cancel
             </button>
-            <button className="btn btn-primary" onClick={self.handleOK}>
+            <button className="btn btn-primary" onClick={self.handleSaveModalOK}>
               OK
             </button>
           </ModalFooter>
