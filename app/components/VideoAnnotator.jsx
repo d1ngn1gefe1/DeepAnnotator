@@ -152,7 +152,7 @@ export default class VideoAnnotator extends React.Component {
       autoplay: false,
       plugins: {
         framebyframe: {
-          fps: 5,
+          fps: FPS,
           steps: [
             { text: "-5", step: -5 },
             { text: "-1", step: -1 },
@@ -190,6 +190,7 @@ export default class VideoAnnotator extends React.Component {
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
         self.getVideoInfo();
+        self.player.pause();
       }
     });
 
@@ -201,12 +202,14 @@ export default class VideoAnnotator extends React.Component {
     });
 
     self.player.on("play", function() {
+      console.log("on play");
       self.setState({
         isPlaying: true
       });
     });
 
     self.player.on("pause", function() {
+      console.log("on pause");
       self.setState({
         isPlaying: false
       });
@@ -241,6 +244,7 @@ export default class VideoAnnotator extends React.Component {
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()+dist);
       } else if (e.keyCode == 32) { // space
+        console.log("space", self.state.isPlaying);
         if (self.isFocus) {
           return true;
         } else if (self.state.isPlaying) {
@@ -694,7 +698,7 @@ export default class VideoAnnotator extends React.Component {
           </div>
 
           <div className="videojs-wrapper col-lg-6 col-md-6 col-sm-6">
-            <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
+            <div className={"small-label-frame bg-gray"}>{Math.min(self.state.currentFrame, self.state.numFrames-1)+"/"+(self.state.numFrames-1)}</div>
 
             <Stage ref="stage" width={WIDTH*SCALING} height={HEIGHT*SCALING} className="canvas-wrapper">
               <Layer ref="layer" id="layer">
@@ -757,7 +761,7 @@ export default class VideoAnnotator extends React.Component {
                     pips={{
                       mode: "values",
                       values: [0, 1, 2, 3],
-                      density: 5
+                      density: 8
                     }}
                   />
                 </div>

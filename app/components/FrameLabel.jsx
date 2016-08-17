@@ -245,7 +245,7 @@ export default class FrameLabel extends React.Component {
         <div className="label-slider">
           <Nouislider
             ref={"Nouislider"}
-            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames}}
+            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames-1}}
             step={1}
             margin={1}
             start={handles}
