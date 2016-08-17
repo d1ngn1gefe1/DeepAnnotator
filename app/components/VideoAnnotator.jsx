@@ -98,7 +98,7 @@ export default class VideoAnnotator extends React.Component {
       frameCategoryRemove: null,
       frameCategoryAdd: null,
       frameSelect: null,
-      objectSelect: "",
+      objectSelect: null,
       objTextVal: ""
     };
 
@@ -587,7 +587,7 @@ export default class VideoAnnotator extends React.Component {
     console.log("selected value", select.value);
 
     self.setState({
-      objectSelect: select.value
+      objectSelect: select
     });
   }
 
@@ -607,7 +607,7 @@ export default class VideoAnnotator extends React.Component {
 
     self.setState({
       objectSelectOptions: objectSelectOptions,
-      objectSelect: ""
+      objectSelect: null
     });
   }
 
