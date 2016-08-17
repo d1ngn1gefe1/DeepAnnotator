@@ -722,11 +722,11 @@ export default class VideoAnnotator extends React.Component {
                 </div>
               </div>
 
-              <div className="add-remove-class-frame row">
+              <div className="frame-label-customize row">
                 <p className="col-lg-1 col-md-1 col-sm-1">Frame</p>
-                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 wrapper">
+                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 frame-label-customize-control">
                   <div className="row">
-                    <div className="input-group add-category col-lg-5 col-md-5 col-sm-5">
+                    <div className="input-group add-category col-lg-4 col-md-4 col-sm-4">
                       <input type="text" className="form-control" id="name" placeholder="New Category" />
                       <span className="input-group-btn">
                         <button type="button" className="btn btn-default">
@@ -734,61 +734,70 @@ export default class VideoAnnotator extends React.Component {
                         </button>
                       </span>
                     </div>
-                    <div className="input-group add-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
-                      <Select className="class-select col-lg-5 col-md-5 col-sm-5"
+                    <div className="input-group add-class col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
+                      <Select
                         name="form-field-name" options={self.getCategories()}
                         onChange={self.handleFrameSelectAdd} value={self.state.frameCategoryAdd}
-                        searchable={true} clearable={true}
+                        searchable={true} clearable={false}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                        placeholder="Category"
                       />
-                      <input type="text" className="form-control col-lg-3 col-md-3 col-sm-3" id="name" placeholder="New Class" />
-                      <span className="input-group-btn col-lg-4 col-md-4 col-sm-4">
+                      <input type="text" className="form-control" id="name" placeholder="New Class" />
+                      <span className="input-group-btn">
                         <button type="button" className="btn btn-default">
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
                     </div>
                   </div>
-                  <div className="input-group remove-class row">
-                    <input type="text" className="form-control col-lg-5 col-md-5 col-sm-5"
-                      placeholder="Category" value={self.state.frameCategoryRemove?self.state.frameCategoryRemove:""} readOnly />
-                    <Select className="class-select col-lg-4 col-md-4 col-sm-4"
-                      name="form-field-name" options={self.state.frameSelectOptions}
-                      onChange={self.handleFrameSelectRemove} value={self.state.frameSelect}
-                      searchable={true} clearable={true}
-                      onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
-                    />
-                    <span className="input-group-btn col-lg-3 col-md-3 col-sm-3">
-                      <button type="button" className="btn btn-default">
-                        <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
-                      </button>
-                    </span>
+                  <div className="row">
+                    <div className="input-group remove-class">
+                      <input type="text" className="form-control"
+                        placeholder="Category" value={self.state.frameCategoryRemove?self.state.frameCategoryRemove:""} readOnly />
+                      <Select
+                        name="form-field-name" options={self.state.frameSelectOptions}
+                        onChange={self.handleFrameSelectRemove} value={self.state.frameSelect}
+                        searchable={true} clearable={false}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                        placeholder="Class"
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default">
+                          <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
+                        </button>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="add-remove-class-object row">
+              <div className="object-label-customize row">
                 <p className="col-lg-1 col-md-1 col-sm-1">Object</p>
-                <div className="input-group add-class col-lg-4 col-md-4 col-sm-4 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
-                  <input type="text" className="form-control" id="name" placeholder="New Class" />
-                  <span className="input-group-btn">
-                    <button type="button" className="btn btn-default">
-                      <span className="glyphicon glyphicon-plus-sign"></span> Add Class
-                    </button>
-                  </span>
-                </div>
-                <div className="input-group remove-class col-lg-5 col-md-5 col-sm-5 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
-                  <Select className="class-select"
-                    name="form-field-name" options={self.state.objectSelectOptions}
-                    onChange={self.handleObjectSelect} value={self.state.objectSelect}
-                    searchable={true} clearable={true}
-                    onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
-                  />
-                  <span className="input-group-btn">
-                    <button type="button" className="btn btn-default">
-                      <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
-                    </button>
-                  </span>
+                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 object-label-customize-control">
+                  <div className="row">
+                    <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
+                      <input type="text" className="form-control" id="name" placeholder="New Class" />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default">
+                          <span className="glyphicon glyphicon-plus-sign"></span> Add Class
+                        </button>
+                      </span>
+                    </div>
+                    <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
+                      <Select
+                        name="form-field-name" options={self.state.objectSelectOptions}
+                        onChange={self.handleObjectSelect} value={self.state.objectSelect}
+                        searchable={true} clearable={false}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                        placeholder="Class"
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default">
+                          <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
+                        </button>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
