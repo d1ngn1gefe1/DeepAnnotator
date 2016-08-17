@@ -94,7 +94,8 @@ export default class VideoAnnotator extends React.Component {
       frameCategoryRemove: null,
       frameCategoryAdd: null,
       frameSelect: null,
-      objectSelect: null
+      objectSelect: null,
+      objTextVal: ""
     };
 
     this.currentKey = 0;
@@ -116,6 +117,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleFrameSelectRemove = this.handleFrameSelectRemove.bind(this);
     this.handleFrameSelectAdd = this.handleFrameSelectAdd.bind(this);
     this.handleObjectSelect = this.handleObjectSelect.bind(this);
+    this.handleObjTextChange = this.handleObjTextChange.bind(this);
   }
 
   componentWillMount() {
@@ -526,8 +528,26 @@ export default class VideoAnnotator extends React.Component {
     self.player.currentTime(currentFrame/FPS);
   }
 
-  handleUpdateobjectSelectOptions(objectSelectOptions) {
+  handleObjTextChange(event) {
     var self = this;
+    var text = event.target.value;
+    console.log("text value", self.state.objTextVal);
+
+    self.setState({
+      objTextVal: text
+    });
+  }
+
+  handleUpdateobjectSelectOptions() {
+    var self = this;
+    var objectSelectOptions = self.state.objectSelectOptions;
+    var textVal = self.state.objTextVal;
+
+    objectSelectOptions[0].options.push({
+      label: textVal,
+      value: textVal
+    });
+    console.log("Obj Menu:", objectSelectOptions);
 
     self.setState({
       objectSelectOptions: objectSelectOptions
@@ -630,7 +650,6 @@ export default class VideoAnnotator extends React.Component {
                       closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
                       numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.state.frameSelectOptions}
-                      updateFrameSelectOptions={self.handleUpdateFrameSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                       isFocus={self.handleIsFocus.bind(self)}
                     />
@@ -642,7 +661,6 @@ export default class VideoAnnotator extends React.Component {
                       closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
                       numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.state.objectSelectOptions}
-                      updateobjectSelectOptions={self.handleUpdateobjectSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                       isFocus={self.handleIsFocus.bind(self)}
                     />
@@ -776,9 +794,9 @@ export default class VideoAnnotator extends React.Component {
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 object-label-customize-control">
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
-                      <input type="text" className="form-control" id="name" placeholder="New Class" />
+                      <input type="text" className="form-control" id="name" placeholder="New Class" value={self.state.objTextVal} onChange={self.handleObjTextChange}/>
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default">
+                        <button type="button" className="btn btn-default" onClick={self.handleUpdateobjectSelectOptions}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
