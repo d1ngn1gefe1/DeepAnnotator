@@ -188,7 +188,7 @@ export default class ObjectLabel extends React.Component {
           <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
             name="form-field-name" options={self.props.selectOptions}
             onChange={self.handleSelect} value={self.state.select}
-            searchable={true} clearable={true}
+            searchable={true} clearable={false}
             onFocus={self.handleFocus} onBlur={self.handleBlur}
           />
         </div>
