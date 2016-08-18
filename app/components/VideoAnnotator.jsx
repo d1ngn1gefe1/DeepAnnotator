@@ -925,7 +925,7 @@ export default class VideoAnnotator extends React.Component {
                 <p className="col-lg-1 col-md-1 col-sm-1">Frame</p>
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 frame-label-customize-control">
                   <div className="row">
-                    <div className="input-group add-category col-lg-4 col-md-4 col-sm-4">
+                    <div className="input-group add-category col-lg-6 col-md-6 col-sm-6">
                       <input type="text" className="form-control" id="name" placeholder="New Category" value={self.state.frameCatVal} onChange={self.handleFrameCatChange}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
@@ -935,7 +935,9 @@ export default class VideoAnnotator extends React.Component {
                         </button>
                       </span>
                     </div>
-                    <div className="input-group add-class col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
+                  </div>
+                  <div className="row">
+                    <div className="input-group add-class">
                       <Select
                         name="form-field-name" options={self.state.categories}
                         onChange={self.handleFrameSelectAdd} value={self.state.frameCategoryAdd}
