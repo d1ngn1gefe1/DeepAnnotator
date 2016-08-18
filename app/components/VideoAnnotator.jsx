@@ -564,10 +564,22 @@ export default class VideoAnnotator extends React.Component {
     var objectSelectOptions = self.state.objectSelectOptions;
     var textVal = self.state.objTextVal;
 
-    objectSelectOptions[0].options.push({
-      label: textVal,
-      value: textVal
-    });
+    var flag = false;
+    var options = objectSelectOptions[0].options;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].label === textVal) {
+        flag = true;
+        console.log("Object class already exist!");
+        break;
+      }
+    }
+
+    if (!flag) {
+      objectSelectOptions[0].options.push({
+        label: textVal,
+        value: textVal
+      });
+    }
     console.log("Obj Menu:", objectSelectOptions);
 
     self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
@@ -639,7 +651,6 @@ export default class VideoAnnotator extends React.Component {
         break;
       }
     }
-    console.log("Flag:", flag);
 
     if (!flag) {
       frameSelectOptions.push({
@@ -667,12 +678,23 @@ export default class VideoAnnotator extends React.Component {
     console.log("New category:", category);
 
     for (var i = 0; i < frameSelectOptions.length; i++) {
-       if (frameSelectOptions[i].label === category) {
+      if (frameSelectOptions[i].label === category) {
+        var options = frameSelectOptions[i].options;
+        var flag = false;
+        for (var j = 0; j < options.length; j++) {
+          if (options[j].label === textVal) {
+            flag = true;
+            console.log("Frame class already exist!");
+            break;
+          }
+        }
+        if (!flag) {
           frameSelectOptions[i].options.push({
             label: textVal,
             value: category + " - " + textVal
           });
-          break;
+        }
+        break;
        }
     }
     console.log("Frame Menu:", frameSelectOptions);
