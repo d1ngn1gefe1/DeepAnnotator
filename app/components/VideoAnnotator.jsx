@@ -154,9 +154,9 @@ export default class VideoAnnotator extends React.Component {
           isPlaying: false,
           isSaved: true
         });
+        self.getOptionsInfo();
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
-        self.getOptionsInfo()
         self.getVideoInfo();
       }
     });
@@ -644,7 +644,7 @@ export default class VideoAnnotator extends React.Component {
     if (!flag) {
       frameSelectOptions.push({
         label: textVal,
-        options: Array()
+        options: []
       });
     }
     console.log("Frame Menu:", frameSelectOptions);
@@ -697,6 +697,10 @@ export default class VideoAnnotator extends React.Component {
               options.splice(j, 1);
               break;
             }
+          }
+          if (options.length == 0) {
+            frameSelectOptions.splice(i, 1);
+            break;
           }
        }
     }
