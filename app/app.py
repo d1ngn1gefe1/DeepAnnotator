@@ -43,14 +43,24 @@ def save_option_info():
     """
     Return frame and object label options
     """
-    config_path = './sql/configs/options.json'
+    Session = sessionmaker(bind=engine)
+    s = Session()
+
     frame_options = request.json['frame_options']
     object_options = request.json['object_options']
     options = {
         'frame_options': frame_options,
         'object_options': object_options
     }
-    write_json(options, config_path)
+
+    s.query(OptionInfo).filter_by(
+        option_name='frame_options').update(
+        dict(options=json.dumps(frame_options)))
+    s.query(OptionInfo).filter_by(
+        option_name='object_options').update(
+        dict(options=json.dumps(object_options)))
+
+    s.commit()
     return json.dumps(options)
 
 
@@ -59,8 +69,15 @@ def get_option_info():
     """
     Return frame and object label options
     """
-    config_path = './sql/configs/options.json'
-    options = read_json(config_path)
+    Session = sessionmaker(bind=engine)
+    s = Session()
+    options_all = s.query(OptionInfo).all()
+    options = {}
+    for option in options_all:
+        if option.option_name == 'frame_options':
+            options['frame_options'] = json.loads(option.options)
+        elif option.option_name == 'object_options':
+            options['object_options'] = json.loads(option.options)
     return json.dumps(options)
 
 
