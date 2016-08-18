@@ -47,49 +47,8 @@ export default class VideoAnnotator extends React.Component {
       isPlaying: false,
       isSaved: true,
       labelToBoxData: [],
-      objectSelectOptions: [{
-        options: [{
-          label: "Table",
-          value: "Table"
-        }, {
-          label: "Chair",
-          value: "Chair"
-        }, {
-          label: "Bed",
-          value: "Bed"
-        }, {
-          label: "Doctor",
-          value: "Doctor"
-        }, {
-          label: "Nurse",
-          value: "Nurse"
-        }]
-      }],
-      frameSelectOptions: [{
-      	label: "Alcohol Rub",
-      	options: [{
-      		label: "No Attempt",
-      		value: "Alcohol Rub - No Attempt"
-      	}, {
-      		label: "Insufficient Rub",
-      		value: "Alcohol Rub - Insufficient Rub"
-      	}, {
-      		label: "Sufficient Rub",
-      		value: "Alcohol Rub - sufficient Rub"
-      	}]
-      }, {
-      	label: "Soup and Water Wash",
-      	options: [{
-      		label: "No Attempt",
-      		value: "Soup and Water Wash - No Attempt"
-      	}, {
-      		label: "Insufficient Rub",
-      		value: "Soup and Water Wash - Insufficient Rub"
-      	}, {
-      		label: "Sufficient Rub",
-      		value: "Soup and Water Wash - Sufficient Rub"
-      	}]
-      }],
+      objectSelectOptions: [],
+      frameSelectOptions: [],
       categories: null,
       playbackRate: 1.0,
       showAdvanced: false,
@@ -143,11 +102,6 @@ export default class VideoAnnotator extends React.Component {
     console.log("VideoAnnotator componentDidMount");
     var self = this;
 
-    var categories = self.getCategories(self.state.frameSelectOptions);
-    self.setState({
-      categories: categories
-    })
-
     var playlist = [];
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
@@ -200,6 +154,7 @@ export default class VideoAnnotator extends React.Component {
           isPlaying: false,
           isSaved: true
         });
+        self.getOptionsInfo();
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
         self.getVideoInfo();
@@ -287,6 +242,44 @@ export default class VideoAnnotator extends React.Component {
         option: option // 0 - 1 for frame labels, 0 - 2 for object labels
       };
     }
+  }
+
+  getOptionsInfo() {
+    var self = this;
+
+    fetch(this.props.urlOptions, {method: "post"})
+      .then(function(response) {
+        return response.json(); })
+      .then(function(options) {
+         console.log("Option info:", options);
+         var categories = self.getCategories(options.frame_options)
+         self.setState({
+           frameSelectOptions: options.frame_options,
+           objectSelectOptions: options.object_options,
+           categories: categories
+         })
+       });
+  }
+
+  saveOptionInfo(frameOptions, objectOptions) {
+    var self = this;
+
+    var options = {
+      frame_options: frameOptions,
+      object_options: objectOptions
+    };
+
+    fetch(this.props.urlSaveOptions, {
+      method: "post",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(options)
+    }).then(function(response) {
+        return response.text(); })
+      .then(data => console.log(data))
+      .catch(err => console.error(this.props.url, err.toString()));
   }
 
   getVideoInfo() {
@@ -581,6 +574,7 @@ export default class VideoAnnotator extends React.Component {
     });
     console.log("Obj Menu:", objectSelectOptions);
 
+    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
     self.setState({
       objectSelectOptions: objectSelectOptions
     });
@@ -599,7 +593,7 @@ export default class VideoAnnotator extends React.Component {
     var self = this;
     var objectSelectOptions = self.state.objectSelectOptions;
     var options = objectSelectOptions[0].options;
-    var textVal = self.state.objectSelect;
+    var textVal = self.state.objectSelect.label;
 
     for (var i = 0; i < options.length; i++) {
        if (options[i].value === textVal) {
@@ -609,6 +603,7 @@ export default class VideoAnnotator extends React.Component {
     }
     console.log("Obj menu after remove:", objectSelectOptions);
 
+    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
     self.setState({
       objectSelectOptions: objectSelectOptions,
       objectSelect: null
@@ -653,10 +648,12 @@ export default class VideoAnnotator extends React.Component {
     if (!flag) {
       frameSelectOptions.push({
         label: textVal,
-        options: Array()
+        options: []
       });
     }
     console.log("Frame Menu:", frameSelectOptions);
+
+    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
 
     var categories = self.getCategories(frameSelectOptions);
     self.setState({
@@ -683,6 +680,7 @@ export default class VideoAnnotator extends React.Component {
        }
     }
     console.log("Frame Menu:", frameSelectOptions);
+    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
 
     self.setState({
       frameSelectOptions: frameSelectOptions
@@ -704,9 +702,14 @@ export default class VideoAnnotator extends React.Component {
               break;
             }
           }
+          if (options.length == 0) {
+            frameSelectOptions.splice(i, 1);
+            break;
+          }
        }
     }
     console.log("Frame menu after remove:", frameSelectOptions);
+    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
 
     var categories = self.getCategories(frameSelectOptions);
     self.setState({
@@ -1051,5 +1054,7 @@ VideoAnnotator.propTypes = {
 
 VideoAnnotator.defaultProps = {
   url: "/videoInfo",
-  urlLabel: "/saveLabel"
+  urlLabel: "/saveLabel",
+  urlOptions: "/optionInfo",
+  urlSaveOptions: "/optionInfoSave"
 };

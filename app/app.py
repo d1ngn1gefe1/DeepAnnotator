@@ -6,6 +6,16 @@ from sql.init_tables import *
 import argparse
 import os
 
+def write_json(data, data_path):
+  with open(data_path, 'w') as fp:
+    json.dump(data, fp)
+
+
+def read_json(data_path):
+  with open(data_path, 'r') as fp:
+    return json.load(fp)
+
+
 # create the application object
 app = Flask(__name__)
 
@@ -26,6 +36,32 @@ def login_required(f):
 @login_required
 def home():
     return render_template('index.html')  # render a template
+
+
+@app.route("/optionInfoSave", methods=["POST"])
+def save_option_info():
+    """
+    Return frame and object label options
+    """
+    config_path = './sql/configs/options.json'
+    frame_options = request.json['frame_options']
+    object_options = request.json['object_options']
+    options = {
+        'frame_options': frame_options,
+        'object_options': object_options
+    }
+    write_json(options, config_path)
+    return json.dumps(options)
+
+
+@app.route("/optionInfo", methods=["POST"])
+def get_option_info():
+    """
+    Return frame and object label options
+    """
+    config_path = './sql/configs/options.json'
+    options = read_json(config_path)
+    return json.dumps(options)
 
 
 @app.route("/videoInfo", methods=["POST"])
