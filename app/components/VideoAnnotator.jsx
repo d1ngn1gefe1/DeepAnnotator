@@ -102,11 +102,6 @@ export default class VideoAnnotator extends React.Component {
     console.log("VideoAnnotator componentDidMount");
     var self = this;
 
-    var categories = self.getCategories(self.state.frameSelectOptions);
-    self.setState({
-      categories: categories
-    })
-
     var playlist = [];
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
@@ -247,14 +242,17 @@ export default class VideoAnnotator extends React.Component {
 
   getOptionsInfo() {
     var self = this;
+
     fetch(this.props.urlOptions, {method: "post"})
       .then(function(response) {
         return response.json(); })
       .then(function(options) {
          console.log("Option info:", options);
+         var categories = self.getCategories(options.frame_options)
          self.setState({
            frameSelectOptions: options.frame_options,
-           objectSelectOptions: options.object_options
+           objectSelectOptions: options.object_options,
+           categories: categories
          })
        });
   }
