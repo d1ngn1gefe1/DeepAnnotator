@@ -880,8 +880,8 @@ export default class VideoAnnotator extends React.Component {
 
             <div className="video-control">
               <div className="playbackRate row">
-                <p className="col-lg-2 col-md-2 col-sm-2">{"Speed: "+self.state.playbackRate.toFixed(2)+"x"}</p>
-                <div className="playbackRateSlider col-lg-8 col-md-8 col-sm-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-2">
+                <p className="col-lg-3 col-md-3 col-sm-3">{"Speed: "+self.state.playbackRate.toFixed(2)+"x"}</p>
+                <div className="playbackRateSlider col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                   <Nouislider
                     ref={"Nouislider-playback-rate"}
                     range={{min: 0, max: 3}}
