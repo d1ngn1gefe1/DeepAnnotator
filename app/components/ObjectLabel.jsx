@@ -33,7 +33,7 @@ export default class ObjectLabel extends React.Component {
 
     for (var i = 0; i < self.state.labels.length; i++) {
       var label = self.state.labels[i];
-      if (self.props.currentFrame >= label[0] && self.props.currentFrame <= label[1]) {
+      if ((self.props.currentFrame >= label[0] && self.props.currentFrame <= label[1]) || (i == self.state.labels.length-1 && self.props.currentFrame == self.props.numFrames)) {
         return label[2];
       }
     }
@@ -91,7 +91,7 @@ export default class ObjectLabel extends React.Component {
         } else if (i == labels.length-1) { // append
           if (labels[i][2] != option) {
             labels[i][1] = currentFrame-1;
-            labels.push([currentFrame, self.props.numFrames, option]);
+            labels.push([currentFrame, self.props.numFrames-1, option]);
           }
           break;
         }
@@ -208,7 +208,7 @@ export default class ObjectLabel extends React.Component {
         <div className="label-slider">
           <Nouislider
             ref={"Nouislider"}
-            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames}}
+            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames-1}}
             step={1}
             margin={1}
             start={handles}
