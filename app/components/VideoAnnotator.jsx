@@ -902,8 +902,8 @@ export default class VideoAnnotator extends React.Component {
 
             <div className="video-control">
               <div className="playbackRate row">
-                <p className="col-lg-2 col-md-2 col-sm-2">{"Speed: "+self.state.playbackRate.toFixed(2)+"x"}</p>
-                <div className="playbackRateSlider col-lg-8 col-md-8 col-sm-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-2">
+                <p className="col-lg-3 col-md-3 col-sm-3">{"Speed: "+self.state.playbackRate.toFixed(2)+"x"}</p>
+                <div className="playbackRateSlider col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                   <Nouislider
                     ref={"Nouislider-playback-rate"}
                     range={{min: 0, max: 3}}
@@ -925,7 +925,7 @@ export default class VideoAnnotator extends React.Component {
                 <p className="col-lg-1 col-md-1 col-sm-1">Frame</p>
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 frame-label-customize-control">
                   <div className="row">
-                    <div className="input-group add-category col-lg-4 col-md-4 col-sm-4">
+                    <div className="input-group add-category col-lg-6 col-md-6 col-sm-6">
                       <input type="text" className="form-control" id="name" placeholder="New Category" value={self.state.frameCatVal} onChange={self.handleFrameCatChange}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
@@ -935,7 +935,9 @@ export default class VideoAnnotator extends React.Component {
                         </button>
                       </span>
                     </div>
-                    <div className="input-group add-class col-lg-7 col-md-7 col-sm-7 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
+                  </div>
+                  <div className="row">
+                    <div className="input-group add-class">
                       <Select
                         name="form-field-name" options={self.state.categories}
                         onChange={self.handleFrameSelectAdd} value={self.state.frameCategoryAdd}
