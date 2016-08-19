@@ -88,13 +88,16 @@ def parse_frames(sensor, data_dir, fpv):
     out_dir = os.path.join(data_dir, sensor, 'd_parsed')
     print 'Parsing data...Output to:', out_dir
     if os.path.exists(out_dir): rmtree(out_dir)
-    os.makedirs(out_dir)
 
     frame_dir = os.path.join(data_dir, sensor, 'd')
-    assert os.path.exists(frame_dir), 'Frames not found: ' + frame_dir
-    frames = [f for f in os.listdir(frame_dir) if f.find('jpg') != -1]
-    frames = natural_sort(frames)
-    max_frame_num = len(frames[-1].split('.jpg')[0])
+    if os.path.exists(frame_dir):
+        frames = [f for f in os.listdir(frame_dir) if f.find('jpg') != -1]
+        frames = natural_sort(frames)
+        max_frame_num = len(frames[-1].split('.jpg')[0])
+        os.makedirs(out_dir)
+    else:
+        frames = []
+        print 'Frames not found: ' + frame_dir
 
     frame_count = 0; dir_count = 0;
     dst = os.path.join(out_dir, '0')
@@ -113,8 +116,9 @@ def parse_frames(sensor, data_dir, fpv):
         frame_count += 1
     print 'Num. videos:', dir_count
 
-    command = ' '.join(['chmod', '777', '-R', out_dir])
-    sp.call(command, shell=True)
+    if frame_count > 0:
+        command = ' '.join(['chmod', '777', '-R', out_dir])
+        sp.call(command, shell=True)
     return (out_dir, dir_count)
 
 
@@ -145,7 +149,7 @@ def main(params):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data_dir', default='/mnt/bigdata/intermountain',
+    parser.add_argument('--data_dir', default='/home/cvpr_data',
                         help='Root directory where all data resides')
     parser.add_argument('--out_dir', default='../public/static/video',
                         help='Output directory')
