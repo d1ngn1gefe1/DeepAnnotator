@@ -6,6 +6,16 @@ from sql.init_tables import *
 import argparse
 import os
 
+def write_json(data, data_path):
+  with open(data_path, 'w') as fp:
+    json.dump(data, fp)
+
+
+def read_json(data_path):
+  with open(data_path, 'r') as fp:
+    return json.load(fp)
+
+
 # create the application object
 app = Flask(__name__)
 
@@ -26,6 +36,49 @@ def login_required(f):
 @login_required
 def home():
     return render_template('index.html')  # render a template
+
+
+@app.route("/optionInfoSave", methods=["POST"])
+def save_option_info():
+    """
+    Return frame and object label options
+    """
+    Session = sessionmaker(bind=engine)
+    s = Session()
+
+    frame_options = request.json['frame_options']
+    object_options = request.json['object_options']
+    options = {
+        'frame_options': frame_options,
+        'object_options': object_options
+    }
+
+    s.query(OptionInfo).filter_by(
+        option_name='frame_options').update(
+        dict(options=json.dumps(frame_options)))
+    s.query(OptionInfo).filter_by(
+        option_name='object_options').update(
+        dict(options=json.dumps(object_options)))
+
+    s.commit()
+    return json.dumps(options)
+
+
+@app.route("/optionInfo", methods=["POST"])
+def get_option_info():
+    """
+    Return frame and object label options
+    """
+    Session = sessionmaker(bind=engine)
+    s = Session()
+    options_all = s.query(OptionInfo).all()
+    options = {}
+    for option in options_all:
+        if option.option_name == 'frame_options':
+            options['frame_options'] = json.loads(option.options)
+        elif option.option_name == 'object_options':
+            options['object_options'] = json.loads(option.options)
+    return json.dumps(options)
 
 
 @app.route("/videoInfo", methods=["POST"])

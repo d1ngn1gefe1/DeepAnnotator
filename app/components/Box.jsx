@@ -258,7 +258,7 @@ export default class Box extends React.Component {
       bboxes: bboxes
     });
     self.bbox = self.getCurrentBbox();
-    self.props.notSaved();
+    self.props.isSaved(false);
   }
 
   handleDragMoveRect() {
@@ -298,7 +298,7 @@ export default class Box extends React.Component {
       bboxes: bboxes
     });
     self.bbox = self.getCurrentBbox();
-    self.props.notSaved();
+    self.props.isSaved(false);
   }
 
   getCurrentBbox() {

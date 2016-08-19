@@ -12,13 +12,14 @@ export default class FrameLabel extends React.Component {
     this.state = {
       labels: [],
       select: null,
+      category: null,
       hasStarted: false,
-      textVal: ""
     };
 
     this.handleSelect = this.handleSelect.bind(this);
-    this.handleTextChange = this.handleTextChange.bind(this);
-    this.handleAddText = this.handleAddText.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
   }
 
   componentDidMount() {
@@ -49,9 +50,10 @@ export default class FrameLabel extends React.Component {
     this.setState({
       labels: data["labels"],
       select: data["select"],
+      category: data["select"].value.split(" - ")[0],
       hasStarted: false
     });
-    this.props.saved();
+    this.props.isSaved(true);
   }
 
   mergeIntervals(intervals) {
@@ -136,7 +138,7 @@ export default class FrameLabel extends React.Component {
       labels: labels,
       hasStarted: !self.state.hasStarted
     });
-    self.props.notSaved();
+    self.props.isSaved(false);
   }
 
   handleChange(handles, index) {
@@ -150,7 +152,7 @@ export default class FrameLabel extends React.Component {
       labels: labels
     });
     self.props.setCurrentFrame(value);
-    self.props.notSaved();
+    self.props.isSaved(false);
   }
 
   getHandles() {
@@ -195,34 +197,18 @@ export default class FrameLabel extends React.Component {
     console.log("selected value", select);
 
     self.setState({
-      select: select
+      select: select,
+      category: select.value.split(" - ")[0]
     });
-    self.props.notSaved();
+    self.props.isSaved(false);
   }
 
-  handleAddText() {
-    var self = this;
-    var selectOptions = self.props.selectOptions;
-
-    var textVal = self.state.textVal;
-    console.log("Click", textVal);
-
-    selectOptions[0].options.push({
-      label: textVal,
-      value: textVal
-    });
-    console.log("Menu:", selectOptions);
-    self.props.updateFrameSelectOptions(selectOptions);
+  handleFocus() {
+    this.props.isFocus(true);
   }
 
-  handleTextChange(event) {
-    var self = this;
-    var text = event.target.value;
-    console.log("text value", self.state.textVal);
-
-    self.setState({
-      textVal: text
-    });
+  handleBlur() {
+    this.props.isFocus(false);
   }
 
   render() {
@@ -237,16 +223,15 @@ export default class FrameLabel extends React.Component {
         </button>
 
         <div className="label-header row">
-          <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Frame "+self.props.id}</p>
-          <div className="label-add-class input-group col-lg-5 col-md-5 col-sm-5">
-            <input type="text" className="form-control" id="name" placeholder="New Class" value={self.state.textVal} onChange={self.handleTextChange} />
-            <span className="input-group-btn">
-              <button type="button" className="btn btn-default" onClick={self.handleAddText}>
-                <span className="glyphicon glyphicon-plus-sign"></span> Add Class
-              </button>
-            </span>
-          </div>
-          <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" name="form-field-name" options={self.props.selectOptions} onChange={self.handleSelect} value={self.state.select} searchable={true} clearable={true} />
+          <p className="label-text col-lg-2 col-md-2 col-sm-2">{"Frame "+self.props.id}</p>
+          <input type="text" className="label-category form-control col-lg-4 col-md-4 col-sm-4 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
+            placeholder="Category" value={self.state.category?self.state.category:""} readOnly />
+          <Select className="label-select col-lg-5 col-md-5 col-sm-5"
+            name="form-field-name" options={self.props.selectOptions}
+            onChange={self.handleSelect} value={self.state.select}
+            searchable={true} clearable={false}
+            onFocus={self.handleFocus} onBlur={self.handleBlur}
+          />
         </div>
 
         <div className="btn-group" data-toggle="buttons">
@@ -261,12 +246,12 @@ export default class FrameLabel extends React.Component {
         <div className="label-slider">
           <Nouislider
             ref={"Nouislider"}
-            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames}}
+            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames-1}}
             step={1}
             margin={1}
             start={handles}
             animate={false}
-            onChange={self.handleChange.bind(self)}
+            onChange={self.handleChange}
             disabled={self.state.hasStarted || self.props.isPlaying}
             tooltips
           />

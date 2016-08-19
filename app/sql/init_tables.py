@@ -60,5 +60,19 @@ class Video(Base):
         self.bboxes = bboxes
 
 
+class OptionInfo(Base):
+    """"""
+    __tablename__ = "options"
+
+    option_name = Column(String(100), primary_key=True)
+    options = Column(String(1000))
+
+    #----------------------------------------------------------------------
+    def __init__(self, option_name, options):
+        """"""
+        self.option_name = option_name
+        self.options = options
+
+
 # create tables
 Base.metadata.create_all(engine)

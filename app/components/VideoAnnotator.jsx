@@ -8,6 +8,7 @@ import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from "react-modal-bootstrap"
 import {Layer, Rect, Stage, Group} from "react-konva";
+import Select from "react-select-plus";
 
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
@@ -17,6 +18,7 @@ import Nouislider from "./slider/NouisliderWrapper.jsx";
 
 import "video.js/dist/video-js.min.css";
 import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
+import "react-select-plus/dist/react-select-plus.css";
 
 // don't change these!
 var HEIGHT = 240;
@@ -40,93 +42,52 @@ export default class VideoAnnotator extends React.Component {
       currentFrame: 0,
       numFrames: 0,
       currentItem: -1,
-      isOpen: false,
+      isSaveModalOpen: false,
+      isInstructionsModalOpen: false,
       isPlaying: false,
       isSaved: true,
       labelToBoxData: [],
-      objSelectOptions: [{
-        options: [{
-          label: "Table",
-          value: "Table"
-        }, {
-          label: "Chair",
-          value: "Chair"
-        }, {
-          label: "Bed",
-          value: "Bed"
-        }, {
-          label: "Doctor",
-          value: "Doctor"
-        }, {
-          label: "Nurse",
-          value: "Nurse"
-        }]
-      }],
-      frameSelectOptions: [{
-      	options: [{
-      		label: "Alcohol Rub - No Attempt",
-      		value: "Alcohol Rub - No Attempt"
-      	}, {
-      		label: "Alcohol Rub - Insufficient Rub",
-      		value: "Alcohol Rub - Insufficient Rub"
-      	}, {
-      		label: "Alcohol Rub - Sufficient Rub",
-      		value: "Alcohol Rub - sufficient Rub"
-      	}, {
-      		label: "Soup and Water Wash - No Attempt",
-      		value: "Soup and Water Wash - No Attempt"
-      	}, {
-      		label: "Soup and Water Wash - Insufficient Rub",
-      		value: "Soup and Water Wash - Insufficient Rub"
-      	}, {
-      		label: "Soup and Water Wash - Sufficient Rub",
-      		value: "Soup and Water Wash - Sufficient Rub"
-      	}]
-      }],
+      objectSelectOptions: [],
+      frameSelectOptions: [],
+      categories: null,
       playbackRate: 1.0,
-      showAdvanced: false
+      showAdvanced: false,
+      frameCatVal: "",
+      frameClassVal: "",
+      frameCategoryRemove: null,
+      frameCategoryAdd: null,
+      frameSelect: null,
+      objectSelect: null,
+      objTextVal: ""
     };
 
     this.currentKey = 0;
     this.currentLabels = [];
+    this.isFocus = false;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
     this.handleCloseLabel = this.handleCloseLabel.bind(this);
     this.handleSave = this.handleSave.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.handleOK = this.handleOK.bind(this);
+    this.handleSaveModalCancel = this.handleSaveModalCancel.bind(this);
+    this.handleSaveModalOK = this.handleSaveModalOK.bind(this);
+    this.handleInstructionsModalCancel = this.handleInstructionsModalCancel.bind(this);
     this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
-    this.handleUpdateObjSelectOptions = this.handleUpdateObjSelectOptions.bind(this);
-    this.handleUpdateFrameSelectOptions = this.handleUpdateFrameSelectOptions.bind(this);
+    this.handleAddObjectSelectOptions = this.handleAddObjectSelectOptions.bind(this);
+    this.handleAddFrameCategory = this.handleAddFrameCategory.bind(this);
+    this.handleAddFrameClass = this.handleAddFrameClass.bind(this);
     this.handleChangePlaybackRate = this.handleChangePlaybackRate.bind(this);
     this.handleShowAdvanced = this.handleShowAdvanced.bind(this);
-
-    this.selectOptions = [{
-    	label: "Alcohol Rub",
-    	options: [{
-    		label: "Alcohol Rub - No Attempt",
-    		value: "Alcohol Rub - No Attempt"
-    	}, {
-    		label: "Alcohol Rub - Insufficient Rub",
-    		value: "Alcohol Rub - Insufficient Rub"
-    	}, {
-    		label: "Alcohol Rub - Sufficient Rub",
-    		value: "Alcohol Rub - sufficient Rub"
-    	}]
-    }, {
-    	label: "Soup and Water Wash",
-    	options: [{
-    		label: "Soup and Water Wash - No Attempt",
-    		value: "Soup and Water Wash - No Attempt"
-    	}, {
-    		label: "Soup and Water Wash - Insufficient Rub",
-    		value: "Soup and Water Wash - Insufficient Rub"
-    	}, {
-    		label: "Soup and Water Wash - Sufficient Rub",
-    		value: "Soup and Water Wash - Sufficient Rub"
-    	}]
-    }];
+    this.handleIsSaved = this.handleIsSaved.bind(this);
+    this.handleFrameSelectRemove = this.handleFrameSelectRemove.bind(this);
+    this.handleFrameSelectAdd = this.handleFrameSelectAdd.bind(this);
+    this.handleObjectSelect = this.handleObjectSelect.bind(this);
+    this.handleOpenInstructionsModal = this.handleOpenInstructionsModal.bind(this);
+    this.handleObjTextChange = this.handleObjTextChange.bind(this);
+    this.handleRemoveObjectSelectOptions = this.handleRemoveObjectSelectOptions.bind(this);
+    this.handleFrameCatChange = this.handleFrameCatChange.bind(this);
+    this.handleFrameClassChange = this.handleFrameClassChange.bind(this);
+    this.handleRemoveFrameClass = this.handleRemoveFrameClass.bind(this);
   }
 
   componentWillMount() {
@@ -158,7 +119,7 @@ export default class VideoAnnotator extends React.Component {
       autoplay: false,
       plugins: {
         framebyframe: {
-          fps: 5,
+          fps: FPS,
           steps: [
             { text: "-5", step: -5 },
             { text: "-1", step: -1 },
@@ -182,20 +143,22 @@ export default class VideoAnnotator extends React.Component {
         return;
       } else if (!self.state.isSaved) {
         self.setState({
-          isOpen: true
+          isSaveModalOpen: true
         });
       } else {
         self.setState({
           labelInfos: [],
           currentFrame: 0,
           currentItem: currentItem,
-          isOpen: false,
+          isSaveModalOpen: false,
           isPlaying: false,
           isSaved: true
         });
+        self.getOptionsInfo();
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
         self.getVideoInfo();
+        self.player.pause();
       }
     });
 
@@ -207,12 +170,14 @@ export default class VideoAnnotator extends React.Component {
     });
 
     self.player.on("play", function() {
+      console.log("on play");
       self.setState({
         isPlaying: true
       });
     });
 
     self.player.on("pause", function() {
+      console.log("on pause");
       self.setState({
         isPlaying: false
       });
@@ -232,24 +197,31 @@ export default class VideoAnnotator extends React.Component {
     };
 
     window.onkeydown = function(e) {
-      console.log("key", e);
-
       if (e.keyCode == 37) { // left
+        if (self.isFocus) {
+          return true;
+        }
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()-dist);
       } else if (e.keyCode == 39) { // right
+        if (self.isFocus) {
+          return true;
+        }
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()+dist);
       } else if (e.keyCode == 32) { // space
-        if (self.state.isPlaying) {
+        console.log("space", self.state.isPlaying);
+        if (self.isFocus) {
+          return true;
+        } else if (self.state.isPlaying) {
           self.player.pause();
         } else {
           self.player.play();
         }
         return false;
-      } else if(e.ctrlKey && e.keyCode == 83) {
+      } else if(e.ctrlKey && e.keyCode == 83) { // ctrl + s
         self.handleSave();
         return false;
       }
@@ -270,6 +242,44 @@ export default class VideoAnnotator extends React.Component {
         option: option // 0 - 1 for frame labels, 0 - 2 for object labels
       };
     }
+  }
+
+  getOptionsInfo() {
+    var self = this;
+
+    fetch(this.props.urlOptions, {method: "post"})
+      .then(function(response) {
+        return response.json(); })
+      .then(function(options) {
+         console.log("Option info:", options);
+         var categories = self.getCategories(options.frame_options)
+         self.setState({
+           frameSelectOptions: options.frame_options,
+           objectSelectOptions: options.object_options,
+           categories: categories
+         })
+       });
+  }
+
+  saveOptionInfo(frameOptions, objectOptions) {
+    var self = this;
+
+    var options = {
+      frame_options: frameOptions,
+      object_options: objectOptions
+    };
+
+    fetch(this.props.urlSaveOptions, {
+      method: "post",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(options)
+    }).then(function(response) {
+        return response.text(); })
+      .then(data => console.log(data))
+      .catch(err => console.error(this.props.url, err.toString()));
   }
 
   getVideoInfo() {
@@ -394,24 +404,24 @@ export default class VideoAnnotator extends React.Component {
     }
   }
 
-  handleCancel() {
+  handleSaveModalCancel() {
     var self = this;
 
     self.setState({
-      isOpen: false
+      isSaveModalOpen: false
     });
     // Need to subtract self.start to get correct index in playlist
     self.player.playlist.currentItem(self.state.currentItem - self.start);
   }
 
-  handleOK() {
+  handleSaveModalOK() {
     var self = this;
     var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
     self.setState({
       currentFrame: 0,
       currentItem: currentItem,
-      isOpen: false,
+      isSaveModalOpen: false,
       isPlaying: false,
       isSaved: true
     });
@@ -423,6 +433,14 @@ export default class VideoAnnotator extends React.Component {
 
     // Not saved but still want to go to the next video
     self.getVideoInfo();
+  }
+
+  handleInstructionsModalCancel() {
+    var self = this;
+
+    self.setState({
+      isInstructionsModalOpen: false
+    });
   }
 
   handleCloseLabel(id) {
@@ -525,25 +543,204 @@ export default class VideoAnnotator extends React.Component {
     });
   }
 
+  handleIsFocus(isFocus) {
+    this.isFocus = isFocus;
+  }
+
   handleSetCurrentFrame(currentFrame) {
     var self = this;
 
     self.player.currentTime(currentFrame/FPS);
   }
 
-  handleUpdateObjSelectOptions(objSelectOptions) {
+  handleObjTextChange(event) {
     var self = this;
+    var text = event.target.value;
+    console.log("Text value", text);
 
     self.setState({
-      objSelectOptions: objSelectOptions
+      objTextVal: text
     });
   }
 
-  handleUpdateFrameSelectOptions(frameSelectOptions) {
+  handleAddObjectSelectOptions() {
     var self = this;
+    var objectSelectOptions = self.state.objectSelectOptions;
+    var textVal = self.state.objTextVal;
+
+    var flag = false;
+    var options = objectSelectOptions[0].options;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].label === textVal) {
+        flag = true;
+        console.log("Object class already exist!");
+        break;
+      }
+    }
+
+    if (!flag) {
+      objectSelectOptions[0].options.push({
+        label: textVal,
+        value: textVal
+      });
+    }
+    console.log("Obj Menu:", objectSelectOptions);
+
+    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
+    self.setState({
+      objectSelectOptions: objectSelectOptions
+    });
+  }
+
+  handleObjectSelect(select) {
+    var self = this;
+    console.log("selected value", select.value);
+
+    self.setState({
+      objectSelect: select
+    });
+  }
+
+  handleRemoveObjectSelectOptions() {
+    var self = this;
+    var objectSelectOptions = self.state.objectSelectOptions;
+    var options = objectSelectOptions[0].options;
+    var textVal = self.state.objectSelect.label;
+
+    for (var i = 0; i < options.length; i++) {
+       if (options[i].value === textVal) {
+          options.splice(i, 1);
+          break;
+       }
+    }
+    console.log("Obj menu after remove:", objectSelectOptions);
+
+    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
+    self.setState({
+      objectSelectOptions: objectSelectOptions,
+      objectSelect: null
+    });
+  }
+
+  handleFrameCatChange(event) {
+    var self = this;
+    var text = event.target.value;
+    console.log("New Cat value", text);
+
+    self.setState({
+      frameCatVal: text
+    });
+  }
+
+  handleFrameClassChange(event) {
+    var self = this;
+    var text = event.target.value;
+    console.log("New Class value", text);
+
+    self.setState({
+      frameClassVal: text
+    });
+  }
+
+  handleAddFrameCategory() {
+    var self = this;
+    var frameSelectOptions = self.state.frameSelectOptions;
+    var textVal = self.state.frameCatVal;
+
+    var flag = false;
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+      if (frameSelectOptions[i].label === textVal) {
+        flag = true;
+        console.log("Frame category already exist!");
+        break;
+      }
+    }
+
+    if (!flag) {
+      frameSelectOptions.push({
+        label: textVal,
+        options: []
+      });
+    }
+    console.log("Frame Menu:", frameSelectOptions);
+
+    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
+
+    var categories = self.getCategories(frameSelectOptions);
+    self.setState({
+      frameSelectOptions: frameSelectOptions,
+      categories: categories
+    });
+  }
+
+  handleAddFrameClass() {
+    var self = this;
+    var frameSelectOptions = self.state.frameSelectOptions;
+    var category = self.state.frameCategoryAdd.value;
+    var textVal = self.state.frameClassVal;
+
+    console.log("New category:", category);
+
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+      if (frameSelectOptions[i].label === category) {
+        var options = frameSelectOptions[i].options;
+        var flag = false;
+        for (var j = 0; j < options.length; j++) {
+          if (options[j].label === textVal) {
+            flag = true;
+            console.log("Frame class already exist!");
+            break;
+          }
+        }
+        if (!flag) {
+          frameSelectOptions[i].options.push({
+            label: textVal,
+            value: category + " - " + textVal
+          });
+        }
+        break;
+       }
+    }
+    console.log("Frame Menu:", frameSelectOptions);
+    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
 
     self.setState({
       frameSelectOptions: frameSelectOptions
+    });
+  }
+
+  handleRemoveFrameClass() {
+    var self = this;
+    var frameSelectOptions = self.state.frameSelectOptions;
+    var category = self.state.frameCategoryRemove;
+    var frameClass = self.state.frameSelect.label;
+
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+       if (frameSelectOptions[i].label === category) {
+          var options = frameSelectOptions[i].options;
+          for (var j = 0; j < options.length; j++) {
+            if (options[j].label === frameClass) {
+              options.splice(j, 1);
+              break;
+            }
+          }
+          if (options.length == 0) {
+            frameSelectOptions.splice(i, 1);
+            break;
+          }
+       }
+    }
+    console.log("Frame menu after remove:", frameSelectOptions);
+    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
+
+    var categories = self.getCategories(frameSelectOptions);
+    self.setState({
+      frameSelectOptions: frameSelectOptions,
+      frameSelect: null,
+      frameCategoryRemove: null,
+      frameCategoryAdd: null,
+      frameClassVal: "",
+      categories: categories
     });
   }
 
@@ -562,6 +759,45 @@ export default class VideoAnnotator extends React.Component {
 
     self.setState({
       showAdvanced: !self.state.showAdvanced
+    });
+  }
+
+  handleFrameSelectRemove(select) {
+    var self = this;
+    console.log("selected value", select);
+
+    self.setState({
+      frameSelect: select,
+      frameCategoryRemove: select.value.split(" - ")[0]
+    });
+  }
+
+  handleFrameSelectAdd(select) {
+    var self = this;
+    console.log("selected value", select);
+
+    self.setState({
+      frameCategoryAdd: select
+    });
+  }
+
+  getCategories(frameSelectOptions) {
+    var self = this;
+    var categories = [{options: []}];
+
+    for (var i = 0; i < frameSelectOptions.length; i++) {
+      var category = frameSelectOptions[i].label;
+      categories[0].options.push({label: category, value: category});
+    }
+
+    return categories;
+  }
+
+  handleOpenInstructionsModal() {
+    var self = this;
+
+    self.setState({
+      isInstructionsModalOpen: true
     });
   }
 
@@ -592,22 +828,22 @@ export default class VideoAnnotator extends React.Component {
                   return (
                     <FrameLabel key={labelInfo.key} id={index}
                       ref={"label"+index} currentFrame={self.state.currentFrame}
-                      closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
-                      saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
+                      closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
+                      numFrames={self.state.numFrames}
                       isPlaying={self.state.isPlaying} selectOptions={self.state.frameSelectOptions}
-                      updateFrameSelectOptions={self.handleUpdateFrameSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
+                      isFocus={self.handleIsFocus.bind(self)}
                     />
                   );
                 } else {
                   return (
                     <ObjectLabel key={labelInfo.key} id={index}
                       ref={"label"+index} currentFrame={self.state.currentFrame}
-                      closeLabel={self.handleCloseLabel} notSaved={self.handleIsSaved.bind(self, false)}
-                      saved={self.handleIsSaved.bind(self, true)} numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.state.objSelectOptions}
-                      updateObjSelectOptions={self.handleUpdateObjSelectOptions}
+                      closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
+                      numFrames={self.state.numFrames}
+                      isPlaying={self.state.isPlaying} selectOptions={self.state.objectSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
+                      isFocus={self.handleIsFocus.bind(self)}
                     />
                   );
                 }
@@ -616,7 +852,7 @@ export default class VideoAnnotator extends React.Component {
           </div>
 
           <div className="videojs-wrapper col-lg-6 col-md-6 col-sm-6">
-            <div className={"small-label-frame bg-gray"}>{self.state.currentFrame+"/"+self.state.numFrames}</div>
+            <div className={"small-label-frame bg-gray"}>{Math.min(self.state.currentFrame, self.state.numFrames-1)+"/"+(self.state.numFrames-1)}</div>
 
             <Stage ref="stage" width={WIDTH*SCALING} height={HEIGHT*SCALING} className="canvas-wrapper">
               <Layer ref="layer" id="layer">
@@ -627,7 +863,7 @@ export default class VideoAnnotator extends React.Component {
                       <Box key={labelInfo.key} ref={"box"+index} id={index}
                         currentFrame={self.state.currentFrame}
                         currentOption={(self.currentLabels[index])?self.currentLabels[index].option:0}
-                        notSaved={self.handleIsSaved.bind(self, false)}
+                        isSaved={self.handleIsSaved}
                         isPlaying={self.state.isPlaying}
                       />
                     );
@@ -642,15 +878,12 @@ export default class VideoAnnotator extends React.Component {
                 var bg;
 
                 if (currentLabel.isFrameLabel) {
-                  numFrameLabels++;
-                  if (currentLabel.option == 0) {
-                    bg = " bg-gray";
-                  } else if (currentLabel.option == 1) {
-                    bg = " bg-danger";
+                  if (currentLabel.option == 1) {
+                    numFrameLabels++;
+                    return (
+                      <div className={"small-label bg-danger"} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame "+index}</div>
+                    );
                   }
-                  return (
-                    <div className={"small-label"+bg} key={index} style={{left: 76*(numFrameLabels-1)+"px"}}>{"Frame"+index}</div>
-                  );
                 } else {
                   if (currentLabel.option == 0) {
                     bg = " bg-success";
@@ -669,11 +902,11 @@ export default class VideoAnnotator extends React.Component {
 
             <div className="video-control">
               <div className="playbackRate row">
-                <p className="col-lg-2 col-md-2 col-sm-2">{"Speed: "+self.state.playbackRate+"x"}</p>
-                <div className="playbackRateSlider col-lg-8 col-md-8 col-sm-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-2">
+                <p className="col-lg-3 col-md-3 col-sm-3">{"Speed: "+self.state.playbackRate.toFixed(2)+"x"}</p>
+                <div className="playbackRateSlider col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                   <Nouislider
                     ref={"Nouislider-playback-rate"}
-                    range={{min: 0, max: 5}}
+                    range={{min: 0, max: 3}}
                     start={[self.state.playbackRate]}
                     step={0.25}
                     margin={0.25}
@@ -681,14 +914,106 @@ export default class VideoAnnotator extends React.Component {
                     onSlide={self.handleChangePlaybackRate}
                     pips={{
                       mode: "values",
-                      values: [0, 1, 2, 3, 4, 5],
-                      density: 5
+                      values: [0, 1, 2, 3],
+                      density: 8
                     }}
                   />
                 </div>
               </div>
-              <div className="advanced-options row">
-                <button className="btn btn-default" onClick={self.handleShowAdvanced}>
+
+              <div className="frame-label-customize row">
+                <p className="col-lg-1 col-md-1 col-sm-1">Frame</p>
+                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 frame-label-customize-control">
+                  <div className="row">
+                    <div className="input-group add-category col-lg-6 col-md-6 col-sm-6">
+                      <input type="text" className="form-control" id="name" placeholder="New Category" value={self.state.frameCatVal} onChange={self.handleFrameCatChange}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default" onClick={self.handleAddFrameCategory}>
+                          <span className="glyphicon glyphicon-plus-sign"></span> Add Category
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="input-group add-class">
+                      <Select
+                        name="form-field-name" options={self.state.categories}
+                        onChange={self.handleFrameSelectAdd} value={self.state.frameCategoryAdd}
+                        searchable={true} clearable={false}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                        placeholder="Category"
+                      />
+                      <input type="text" className="form-control" id="name" placeholder="New Class" value={self.state.frameClassVal} onChange={self.handleFrameClassChange}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default" onClick={self.handleAddFrameClass}>
+                          <span className="glyphicon glyphicon-plus-sign"></span> Add Class
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="input-group remove-class">
+                      <input type="text" className="form-control"
+                        placeholder="Category" value={self.state.frameCategoryRemove?self.state.frameCategoryRemove:""} readOnly />
+                      <Select
+                        name="form-field-name" options={self.state.frameSelectOptions}
+                        onChange={self.handleFrameSelectRemove} value={self.state.frameSelect}
+                        searchable={true} clearable={false}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                        placeholder="Class"
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveFrameClass}>
+                          <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="object-label-customize row">
+                <p className="col-lg-1 col-md-1 col-sm-1">Object</p>
+                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 object-label-customize-control">
+                  <div className="row">
+                    <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
+                      <input type="text" className="form-control" id="name" placeholder="New Class"
+                        value={self.state.objTextVal} onChange={self.handleObjTextChange}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default" onClick={self.handleAddObjectSelectOptions}>
+                          <span className="glyphicon glyphicon-plus-sign"></span> Add Class
+                        </button>
+                      </span>
+                    </div>
+                    <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
+                      <Select
+                        name="form-field-name" options={self.state.objectSelectOptions}
+                        onChange={self.handleObjectSelect} value={self.state.objectSelect}
+                        searchable={true} clearable={false}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                        placeholder="Class"
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveObjectSelectOptions}>
+                          <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="options row">
+                <button className="btn btn-default col-lg-offset-1 col-md-offset-1 col-sm-offset-1" onClick={self.handleOpenInstructionsModal}>
+                  <span className="glyphicon glyphicon-info-sign"></span> Instructions
+                </button>
+                <button className="btn btn-default col-lg-offset-1 col-md-offset-1 col-sm-offset-1" onClick={self.handleShowAdvanced}>
                   <span className="glyphicon glyphicon-list-alt"></span> Advanced Information
                 </button>
               </div>
@@ -704,9 +1029,28 @@ export default class VideoAnnotator extends React.Component {
           <div className="media-events col-lg-4 col-md-4 col-sm-4"></div>
         </section>
 
-        <Modal isOpen={self.state.isOpen} onRequestHide={self.handleCancel}>
+        <Modal isOpen={self.state.isInstructionsModalOpen} onRequestHide={self.handleInstructionsModalCancel}>
           <ModalHeader>
-            <ModalClose onClick={self.handleCancel}/>
+            <ModalClose onClick={self.handleInstructionsModalCancel}/>
+            <ModalTitle>Instructions</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <ModalTitle>Hotkeys</ModalTitle>
+            <p>Space: Toggle play/pause</p>
+            <p>Ctrl + S: Save</p>
+            <p>Left Arrow: Step backward for 5 frames</p>
+            <p>Right Arrow: Step forward for 5 frames</p>
+          </ModalBody>
+          <ModalFooter>
+            <button className="btn btn-default" onClick={self.handleInstructionsModalCancel}>
+              Close
+            </button>
+          </ModalFooter>
+        </Modal>
+
+        <Modal isOpen={self.state.isSaveModalOpen} onRequestHide={self.handleSaveModalCancel}>
+          <ModalHeader>
+            <ModalClose onClick={self.handleSaveModalCancel}/>
             <ModalTitle>Friendly Reminder</ModalTitle>
           </ModalHeader>
           <ModalBody>
@@ -714,10 +1058,10 @@ export default class VideoAnnotator extends React.Component {
             <p>Press OK to continue, or Cancel to stay on the current page.</p>
           </ModalBody>
           <ModalFooter>
-            <button className="btn btn-default" onClick={self.handleCancel}>
+            <button className="btn btn-default" onClick={self.handleSaveModalCancel}>
               Cancel
             </button>
-            <button className="btn btn-primary" onClick={self.handleOK}>
+            <button className="btn btn-primary" onClick={self.handleSaveModalOK}>
               OK
             </button>
           </ModalFooter>
@@ -734,5 +1078,7 @@ VideoAnnotator.propTypes = {
 
 VideoAnnotator.defaultProps = {
   url: "/videoInfo",
-  urlLabel: "/saveLabel"
+  urlLabel: "/saveLabel",
+  urlOptions: "/optionInfo",
+  urlSaveOptions: "/optionInfoSave"
 };
