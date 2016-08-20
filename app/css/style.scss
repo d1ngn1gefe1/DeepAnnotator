@@ -33,7 +33,12 @@ body {
     padding: 70px 0px 0px 0px;
     margin: 0px;
     overflow: hidden;
+
+   p {
+    font-size: 18px;
+    color: white;
   }
+ }
 
   .video-js {
     width: 100%;
@@ -73,10 +78,6 @@ body {
     .label-info {
       padding: 10px;
       margin: 1px 10px 1px 10px;
-
-      p {
-        color: white;
-      }
 
       .btn-group {
         width: 100%;
@@ -191,6 +192,10 @@ body {
       .vjs-volume-menu-button {
         display: none;
       }
+
+      .vjs-fullscreen-control {
+        display: none;
+      }
     }
 
     .video-control {
@@ -219,7 +224,6 @@ body {
       }
 
       p {
-        color: white;
         float: left;
         padding: 0px;
         margin: 0px;

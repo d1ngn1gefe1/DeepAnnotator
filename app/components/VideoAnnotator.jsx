@@ -550,7 +550,9 @@ export default class VideoAnnotator extends React.Component {
   handleSetCurrentFrame(currentFrame) {
     var self = this;
 
+    console.log(self.player.currentTime());
     self.player.currentTime(currentFrame/FPS);
+    console.log(self.player.currentTime());
   }
 
   handleObjTextChange(event) {
