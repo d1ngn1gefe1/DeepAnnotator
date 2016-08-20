@@ -497,7 +497,15 @@ export default class VideoAnnotator extends React.Component {
 
     for (var i = 0; i < self.state.labelInfos.length; i++) {
       var labels = self.refs["label"+i].getData();
+      var label = labels.labels;
+      // Remove invalid labels
+      for (var j = 0; j < label.length; j++) {
+        if (label[j][0] == -1 || label[j][1] == -1) {
+          label.splice(j, 1);
+        }
+      }
       console.log("Save data:", labels);
+
       if (self.state.labelInfos[i]["isFrameLabel"]) {
         frameData.push(labels);
       } else {
@@ -550,9 +558,7 @@ export default class VideoAnnotator extends React.Component {
   handleSetCurrentFrame(currentFrame) {
     var self = this;
 
-    console.log(self.player.currentTime());
     self.player.currentTime(currentFrame/FPS);
-    console.log(self.player.currentTime());
   }
 
   handleObjTextChange(event) {
