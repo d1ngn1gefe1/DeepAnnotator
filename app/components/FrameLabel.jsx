@@ -47,10 +47,14 @@ export default class FrameLabel extends React.Component {
   }
 
   setData(data) {
+    var category = null;
+    if (data["select"] != null) {
+      category = data["select"].value.split(" - ")[0];
+    }
     this.setState({
       labels: data["labels"],
       select: data["select"],
-      category: data["select"].value.split(" - ")[0],
+      category: category,
       hasStarted: false
     });
     this.props.isSaved(true);
