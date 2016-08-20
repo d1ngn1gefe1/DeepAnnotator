@@ -13,6 +13,11 @@ body {
 .video-annotator {
   padding: 0px;
 
+  p {
+    font-size: 18px;
+    color: white;
+  }
+
   .glyphicon-pencil {
     color: yellow;
   }
@@ -74,10 +79,6 @@ body {
       padding: 10px;
       margin: 1px 10px 1px 10px;
 
-      p {
-        color: white;
-      }
-
       .btn-group {
         width: 100%;
       }
@@ -113,7 +114,6 @@ body {
       margin: 0 0 10px 0;
 
       .label-text {
-        font-size: 18px;
         float: left;
         padding: 4px 0 4px 0;
         margin: 0px;
@@ -224,7 +224,6 @@ body {
       }
 
       p {
-        color: white;
         float: left;
         padding: 0px;
         margin: 0px;
