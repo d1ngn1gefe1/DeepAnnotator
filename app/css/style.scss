@@ -13,11 +13,6 @@ body {
 .video-annotator {
   padding: 0px;
 
-  p {
-    font-size: 18px;
-    color: white;
-  }
-
   .glyphicon-pencil {
     color: yellow;
   }
@@ -38,7 +33,12 @@ body {
     padding: 70px 0px 0px 0px;
     margin: 0px;
     overflow: hidden;
+
+   p {
+    font-size: 18px;
+    color: white;
   }
+ }
 
   .video-js {
     width: 100%;
