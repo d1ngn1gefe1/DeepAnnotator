@@ -160,4 +160,4 @@ if __name__ == '__main__':
     params = vars(args)
 
     app.secret_key = os.urandom(12)
-    app.run(host='0.0.0.0', port=int(params['port']), debug=True, threaded=True)
+    app.run(host='0.0.0.0', port=int(params['port']), debug=False, threaded=True)
