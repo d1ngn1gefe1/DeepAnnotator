@@ -158,6 +158,7 @@ export default class VideoAnnotator extends React.Component {
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
         self.getVideoInfo();
+        self.markCurrentVideo();
         self.player.pause();
       }
     });
@@ -299,6 +300,34 @@ export default class VideoAnnotator extends React.Component {
        });
   }
 
+  markCurrentVideo() {
+    var self = this;
+    var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+    var playlist = document.getElementsByClassName("vjs-playlist")[0];
+    console.log("Mark current item:", currentItem);
+
+    for (var i = 0; i < playlist.childNodes.length; i++) {
+      var video = playlist.childNodes[i];
+      var tag = "glyphicon glyphicon-headphones";
+
+      for (var j = 0; j < video.childNodes.length; j++) {
+        if (video.childNodes[j].className === tag) {
+          video.removeChild(video.childNodes[j]);
+          break;
+        }
+      }
+
+      if (parseInt(currentItem) == i) {
+        console.log("Current item:", currentItem);
+        var span = document.createElement("span");
+        span.setAttribute("class", tag);
+        video.appendChild(span);
+        console.log("Mark current video span:", span);
+        console.log("Mark current video:", video);
+      }
+    }
+  }
+
   markLabeledVideos() {
       var self = this;
       var serverData = self.state.serverData;
@@ -321,13 +350,26 @@ export default class VideoAnnotator extends React.Component {
             tag = "glyphicon glyphicon-ok";
           }
 
-          var index = serverData[i].videoId;
-          if (playlist.childNodes[index].childNodes.length <= 2) {
+          if (count > 0) {
+            var index = serverData[i].videoId;
+            var node = playlist.childNodes[index];
             var span = document.createElement("span");
             span.setAttribute("class", tag);
-            playlist.childNodes[index].appendChild(span);
-          } else {
-            playlist.childNodes[index].childNodes[2].setAttribute("class", tag);
+            if (node.childNodes.length <= 2) {
+              var linebreak = document.createElement("br");
+              node.appendChild(span);
+              node.appendChild(linebreak);
+            } else {
+              var className = node.childNodes[2].className;
+              if (className === "glyphicon glyphicon-pencil" ||
+                  className === "glyphicon glyphicon-ok") {
+                node.childNodes[2].setAttribute("class", tag);
+              } else {
+                var linebreak = document.createElement("br");
+                node.insertBefore(span, node.childNodes[2]);
+                node.insertBefore(linebreak, node.childNodes[3]);
+              }
+            }
           }
         }
       }
