@@ -305,6 +305,7 @@ export default class VideoAnnotator extends React.Component {
     var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
     var playlist = document.getElementsByClassName("vjs-playlist")[0];
     console.log("Mark current item:", currentItem);
+    console.log("self.start:", self.start);
 
     for (var i = 0; i < playlist.childNodes.length; i++) {
       var video = playlist.childNodes[i];
@@ -317,7 +318,7 @@ export default class VideoAnnotator extends React.Component {
         }
       }
 
-      if (parseInt(currentItem) == i) {
+      if (parseInt(currentItem) == i + self.start) {
         console.log("Current item:", currentItem);
         var span = document.createElement("span");
         span.setAttribute("class", tag);
@@ -351,7 +352,8 @@ export default class VideoAnnotator extends React.Component {
           }
 
           if (count > 0) {
-            var index = serverData[i].videoId;
+            var index = serverData[i].videoId - self.start;
+            console.log("index:", index);
             var node = playlist.childNodes[index];
             var span = document.createElement("span");
             span.setAttribute("class", tag);
