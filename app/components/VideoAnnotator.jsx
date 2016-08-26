@@ -136,7 +136,7 @@ export default class VideoAnnotator extends React.Component {
       mediaProperties(self.player);
     });
 
-    self.player.on("loadstart", function() {
+    self.player.on("canplaythrough", function() {
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
       if (currentItem == self.state.currentItem) {
@@ -154,12 +154,12 @@ export default class VideoAnnotator extends React.Component {
           isPlaying: false,
           isSaved: true
         });
+        return;
         self.getOptionsInfo();
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
         self.getVideoInfo();
         self.markCurrentVideo();
-        self.player.pause();
       }
     });
 
@@ -170,11 +170,15 @@ export default class VideoAnnotator extends React.Component {
       });
     });
 
-    self.player.on("play", function() {
-      console.log("on play");
+    self.player.on("playing", function() {
+      console.log("on playing");
       self.setState({
         isPlaying: true
       });
+    });
+
+    self.player.on("play", function() {
+      console.log("on play");
     });
 
     self.player.on("pause", function() {
