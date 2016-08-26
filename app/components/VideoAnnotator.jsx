@@ -88,6 +88,7 @@ export default class VideoAnnotator extends React.Component {
     this.handleFrameCatChange = this.handleFrameCatChange.bind(this);
     this.handleFrameClassChange = this.handleFrameClassChange.bind(this);
     this.handleRemoveFrameClass = this.handleRemoveFrameClass.bind(this);
+    this.handleClickPlaylist = this.handleClickPlaylist.bind(this);
   }
 
   componentWillMount() {
@@ -154,7 +155,9 @@ export default class VideoAnnotator extends React.Component {
           isPlaying: false,
           isSaved: true
         });
-        return;
+
+        self.player.pause();
+
         self.getOptionsInfo();
         // Reinitialize labels from server when saved and go to next video or
         // load page for the first time
@@ -171,18 +174,11 @@ export default class VideoAnnotator extends React.Component {
     });
 
     self.player.on("playing", function() {
-      console.log("on playing");
       self.setState({
         isPlaying: true
       });
     });
-
-    self.player.on("play", function() {
-      console.log("on play");
-    });
-
     self.player.on("pause", function() {
-      console.log("on pause");
       self.setState({
         isPlaying: false
       });
@@ -196,7 +192,7 @@ export default class VideoAnnotator extends React.Component {
       });
     });
 
-    window.onpopstate = function() {
+    window.onpopstate = function(e) {
       console.log("Back button pressed!");
       window.location.href = "/";
     };
@@ -217,13 +213,14 @@ export default class VideoAnnotator extends React.Component {
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()+dist);
       } else if (e.keyCode == 32) { // space
-        console.log("space", self.state.isPlaying);
-        if (self.isFocus) {
-          return true;
-        } else if (self.state.isPlaying) {
-          self.player.pause();
+        if (self.player.paused()) {
+          setTimeout(function () {
+            self.player.play();
+          }, 150);
         } else {
-          self.player.play();
+          setTimeout(function () {
+            self.player.pause();
+          }, 150);
         }
         return false;
       } else if(e.ctrlKey && e.keyCode == 83) { // ctrl + s
@@ -231,6 +228,13 @@ export default class VideoAnnotator extends React.Component {
         return false;
       }
     };
+  }
+
+  handleClickPlaylist() {
+    var items = document.getElementsByClassName("vjs-playlist-item");
+    for (var i = 0; i < items.length; i++) {
+      items[i].blur();
+    }
   }
 
   componentWillUpdate() {
@@ -313,7 +317,7 @@ export default class VideoAnnotator extends React.Component {
 
     for (var i = 0; i < playlist.childNodes.length; i++) {
       var video = playlist.childNodes[i];
-      var tag = "glyphicon glyphicon-headphones";
+      var tag = "glyphicon glyphicon-hand-left";
 
       for (var j = 0; j < video.childNodes.length; j++) {
         if (video.childNodes[j].className === tag) {
@@ -1076,7 +1080,7 @@ export default class VideoAnnotator extends React.Component {
             </div>
           </div>
 
-          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2"></ol>
+          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2" onClick={self.handleClickPlaylist}></ol>
         </section>
 
         <section className={self.state.showAdvanced?"details":"details details-hidden"}>
