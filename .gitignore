@@ -1,5 +1,7 @@
 /public
 /node_modules
-/app/sql/configs/*
+/app/sql/configs
+/app/sql/configs/config.json
+/app/sql/init_tables_aicare.py
 *.pyc
 *.log
