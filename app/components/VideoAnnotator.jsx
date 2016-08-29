@@ -138,7 +138,29 @@ export default class VideoAnnotator extends React.Component {
     });
 
     self.player.on("canplaythrough", function() {
+      console.log("canplaythrough");
+    });
+
+    self.player.on("loadedmetadata", function() {
+      console.log("loadedmetadata");
+    });
+
+    self.player.on("loadstart", function() {
+      console.log("loadstart");
+    });
+
+    self.player.on("canplay", function() {
+      console.log("canplay");
+    });
+
+    self.player.on("loadeddata", function() {
+      console.log("loadeddata");
       var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+
+      if (self.player.seekable().end(0) == 0) {
+        console.log("reload");
+        self.player.playlist.currentItem(currentItem-self.start);
+      }
 
       if (currentItem == self.state.currentItem) {
         return;
