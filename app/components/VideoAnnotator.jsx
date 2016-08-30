@@ -1,5 +1,10 @@
+import 'es5-shim';
+import 'es6-shim';
+import 'es7-shim';
 import React from "react";
 import videojs from "video.js";
+import document from 'global/document';
+import 'videojs-contrib-hls';
 import "videojs-playlist";
 import "videojs-playlist-ui";
 
@@ -28,24 +33,31 @@ export default class VideoAnnotator extends React.Component {
       });
     }
 
-    self.player = videojs("player", {
+    const player = window.player = videojs("player", {
       control: true,
       preload: "auto",
       autoplay: false
     });
 
-    self.player.playlist(playlist);
-    self.player.playlistUi();
+    player.playlist(playlist);
+    player.playlistUi();
 
-    self.player.on('loadstart', function() {
-      console.log(self.player.playlist.currentItem());
+    player.on('loadstart', function() {
+      console.log(player.playlist.currentItem());
     });
   }
 
   render() {
     return (
-      <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
-      </video>
+      <section className="main-preview-player">
+        <video id="preview-player" class="video-js vjs-fluid" controls preload="auto">
+          <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+        </video>
+
+        <div className="playlist-container  preview-player-dimensions vjs-fluid">
+          <ol className="vjs-playlist"></ol>
+        </div>
+      </section>
     );
   }
 }
