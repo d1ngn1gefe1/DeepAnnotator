@@ -115,9 +115,6 @@ export default class VideoAnnotator extends React.Component {
     // }
 
     self.player = videojs("player", {
-      control: true,
-      preload: "auto",
-      autoplay: false,
       plugins: {
         framebyframe: {
           fps: FPS,
@@ -173,7 +170,7 @@ export default class VideoAnnotator extends React.Component {
       });
 
       self.player.on("loadstart", function() {
-        console.log("loadstart");
+        console.log("loadstart", self.player.playlist.currentItem());
       });
 
       self.player.on("canplay", function() {
@@ -1010,7 +1007,7 @@ export default class VideoAnnotator extends React.Component {
               })
             }
 
-            <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
+            <video id="player" className="video-js">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>
 
