@@ -132,86 +132,87 @@ export default class VideoAnnotator extends React.Component {
     }, function() {
       self.player.playlist(playlist);
       self.player.playlistUi();
+
+      self.player.on("canplaythrough", function() {
+        console.log("canplaythrough");
+      });
+
+      self.player.on("loadedmetadata", function() {
+        console.log("loadedmetadata");
+      });
+
+      self.player.on("loadstart", function() {
+        console.log("loadstart");
+      });
+
+      self.player.on("canplay", function() {
+        console.log("canplay");
+      });
+
+      self.player.on("loadeddata", function() {
+        console.log("loadeddata");
+        var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+
+        if (self.player.seekable().end(0) == 0) {
+          console.log("reload");
+          self.player.playlist.currentItem(currentItem-self.start);
+        }
+
+        if (currentItem == self.state.currentItem) {
+          return;
+        } else if (!self.state.isSaved) {
+          self.setState({
+            isSaveModalOpen: true
+          });
+        } else {
+          self.setState({
+            labelInfos: [],
+            currentFrame: 0,
+            currentItem: currentItem,
+            isSaveModalOpen: false,
+            isPlaying: false,
+            isSaved: true
+          });
+
+          self.player.pause();
+
+          self.getOptionsInfo();
+          // Reinitialize labels from server when saved and go to next video or
+          // load page for the first time
+          self.getVideoInfo();
+          self.markCurrentVideo();
+        }
+      });
+
+      self.player.on("durationchange", function() {
+        console.log("durationchange");
+        self.setState({
+          numFrames: Math.round(self.player.duration()*FPS)
+        });
+      });
+
+      self.player.on("playing", function() {
+        self.setState({
+          isPlaying: true
+        });
+      });
+      self.player.on("pause", function() {
+        self.setState({
+          isPlaying: false
+        });
+      });
+
+      self.player.on("timeupdate", function() {
+        var currentFrame = Math.round(self.player.currentTime()*FPS);
+
+        self.setState({
+          currentFrame: currentFrame
+        });
+      });
+
       boundProperties(self.player);
       mediaEvents(self.player);
       mediaProperties(self.player);
-    });
-
-    self.player.on("canplaythrough", function() {
-      console.log("canplaythrough");
-    });
-
-    self.player.on("loadedmetadata", function() {
-      console.log("loadedmetadata");
-    });
-
-    self.player.on("loadstart", function() {
-      console.log("loadstart");
-    });
-
-    self.player.on("canplay", function() {
-      console.log("canplay");
-    });
-
-    self.player.on("loadeddata", function() {
-      console.log("loadeddata");
-      var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
-
-      if (self.player.seekable().end(0) == 0) {
-        console.log("reload");
-        self.player.playlist.currentItem(currentItem-self.start);
-      }
-
-      if (currentItem == self.state.currentItem) {
-        return;
-      } else if (!self.state.isSaved) {
-        self.setState({
-          isSaveModalOpen: true
-        });
-      } else {
-        self.setState({
-          labelInfos: [],
-          currentFrame: 0,
-          currentItem: currentItem,
-          isSaveModalOpen: false,
-          isPlaying: false,
-          isSaved: true
-        });
-
-        self.player.pause();
-
-        self.getOptionsInfo();
-        // Reinitialize labels from server when saved and go to next video or
-        // load page for the first time
-        self.getVideoInfo();
-        self.markCurrentVideo();
-      }
-    });
-
-    self.player.on("durationchange", function() {
-      console.log("durationchange");
-      self.setState({
-        numFrames: Math.round(self.player.duration()*FPS)
-      });
-    });
-
-    self.player.on("playing", function() {
-      self.setState({
-        isPlaying: true
-      });
-    });
-    self.player.on("pause", function() {
-      self.setState({
-        isPlaying: false
-      });
-    });
-
-    self.player.on("timeupdate", function() {
-      var currentFrame = Math.round(self.player.currentTime()*FPS);
-
-      self.setState({
-        currentFrame: currentFrame
-      });
     });
 
     window.onpopstate = function(e) {
