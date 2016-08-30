@@ -106,11 +106,13 @@ export default class VideoAnnotator extends React.Component {
     var playlist = [];
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
-        "sources": [{
-          "src": "/static/video/"+self.playlistName+"/"+i+"/depth.mp4", "type": "video/mp4"
+        sources: [{
+          "src": "http://media.w3.org/2010/05/sintel/trailer.mp4",
+          "type": "video/mp4"
         }],
-        "name": "Video "+i,
-        "thumbnail": "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg"
+        name: "Video "+i,
+        thumbnail: "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg",
+        poster: "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg"
       });
     }
 
