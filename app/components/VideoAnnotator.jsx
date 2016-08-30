@@ -17,7 +17,8 @@ export default class VideoAnnotator extends React.Component {
     var self = this;
 
     var playlist = [];
-    for (var i = self.start; i < self.end; i++) {
+    self.playlistName = "10.0.1.71";
+    for (var i = 0; i < 1; i++) {
       playlist.push({
         "sources": [{
           "src": "/static/video/"+self.playlistName+"/"+i+"/depth.mp4", "type": "video/mp4"
@@ -30,18 +31,7 @@ export default class VideoAnnotator extends React.Component {
     self.player = videojs("player", {
       control: true,
       preload: "auto",
-      autoplay: false,
-      plugins: {
-        framebyframe: {
-          fps: FPS,
-          steps: [
-            { text: "-5", step: -5 },
-            { text: "-1", step: -1 },
-            { text: "+1", step: 1 },
-            { text: "+5", step: 5 },
-          ]
-        }
-      }
+      autoplay: false
     });
 
     self.player.playlist(playlist);
@@ -55,7 +45,6 @@ export default class VideoAnnotator extends React.Component {
   render() {
     return (
       <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
-        <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
       </video>
     );
   }
