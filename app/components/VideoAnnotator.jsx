@@ -94,7 +94,9 @@ export default class VideoAnnotator extends React.Component {
   componentWillMount() {
     console.log("VideoAnnotator componentWillMount");
     this.playlistName = this.props.params.playlistName;
+    console.log(this.playlistName);
     var range = this.props.params.range.split("-");
+    console.log(range);
     this.start = parseInt(range[0]);
     this.end = parseInt(range[1])+1; // exclusive
   }
@@ -107,7 +109,7 @@ export default class VideoAnnotator extends React.Component {
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
         sources: [{
-          src: "/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          src: "http://aicare.stanford.edu/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
           type: "video/mp4"
         }],
         name: "Video "+i,
@@ -129,38 +131,7 @@ export default class VideoAnnotator extends React.Component {
         }
       }
     }, function() {
-      self.player.playlist([{
-        sources: [{
-          src: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
-          type: 'video/mp4'
-        }],
-        poster: 'http://media.w3.org/2010/05/sintel/poster.png'
-      }, {
-        sources: [{
-          src: 'http://media.w3.org/2010/05/bunny/trailer.mp4',
-          type: 'video/mp4'
-        }],
-        poster: 'http://media.w3.org/2010/05/bunny/poster.png'
-      }, {
-        sources: [{
-          src: 'http://vjs.zencdn.net/v/oceans.mp4',
-          type: 'video/mp4'
-        }],
-        poster: 'http://www.videojs.com/img/poster.jpg'
-      }, {
-        sources: [{
-          src: 'http://media.w3.org/2010/05/bunny/movie.mp4',
-          type: 'video/mp4'
-        }],
-        poster: 'http://media.w3.org/2010/05/bunny/poster.png'
-      }, {
-        sources: [{
-          src: 'http://media.w3.org/2010/05/video/movie_300.mp4',
-          type: 'video/mp4'
-        }],
-        poster: 'http://media.w3.org/2010/05/video/poster.png'
-      }]);
-
+      self.player.playlist(playlist);
       self.player.playlistUi();
 
       self.player.on("canplaythrough", function() {
@@ -184,8 +155,7 @@ export default class VideoAnnotator extends React.Component {
         var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
 
         if (self.player.seekable().end(0) == 0) {
-          console.log("reload");
-          self.player.playlist.currentItem(currentItem-self.start);
+          console.log("error: not seekable");
         }
 
         if (currentItem == self.state.currentItem) {
@@ -1009,7 +979,7 @@ export default class VideoAnnotator extends React.Component {
               })
             }
 
-            <video id="player" className="video-js" controls autoplay preload="auto">
+            <video id="player" className="video-js" controls autoPlay preload="auto">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>
 
