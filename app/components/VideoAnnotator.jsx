@@ -135,24 +135,8 @@ export default class VideoAnnotator extends React.Component {
       self.player.playlist(playlist);
       self.player.playlistUi();
 
-      self.player.on("canplaythrough", function() {
-        console.log("canplaythrough");
-      });
-
-      self.player.on("loadedmetadata", function() {
-        console.log("loadedmetadata");
-      });
-
-      self.player.on("loadstart", function() {
-        console.log("loadstart", self.player.playlist.currentItem());
-      });
-
-      self.player.on("canplay", function() {
-        console.log("canplay");
-      });
-
       self.player.on("loadeddata", function() {
-        console.log("loadeddata");
+        console.log("loadeddata", self.player.playlist.currentItem());
         var currentItem = self.player.playlist.currentItem();
 
         if (self.player.seekable().end(0) == 0) {
