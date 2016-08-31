@@ -20,6 +20,8 @@ import "video.js/dist/video-js.min.css";
 import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
 import "react-select-plus/dist/react-select-plus.css";
 
+import json from "../sql/configs/config.json";
+
 // don't change these!
 var HEIGHT = 240;
 var WIDTH = 320;
@@ -64,6 +66,7 @@ export default class VideoAnnotator extends React.Component {
     this.currentKey = 0;
     this.currentLabels = [];
     this.isFocus = false;
+    this.public = json.public;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
@@ -94,9 +97,7 @@ export default class VideoAnnotator extends React.Component {
   componentWillMount() {
     console.log("VideoAnnotator componentWillMount");
     this.playlistName = this.props.params.playlistName;
-    console.log(this.playlistName);
     var range = this.props.params.range.split("-");
-    console.log(range);
     this.start = parseInt(range[0]);
     this.end = parseInt(range[1])+1; // exclusive
   }
@@ -109,7 +110,7 @@ export default class VideoAnnotator extends React.Component {
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
         sources: [{
-          src: "http://aicare.stanford.edu/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          src: "http://"+self.public+"/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
           type: "video/mp4"
         }],
         name: "Video "+i,
@@ -152,7 +153,7 @@ export default class VideoAnnotator extends React.Component {
 
       self.player.on("loadeddata", function() {
         console.log("loadeddata");
-        var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+        var currentItem = self.player.playlist.currentItem();
 
         if (self.player.seekable().end(0) == 0) {
           console.log("error: not seekable");
@@ -180,7 +181,6 @@ export default class VideoAnnotator extends React.Component {
           // Reinitialize labels from server when saved and go to next video or
           // load page for the first time
           self.getVideoInfo();
-          self.markCurrentVideo();
         }
       });
 
@@ -228,6 +228,7 @@ export default class VideoAnnotator extends React.Component {
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()-dist);
+        return false;
       } else if (e.keyCode == 39) { // right
         if (self.isFocus) {
           return true;
@@ -235,6 +236,7 @@ export default class VideoAnnotator extends React.Component {
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()+dist);
+        return false;
       } else if (e.keyCode == 32) { // space
         if (self.player.paused()) {
           setTimeout(function () {
@@ -315,7 +317,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   getVideoInfo() {
-    console.log(this.props.url);
+    // console.log(this.props.url);
 
     var self = this;
     fetch(this.props.url, {method: "post"})
@@ -329,35 +331,6 @@ export default class VideoAnnotator extends React.Component {
          self.initLabeledVideos();
          self.markLabeledVideos();
        });
-  }
-
-  markCurrentVideo() {
-    var self = this;
-    var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
-    var playlist = document.getElementsByClassName("vjs-playlist")[0];
-    console.log("Mark current item:", currentItem);
-    console.log("self.start:", self.start);
-
-    for (var i = 0; i < playlist.childNodes.length; i++) {
-      var video = playlist.childNodes[i];
-      var tag = "glyphicon glyphicon-hand-left";
-
-      for (var j = 0; j < video.childNodes.length; j++) {
-        if (video.childNodes[j].className === tag) {
-          video.removeChild(video.childNodes[j]);
-          break;
-        }
-      }
-
-      if (parseInt(currentItem) == i + self.start) {
-        console.log("Current item:", currentItem);
-        var span = document.createElement("span");
-        span.setAttribute("class", tag);
-        video.appendChild(span);
-        console.log("Mark current video span:", span);
-        console.log("Mark current video:", video);
-      }
-    }
   }
 
   markLabeledVideos() {
@@ -384,7 +357,7 @@ export default class VideoAnnotator extends React.Component {
 
           if (count > 0) {
             var index = serverData[i].videoId - self.start;
-            console.log("index:", index);
+            // console.log("index:", index);
             var node = playlist.childNodes[index];
             var span = document.createElement("span");
             span.setAttribute("class", tag);
@@ -415,12 +388,12 @@ export default class VideoAnnotator extends React.Component {
       var frameLabel = Array();
       var objectLabel = Array();
       var bboxes = Array();
-      var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+      var currentItem = self.player.playlist.currentItem();
       console.log("Src currentItem", currentItem);
 
       for (var i = 0; i < serverData.length; i++) {
         if (self.playlistName == serverData[i].playlistName &&
-            currentItem == serverData[i].videoId) {
+            currentItem == serverData[i].videoId - self.start) {
           frameLabel.push.apply(frameLabel,
             JSON.parse(serverData[i].frameLabel)["label"]);
           objectLabel.push.apply(objectLabel,
@@ -485,13 +458,12 @@ export default class VideoAnnotator extends React.Component {
     self.setState({
       isSaveModalOpen: false
     });
-    // Need to subtract self.start to get correct index in playlist
-    self.player.playlist.currentItem(self.state.currentItem - self.start);
+    self.player.playlist.currentItem(self.state.currentItem);
   }
 
   handleSaveModalOK() {
     var self = this;
-    var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+    var currentItem = self.player.playlist.currentItem();
 
     self.setState({
       currentFrame: 0,
@@ -601,7 +573,7 @@ export default class VideoAnnotator extends React.Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        videoId: self.state.currentItem,
+        videoId: self.start+self.state.currentItem,
         playlistName: self.playlistName,
         frameLabel: JSON.stringify(frameLabel),
         objectLabel: JSON.stringify(objectLabel),
