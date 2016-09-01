@@ -233,7 +233,7 @@ export default class FrameLabel extends React.Component {
           <Select className="label-select col-lg-5 col-md-5 col-sm-5"
             name="form-field-name" options={self.props.selectOptions}
             onChange={self.handleSelect} value={self.state.select}
-            searchable={true} clearable={false}
+            searchable={true} clearable={false} autoBlur={true}
             onFocus={self.handleFocus} onBlur={self.handleBlur}
           />
         </div>

@@ -141,6 +141,33 @@ body {
       }
     }
 
+    .label-subheader {
+      width: 100%;
+      margin: 0 0 10px 0;
+
+      .label-text {
+        float: left;
+        padding: 14px 0 4px 0;
+        margin: 10px 0 0 0;
+        font-size: 16px;
+        border-top-style: dotted;
+        border-top-width: 2px;
+        border-top-color: $gray-even-darker;
+      }
+    }
+
+    .label-action-select {
+      .Select-control {
+        z-index: 100;
+        width: 50px;
+        margin: 0 auto;
+      }
+
+      .Select-menu-outer {
+        width: 200px;
+      }
+    }
+
     .label-slider {
       margin: 45px 10px 40px 10px;
       position: relative;

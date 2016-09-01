@@ -980,7 +980,7 @@ export default class VideoAnnotator extends React.Component {
                       <Select
                         name="form-field-name" options={self.state.categories}
                         onChange={self.handleFrameSelectAdd} value={self.state.frameCategoryAdd}
-                        searchable={true} clearable={false}
+                        searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Category"
                       />
@@ -1001,7 +1001,7 @@ export default class VideoAnnotator extends React.Component {
                       <Select
                         name="form-field-name" options={self.state.frameSelectOptions}
                         onChange={self.handleFrameSelectRemove} value={self.state.frameSelect}
-                        searchable={true} clearable={false}
+                        searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Class"
                       />
@@ -1034,7 +1034,7 @@ export default class VideoAnnotator extends React.Component {
                       <Select
                         name="form-field-name" options={self.state.objectSelectOptions}
                         onChange={self.handleObjectSelect} value={self.state.objectSelect}
-                        searchable={true} clearable={false}
+                        searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Class"
                       />

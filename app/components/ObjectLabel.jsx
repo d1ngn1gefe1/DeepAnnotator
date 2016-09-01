@@ -12,6 +12,7 @@ export default class ObjectLabel extends React.Component {
     this.state = {
       /*
         objectLabels is a list of label = [startFrame, endFrame, option]
+        actionLabels is a list of label = [startFrame, endFrame]
       */
       objectLabels: [],
       actionLabels: [],
@@ -157,8 +158,6 @@ export default class ObjectLabel extends React.Component {
   }
 
   handleActionClick(isStartButton) {
-    console.log("handleActionClick", this.state.actionLabels);
-
     var self = this;
 
     if (self.state.hasStarted == isStartButton) {
@@ -195,8 +194,6 @@ export default class ObjectLabel extends React.Component {
         }
       }
     }
-
-    console.log("handleActionClick done", actionLabels);
 
     self.setState({
       actionLabels: actionLabels,
@@ -331,6 +328,13 @@ export default class ObjectLabel extends React.Component {
     var objectIntervals = self.getObjectIntervals();
     var actionIntervals = self.getActionIntervals();
 
+    var options = [
+      { value: "one", label: "One" },
+      { value: "two", label: "Two" },
+      { value: "asdfsadfasdffff", label: "fffffffffffffffffffffff" }
+    ];
+
+
     return (
       <div className={"label-info object-label-info"}>
         <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabel.bind(self, self.props.id)}>
@@ -342,7 +346,7 @@ export default class ObjectLabel extends React.Component {
           <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
             name="form-field-name" options={self.props.selectOptions}
             onChange={self.handleSelect} value={self.state.select}
-            searchable={true} clearable={false}
+            searchable={true} clearable={false} autoBlur={true}
             onFocus={self.handleFocus} onBlur={self.handleBlur}
           />
         </div>
@@ -397,8 +401,8 @@ export default class ObjectLabel extends React.Component {
           }
         </div>
 
-        <div className="label-header row">
-          <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Action"}</p>
+        <div className="label-subheader row">
+          <p className="label-text col-lg-12 col-md-12 col-sm-12">{"Action"}</p>
         </div>
 
         <div className="btn-group" data-toggle="buttons">
@@ -434,7 +438,14 @@ export default class ObjectLabel extends React.Component {
               }
 
               return (
-                <div className={"slider-connect"+bg} key={index} style={{left: interval[0]+"%", width: interval[1]+"%"}}></div>
+                <div className={"slider-connect"+bg} key={index} style={{left: interval[0]+"%", width: interval[1]+"%"}}>
+                  <Select className="label-action-select"
+                    name="form-field-name" options={options}
+                    value={"one"}
+                    searchable={true} clearable={false}
+                    onFocus={self.handleFocus} onBlur={self.handleBlur}
+                  />
+                </div>
               );
             })
           }
