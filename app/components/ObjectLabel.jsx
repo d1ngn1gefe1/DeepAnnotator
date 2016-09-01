@@ -11,29 +11,41 @@ export default class ObjectLabel extends React.Component {
 
     this.state = {
       /*
-        labels is a list of label = [startFrame, endFrame, option]
+        objectLabels is a list of label = [startFrame, endFrame, option]
       */
-      labels: [],
-      select: null
+      objectLabels: [],
+      actionLabels: [],
+      select: null,
+      hasStarted: false
     };
 
     this.handleSelect = this.handleSelect.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
+    this.handleObjectChange = this.handleObjectChange.bind(this);
+    this.handleActionChange = this.handleActionChange.bind(this);
   }
 
   componentDidMount() {
     var self = this;
 
-    self.handleClick(0);
+    self.handleObjectClick(0);
+  }
+
+  componentDidUpdate() {
+    var self = this;
+
+    if (self.state.actionLabels.length == 0) {
+      document.getElementById("action-label-slider"+self.props.id).getElementsByClassName("noUi-origin")[0].className += " handle-invisible";
+    }
   }
 
   getCurrentOption() {
     var self = this;
 
-    for (var i = 0; i < self.state.labels.length; i++) {
-      var label = self.state.labels[i];
-      if ((self.props.currentFrame >= label[0] && self.props.currentFrame <= label[1]) || (i == self.state.labels.length-1 && self.props.currentFrame == self.props.numFrames)) {
+    for (var i = 0; i < self.state.objectLabels.length; i++) {
+      var label = self.state.objectLabels[i];
+      if ((self.props.currentFrame >= label[0] && self.props.currentFrame <= label[1]) || (i == self.state.objectLabels.length-1 && self.props.currentFrame == self.props.numFrames)) {
         return label[2];
       }
     }
@@ -43,55 +55,95 @@ export default class ObjectLabel extends React.Component {
 
   getData() {
     var data = {}
-    data["labels"] = this.state.labels;
+    data["objectLabels"] = this.state.objectLabels;
     data["select"] = this.state.select;
     return data;
   }
 
   setData(data) {
     this.setState({
-      labels: data["labels"],
+      objectLabels: data["objectLabels"],
       select: data["select"]
     });
     this.props.isSaved(true);
   }
 
-  handleClick(option) {
+  mergeIntervals(intervals) {
+    // Test if the given set has at least one interval
+    if (intervals.length <= 1) {
+      return intervals;
+    }
+
+    // Create an empty stack of intervals
+    var stack = [], last;
+
+    // sort the intervals based on start time
+    intervals.sort(function(a,b) {
+      return a[0] - b[0];
+    });
+
+    // push the first interval to stack
+    stack.push(intervals[0]);
+
+    // Start from the next interval and merge if necessary
+    for (var i = 1, len = intervals.length; i < len; i++) {
+      // get interval from last item
+      last = stack[stack.length-1];
+
+      // if current interval is not overlapping with stack top,
+      // push it to the stack
+      if (last[1] <= intervals[i][0]) {
+        stack.push( intervals[i]);
+      }
+
+      // Otherwise update the ending time of top if ending of current
+      // interval is more
+      else if (last[1] < intervals[i][1]) {
+        last[1] = intervals[i][1];
+        stack.pop();
+        stack.push(last);
+      }
+    }
+
+    return stack;
+  }
+
+  handleObjectClick(option) {
     var self = this;
 
     var currentFrame = self.props.currentFrame;
-    var labels = self.state.labels;
+    var objectLabels = self.state.objectLabels;
 
-    if (labels.length == 0) {
-      labels.push([0, self.props.currentFrame-1, 1])
-      labels.push([self.props.currentFrame, self.props.numFrames-1, option])
+    if (objectLabels.length == 0) {
+      objectLabels.push([0, self.props.currentFrame-1, 1])
+      objectLabels.push([self.props.currentFrame, self.props.numFrames-1, option])
     } else {
-      for (var i = 0; i < labels.length; i++) {
-        if (labels[i][0] == currentFrame) { // same frame, update option
-          if (i >= 1 && labels[i-1][2] == option) {
-            labels[i-1][1] = labels[i][1];
-            labels.splice(i, 1);
-          } else if (i <= labels.length-2 && labels[i+1][2] == option) {
-            labels[i][1] = labels[i+1][1];
-            labels[i][2] = option;
-            labels.splice(i+1, 1);
+      for (var i = 0; i < objectLabels.length; i++) {
+        if (objectLabels[i][0] == currentFrame) { // same frame, update option
+          if (i >= 1 && objectLabels[i-1][2] == option) {
+            objectLabels[i-1][1] = objectLabels[i][1];
+            objectLabels.splice(i, 1);
+          } else if (i <= objectLabels.length-2 && objectLabels[i+1][2] == option) {
+            objectLabels[i][1] = objectLabels[i+1][1];
+            objectLabels[i][2] = option;
+            objectLabels.splice(i+1, 1);
           } else {
-            labels[i][2] = option;
+            objectLabels[i][2] = option;
           }
           break;
-        } else if (labels[i][0] > currentFrame) { // insert
-          if (labels[i][2] == option) {
-            labels[i][0] = currentFrame;
-            labels[i-1][1] = currentFrame-1;
-          } else if (labels[i-1][2] != option) {
-            labels.splice(i, 0, [currentFrame, labels[i-1][1], option]);
-            labels[i-1][1] = currentFrame-1;
+        } else if (objectLabels[i][0] > currentFrame) { // insert
+          if (objectLabels[i][2] == option) {
+            objectLabels[i][0] = currentFrame;
+            objectLabels[i-1][1] = currentFrame-1;
+          } else if (objectLabels[i-1][2] != option) {
+            objectLabels.splice(i, 0, [currentFrame, objectLabels[i-1][1], option]);
+            objectLabels[i-1][1] = currentFrame-1;
           }
           break;
-        } else if (i == labels.length-1) { // append
-          if (labels[i][2] != option) {
-            labels[i][1] = currentFrame-1;
-            labels.push([currentFrame, self.props.numFrames-1, option]);
+        } else if (i == objectLabels.length-1) { // append
+          if (objectLabels[i][2] != option) {
+            objectLabels[i][1] = currentFrame-1;
+            objectLabels.push([currentFrame, self.props.numFrames-1, option]);
           }
           break;
         }
@@ -99,56 +151,156 @@ export default class ObjectLabel extends React.Component {
     }
 
     self.setState({
-      labels: labels
+      objectLabels: objectLabels
     });
     self.props.isSaved(false);
   }
 
-  handleChange(handles, index) {
+  handleActionClick(isStartButton) {
+    console.log("handleActionClick", this.state.actionLabels);
+
     var self = this;
-    var labels = self.state.labels;
+
+    if (self.state.hasStarted == isStartButton) {
+      return;
+    }
+
+    var currentFrame = self.props.currentFrame;
+    var actionLabels = self.state.actionLabels;
+
+    if (self.state.hasStarted) {
+      for (var i = 0; i < actionLabels.length; i++) {
+        if (actionLabels[i][1] == -1) {
+          if (currentFrame > actionLabels[i][0]) {
+            actionLabels[i][1] = currentFrame;
+            actionLabels = self.mergeIntervals(actionLabels);
+          } else if (currentFrame < actionLabels[i][0]) {
+            actionLabels[i][1] = actionLabels[i][0];
+            actionLabels[i][0] = currentFrame;
+            actionLabels = self.mergeIntervals(actionLabels);
+          } else {
+            actionLabels.splice(i, 1); // remove interval of length 0
+          }
+          break;
+        }
+      }
+    } else {
+      if (actionLabels.length == 0 || currentFrame >= actionLabels[actionLabels.length-1][0]) {
+        actionLabels.push([currentFrame, -1]);
+      } else {
+        for (var i = 0; i < actionLabels.length; i++) {
+          if (actionLabels[i][0] > currentFrame) {
+            actionLabels.splice(i, 0, [currentFrame, -1]);
+          }
+        }
+      }
+    }
+
+    console.log("handleActionClick done", actionLabels);
+
+    self.setState({
+      actionLabels: actionLabels,
+      hasStarted: !self.state.hasStarted
+    });
+    self.props.isSaved(false);
+  }
+
+  handleObjectChange(handles, index) {
+    var self = this;
+    var objectLabels = self.state.objectLabels;
 
     if (index == 0) {
       self.setState({
-        labels: labels
+        objectLabels: objectLabels
       });
       return;
     }
 
     var value = parseInt(handles[index]);
-    labels[index][0] = value;
-    labels[index-1][1] = value-1;
+    objectLabels[index][0] = value;
+    objectLabels[index-1][1] = value-1;
 
     self.setState({
-      labels: labels
+      objectLabels: objectLabels
     });
     self.props.setCurrentFrame(value);
     self.props.isSaved(false);
   }
 
-  getHandles() {
+  handleActionChange(handles, index) {
     var self = this;
-    if (self.state.labels.length == 0) {
+    var actionLabels = self.state.actionLabels;
+
+    var value = parseInt(handles[index]);
+    actionLabels[Math.floor(index/2)][index%2] = value;
+
+    self.setState({
+      actionLabels: actionLabels
+    });
+    self.props.setCurrentFrame(value);
+    self.props.isSaved(false);
+  }
+
+  getObjectHandles() {
+    var self = this;
+    if (self.state.objectLabels.length == 0) {
       return [0];
     }
 
     var handles = [];
-    for (var i = 0; i < self.state.labels.length; i++) {
-      handles.push(self.state.labels[i][0]);
+    for (var i = 0; i < self.state.objectLabels.length; i++) {
+      handles.push(self.state.objectLabels[i][0]);
     }
 
     return handles;
   }
 
-  getIntervals() {
+  getActionHandles() {
+    var self = this;
+    if (self.state.actionLabels.length == 0) {
+      return [0];
+    }
+
+    var handles = [];
+    for (var i = 0; i < self.state.actionLabels.length; i++) {
+      handles.push(self.state.actionLabels[i][0]);
+      if (self.state.actionLabels[i][1] != -1) {
+        handles.push(self.state.actionLabels[i][1]);
+      }
+    }
+
+    return handles;
+  }
+
+  getObjectIntervals() {
     var self = this;
     var intervals = [];
 
-    for (var i = 0; i < self.state.labels.length; i++) {
-      var label = self.state.labels[i];
+    for (var i = 0; i < self.state.objectLabels.length; i++) {
+      var label = self.state.objectLabels[i];
       var start = 100*label[0]/self.props.numFrames;
       var length = 100*(label[1]-label[0]+1)/self.props.numFrames;
       intervals.push([start, length, label[2]]);
+    }
+
+    return intervals;
+  }
+
+  getActionIntervals() {
+    var self = this;
+    var intervals = [];
+
+    for (var i = 0; i < self.state.actionLabels.length; i++) {
+      var label = self.state.actionLabels[i];
+
+      if (label[1] == -1) {
+        continue;
+      }
+
+      var start = 100*label[0]/self.props.numFrames;
+      var length = 100*(label[1]-label[0]+1)/self.props.numFrames;
+
+      intervals.push([start, length]);
     }
 
     return intervals;
@@ -174,8 +326,10 @@ export default class ObjectLabel extends React.Component {
 
   render() {
     var self = this;
-    var handles = self.getHandles();
-    var intervals = self.getIntervals();
+    var objectHandles = self.getObjectHandles();
+    var actionHandles = self.getActionHandles();
+    var objectIntervals = self.getObjectIntervals();
+    var actionIntervals = self.getActionIntervals();
 
     return (
       <div className={"label-info object-label-info"}>
@@ -194,13 +348,13 @@ export default class ObjectLabel extends React.Component {
         </div>
 
         <div className="btn-group" data-toggle="buttons">
-          <label className={"btn btn-success col-lg-4 col-md-4 col-sm-4"} onClick={self.handleClick.bind(self, 0)}>
+          <label className={"btn btn-success col-lg-4 col-md-4 col-sm-4"} onClick={self.handleObjectClick.bind(self, 0)}>
             <input type="radio" name="options" id="option1" autoComplete="off" /> Visible
           </label>
-          <label className={"btn btn-info col-lg-4 col-md-4 col-sm-4"} onClick={self.handleClick.bind(self, 1)}>
+          <label className={"btn btn-info col-lg-4 col-md-4 col-sm-4"} onClick={self.handleObjectClick.bind(self, 1)}>
             <input type="radio" name="options" id="option2" autoComplete="off" /> Out of frame
           </label>
-          <label className={"btn btn-danger col-lg-4 col-md-4 col-sm-4"} onClick={self.handleClick.bind(self, 2)}>
+          <label className={"btn btn-danger col-lg-4 col-md-4 col-sm-4"} onClick={self.handleObjectClick.bind(self, 2)}>
             <input type="radio" name="options" id="option3" autoComplete="off" /> Occluded
           </label>
         </div>
@@ -211,14 +365,14 @@ export default class ObjectLabel extends React.Component {
             range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames-1}}
             step={1}
             margin={1}
-            start={handles}
+            start={objectHandles}
             animate={false}
-            onChange={self.handleChange.bind(self)}
+            onChange={self.handleObjectChange}
             disabled={self.props.isPlaying}
             tooltips
           />
           {
-            intervals.map(function(interval, index) {
+            objectIntervals.map(function(interval, index) {
               var bg;
 
               if (interval[2] == 0) {
@@ -232,7 +386,7 @@ export default class ObjectLabel extends React.Component {
               if (index == 0) {
                 bg += " slider-left"
               }
-              if (index == self.state.labels.length-1) {
+              if (index == self.state.objectLabels.length-1) {
                 bg += " slider-right"
               }
 
@@ -242,6 +396,50 @@ export default class ObjectLabel extends React.Component {
             })
           }
         </div>
+
+        <div className="label-header row">
+          <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Action"}</p>
+        </div>
+
+        <div className="btn-group" data-toggle="buttons">
+          <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" disabled":"")} onClick={self.handleActionClick.bind(self, true)}>
+            <input type="radio" name="options" id="option1" autoComplete="off" /> Start
+          </label>
+          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" disabled")} onClick={self.handleActionClick.bind(self, false)}>
+            <input type="radio" name="options" id="option2" autoComplete="off" /> End
+          </label>
+        </div>
+
+        <div className="label-slider" id={"action-label-slider"+self.props.id}>
+          <Nouislider
+            ref={"Nouislider"}
+            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames-1}}
+            step={1}
+            margin={1}
+            start={actionHandles}
+            animate={false}
+            onChange={self.handleActionChange}
+            disabled={self.state.hasStarted || self.props.isPlaying}
+            tooltips
+          />
+          {
+            actionIntervals.map(function(interval, index) {
+              var bg = " slider-danger";
+
+              if (index == 0) {
+                bg += " slider-left"
+              }
+              if (index == self.state.actionLabels.length-1) {
+                bg += " slider-right"
+              }
+
+              return (
+                <div className={"slider-connect"+bg} key={index} style={{left: interval[0]+"%", width: interval[1]+"%"}}></div>
+              );
+            })
+          }
+        </div>
+
       </div>
     );
   }

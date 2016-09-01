@@ -900,6 +900,7 @@ function closure ( target, options, originalOptions ){
 		addClass(handle, classModifier[index]);
 
 		addClass(origin, options.cssClasses.origin);
+    // addClass(origin, options.cssClasses.origin+index);
 		origin.appendChild(handle);
 
 		return origin;
@@ -973,6 +974,9 @@ function closure ( target, options, originalOptions ){
 
 		var element = document.createElement('div');
 		element.className = options.cssClasses.tooltip;
+    if (index % 2) {
+      element.className += ' '+options.cssClasses.tooltip+'-top'
+    }
 		return handle.firstChild.appendChild(element);
 	}
 

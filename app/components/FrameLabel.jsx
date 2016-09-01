@@ -13,7 +13,7 @@ export default class FrameLabel extends React.Component {
       labels: [],
       select: null,
       category: null,
-      hasStarted: false,
+      hasStarted: false
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -23,7 +23,7 @@ export default class FrameLabel extends React.Component {
   }
 
   componentDidMount() {
-    this.handleClick(true, true);
+    this.handleClick(true);
   }
 
   getCurrentOption() {

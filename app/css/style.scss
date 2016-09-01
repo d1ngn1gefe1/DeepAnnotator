@@ -111,6 +111,10 @@ body {
       background-color: $color-object;
       border-style: solid;
       border-color: darken($color-object, 20%);
+
+      .handle-invisible {
+        display: none;
+      }
     }
 
     .label-header {
@@ -138,7 +142,7 @@ body {
     }
 
     .label-slider {
-      margin: 15px 10px 40px 10px;
+      margin: 45px 10px 40px 10px;
       position: relative;
 
       .slider-connect {
