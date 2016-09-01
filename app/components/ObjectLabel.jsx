@@ -26,12 +26,6 @@ export default class ObjectLabel extends React.Component {
     this.handleBlur = this.handleBlur.bind(this);
     this.handleObjectChange = this.handleObjectChange.bind(this);
     this.handleActionChange = this.handleActionChange.bind(this);
-
-    this.actionSelectOptions = [
-      { value: "one", label: "1. One" },
-      { value: "two", label: "2. Two" },
-      { value: "asdfsadfasdffff", label: "3. fffffffffffffffffffffff" }
-    ];
   }
 
   componentDidMount() {
@@ -170,6 +164,7 @@ export default class ObjectLabel extends React.Component {
 
   handleActionClick(isStartButton) {
     var self = this;
+    console.log("handleActionClick");
 
     if (self.state.hasStarted == isStartButton) {
       return;
@@ -201,6 +196,7 @@ export default class ObjectLabel extends React.Component {
         for (var i = 0; i < actionLabels.length; i++) {
           if (actionLabels[i][0] > currentFrame) {
             actionLabels.splice(i, 0, [currentFrame, -1]);
+            break;
           }
         }
       }
@@ -346,7 +342,7 @@ export default class ObjectLabel extends React.Component {
   }
 
   handleValueRenderer(option) {
-    console.log("handleValueRenderer", option);
+    // console.log("handleValueRenderer", option);
     return option.label[0];
   }
 
@@ -462,7 +458,7 @@ export default class ObjectLabel extends React.Component {
               return (
                 <div className={"slider-connect"+bg} key={index} style={{left: interval[0]+"%", width: interval[1]+"%"}}>
                   <Select className="label-action-select"
-                    name="form-field-name" options={self.actionSelectOptions}
+                    name="form-field-name" options={self.props.actionSelectOptions}
                     onChange={self.handleActionSelect.bind(self, index)} value={self.state.actionSelects[index]}
                     searchable={false} clearable={false} autoBlur={true} autosize={false}
                     onFocus={self.handleFocus} onBlur={self.handleBlur} valueRenderer={self.handleValueRenderer.bind(self)}

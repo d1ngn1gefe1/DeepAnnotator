@@ -126,6 +126,7 @@ export default class FrameLabel extends React.Component {
         for (var i = 0; i < frameLabels.length; i++) {
           if (frameLabels[i][0] > currentFrame) {
             frameLabels.splice(i, 0, [currentFrame, -1]);
+            break;
           }
         }
       }
