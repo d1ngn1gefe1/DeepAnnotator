@@ -12,34 +12,28 @@ export default class ObjectLabel extends React.Component {
     this.state = {
       /*
         objectLabels is a list of label = [startFrame, endFrame, option]
-        actionLabels is a list of label = [startFrame, endFrame]
+        actionLabelsList is a list of actionLabels, which is a list of label = [startFrame, endFrame]
       */
       objectLabels: [],
-      actionLabels: [],
       objectSelect: null,
+      actionLabelsList: [],
       actionSelects: [],
-      hasStarted: false
+      hasStarted: []
     };
+
+    this.currentKey = 0;
 
     this.handleObjectSelect = this.handleObjectSelect.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleObjectChange = this.handleObjectChange.bind(this);
-    this.handleActionChange = this.handleActionChange.bind(this);
+    this.handleAddAction = this.handleAddAction.bind(this);
   }
 
   componentDidMount() {
     var self = this;
 
     self.handleObjectClick(0);
-  }
-
-  componentDidUpdate() {
-    var self = this;
-
-    if (self.state.actionLabels.length == 0) {
-      document.getElementById("action-label-slider"+self.props.id).getElementsByClassName("noUi-origin")[0].className += " handle-invisible";
-    }
   }
 
   getCurrentOption() {
@@ -59,7 +53,7 @@ export default class ObjectLabel extends React.Component {
     var data = {}
     data["objectLabels"] = this.state.objectLabels;
     data["objectSelect"] = this.state.objectSelect;
-    data["actionLabels"] = this.state.actionLabels;
+    data["actionLabelsList"] = this.state.actionLabelsList;
     data["actionSelects"] = this.state.actionSelects;
     return data;
   }
@@ -68,7 +62,7 @@ export default class ObjectLabel extends React.Component {
     this.setState({
       objectLabels: data["objectLabels"] == null ? [] : data["objectLabels"],
       objectSelect: data["objectSelect"],
-      actionLabels: data["actionLabels"] == null ? [] : data["actionLabels"],
+      actionLabelsList: data["actionLabelsList"] == null ? [] : data["actionLabelsList"],
       actionSelects: data["actionSelects"] == null ? [] : data["actionSelects"]
     });
     this.props.isSaved(true);
@@ -162,49 +156,60 @@ export default class ObjectLabel extends React.Component {
     self.props.isSaved(false);
   }
 
-  handleActionClick(isStartButton) {
+  handleActionClick(isStartButton, index) {
     var self = this;
-    console.log("handleActionClick");
+    console.log("handleActionClick!", isStartButton, index);
 
-    if (self.state.hasStarted == isStartButton) {
+    var hasStarted = self.state.hasStarted;
+
+    if (hasStarted[index] == isStartButton) {
+      console.log("bad", hasStarted[index], isStartButton);
       return;
     }
 
     var currentFrame = self.props.currentFrame;
-    var actionLabels = self.state.actionLabels;
+    var actionLabelsList = self.state.actionLabelsList;
 
-    if (self.state.hasStarted) {
-      for (var i = 0; i < actionLabels.length; i++) {
-        if (actionLabels[i][1] == -1) {
-          if (currentFrame > actionLabels[i][0]) {
-            actionLabels[i][1] = currentFrame;
-            actionLabels = self.mergeIntervals(actionLabels);
-          } else if (currentFrame < actionLabels[i][0]) {
-            actionLabels[i][1] = actionLabels[i][0];
-            actionLabels[i][0] = currentFrame;
-            actionLabels = self.mergeIntervals(actionLabels);
+    if (hasStarted[index]) {
+      console.log("good1");
+      for (var i = 0; i < actionLabelsList[index].length; i++) {
+        if (actionLabelsList[index][i][1] == -1) {
+          if (currentFrame > actionLabelsList[index][i][0]) {
+            actionLabelsList[index][i][1] = currentFrame;
+            actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
+          } else if (currentFrame < actionLabelsList[index][i][0]) {
+            actionLabelsList[index][i][1] = actionLabelsList[index][i][0];
+            actionLabelsList[index][i][0] = currentFrame;
+            actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
           } else {
-            actionLabels.splice(i, 1); // remove interval of length 0
+            actionLabelsList[index].splice(i, 1); // remove interval of length 0
           }
           break;
         }
       }
     } else {
-      if (actionLabels.length == 0 || currentFrame >= actionLabels[actionLabels.length-1][0]) {
-        actionLabels.push([currentFrame, -1]);
+      if (actionLabelsList[index].length == 0 || currentFrame >= actionLabelsList[index][actionLabelsList[index].length-1][0]) {
+        console.log("good2");
+        actionLabelsList[index].push([currentFrame, -1]);
       } else {
-        for (var i = 0; i < actionLabels.length; i++) {
-          if (actionLabels[i][0] > currentFrame) {
-            actionLabels.splice(i, 0, [currentFrame, -1]);
+        console.log("good3");
+        for (var i = 0; i < actionLabelsList[index].length; i++) {
+          if (actionLabelsList[index][i][0] > currentFrame) {
+            actionLabelsList[index].splice(i, 0, [currentFrame, -1]);
             break;
           }
         }
       }
     }
 
+
+    hasStarted[index] = !hasStarted[index];
+
+    console.log(hasStarted, actionLabelsList);
+
     self.setState({
-      actionLabels: actionLabels,
-      hasStarted: !self.state.hasStarted
+      actionLabelsList: actionLabelsList,
+      hasStarted: hasStarted
     });
     self.props.isSaved(false);
   }
@@ -259,17 +264,17 @@ export default class ObjectLabel extends React.Component {
     return handles;
   }
 
-  getActionHandles() {
+  getActionHandles(index) {
     var self = this;
-    if (self.state.actionLabels.length == 0) {
+    if (self.state.actionLabelsList[index].length == 0) {
       return [0];
     }
 
     var handles = [];
-    for (var i = 0; i < self.state.actionLabels.length; i++) {
-      handles.push(self.state.actionLabels[i][0]);
-      if (self.state.actionLabels[i][1] != -1) {
-        handles.push(self.state.actionLabels[i][1]);
+    for (var i = 0; i < self.state.actionLabelsList[index].length; i++) {
+      handles.push(self.state.actionLabelsList[index][i][0]);
+      if (self.state.actionLabelsList[index][i][1] != -1) {
+        handles.push(self.state.actionLabelsList[index][i][1]);
       }
     }
 
@@ -290,12 +295,12 @@ export default class ObjectLabel extends React.Component {
     return intervals;
   }
 
-  getActionIntervals() {
+  getActionIntervals(index) {
     var self = this;
     var intervals = [];
 
-    for (var i = 0; i < self.state.actionLabels.length; i++) {
-      var label = self.state.actionLabels[i];
+    for (var i = 0; i < self.state.actionLabelsList[index].length; i++) {
+      var label = self.state.actionLabelsList[index][i];
 
       if (label[1] == -1) {
         continue;
@@ -322,7 +327,7 @@ export default class ObjectLabel extends React.Component {
 
   handleActionSelect(index, actionSelect) {
     var self = this;
-    console.log("selected value", actionSelect, index);
+    console.log("selected value", index, actionSelect);
 
     var actionSelects = self.state.actionSelects;
     actionSelects[index] = actionSelect;
@@ -341,17 +346,52 @@ export default class ObjectLabel extends React.Component {
     this.props.isFocus(false);
   }
 
-  handleValueRenderer(option) {
-    // console.log("handleValueRenderer", option);
-    return option.label[0];
+  handleAddAction() {
+    var self = this;
+
+    var actionLabelsList = self.state.actionLabelsList;
+    var actionSelects = self.state.actionSelects;
+    var hasStarted = self.state.hasStarted;
+
+    actionLabelsList.push([]);
+    actionSelects.push(null);
+    hasStarted.push(false);
+
+    self.setState({
+      actionLabelsList: actionLabelsList,
+      actionSelects: actionSelects,
+      hasStarted: hasStarted
+    });
+
+
+    self.handleActionClick(true, hasStarted.length-1);
+    self.props.isSaved(false);
+  }
+
+  closeAction(index) {
+    var self = this;
+
+    var actionLabelsList = self.state.actionLabelsList;
+    var actionSelects = self.state.actionSelects;
+    var hasStarted = self.state.hasStarted;
+
+    actionLabelsList.splice(index, 1);
+    actionSelects.splice(index, 1);
+    hasStarted.splice(index, 1);
+
+    self.setState({
+      actionLabelsList: actionLabelsList,
+      actionSelects: actionSelects,
+      hasStarted: hasStarted
+    });
+
+    self.props.isSaved(false);
   }
 
   render() {
     var self = this;
     var objectHandles = self.getObjectHandles();
-    var actionHandles = self.getActionHandles();
     var objectIntervals = self.getObjectIntervals();
-    var actionIntervals = self.getActionIntervals();
 
     return (
       <div className={"label-info object-label-info"}>
@@ -361,7 +401,10 @@ export default class ObjectLabel extends React.Component {
 
         <div className="label-header row">
           <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Object "+self.props.id}</p>
-          <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
+          <button className="btn btn-default col-lg-1 col-md-1 col-sm-1 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" onClick={self.handleAddAction}>
+            <span className="glyphicon glyphicon-plus-sign"></span>
+          </button>
+          <Select className="label-select col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
             name="form-field-name" options={self.props.objectSelectOptions}
             onChange={self.handleObjectSelect} value={self.state.objectSelect}
             searchable={true} clearable={false} autoBlur={true}
@@ -419,57 +462,69 @@ export default class ObjectLabel extends React.Component {
           }
         </div>
 
-        <div className="label-subheader row">
-          <p className="label-text col-lg-12 col-md-12 col-sm-12">{"Action"}</p>
-        </div>
+        {
+          self.state.actionLabelsList.map(function(actionLabels, actionIndex) {
+            var actionHandles = self.getActionHandles(actionIndex);
+            var actionIntervals = self.getActionIntervals(actionIndex);
 
-        <div className="btn-group" data-toggle="buttons">
-          <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" disabled":"")} onClick={self.handleActionClick.bind(self, true)}>
-            <input type="radio" name="options" id="option1" autoComplete="off" /> Start
-          </label>
-          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" disabled")} onClick={self.handleActionClick.bind(self, false)}>
-            <input type="radio" name="options" id="option2" autoComplete="off" /> End
-          </label>
-        </div>
+            return (
+              <div key={self.currentKey++} className="action-label-info">
+                <button type="button" className="close" aria-label="Close" onClick={self.closeAction.bind(self, actionIndex)}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
 
-        <div className="label-slider" id={"action-label-slider"+self.props.id}>
-          <Nouislider
-            ref={"Nouislider"}
-            range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames-1}}
-            step={1}
-            margin={1}
-            start={actionHandles}
-            animate={false}
-            onChange={self.handleActionChange}
-            disabled={self.state.hasStarted || self.props.isPlaying}
-            tooltips
-          />
-          {
-            actionIntervals.map(function(interval, index) {
-              var bg = " slider-danger";
-
-              if (index == 0) {
-                bg += " slider-left"
-              }
-              if (index == self.state.actionLabels.length-1) {
-                bg += " slider-right"
-              }
-
-              return (
-                <div className={"slider-connect"+bg} key={index} style={{left: interval[0]+"%", width: interval[1]+"%"}}>
-                  <Select className="label-action-select"
+                <div className="label-header row">
+                  <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Action"}</p>
+                  <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
                     name="form-field-name" options={self.props.actionSelectOptions}
-                    onChange={self.handleActionSelect.bind(self, index)} value={self.state.actionSelects[index]}
-                    searchable={false} clearable={false} autoBlur={true} autosize={false}
-                    onFocus={self.handleFocus} onBlur={self.handleBlur} valueRenderer={self.handleValueRenderer.bind(self)}
-                    placeholder="+"
+                    onChange={self.handleActionSelect.bind(self, actionIndex)} value={self.state.actionSelects[actionIndex]}
+                    searchable={true} clearable={false} autoBlur={true}
+                    onFocus={self.handleFocus} onBlur={self.handleBlur}
                   />
                 </div>
-              );
-            })
-          }
-        </div>
 
+                <div className="btn-group" data-toggle="buttons">
+                  <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted[actionIndex]?" disabled":"")} onClick={self.handleActionClick.bind(self, true, actionIndex)}>
+                    <input type="radio" name="options" id="option1" autoComplete="off" /> Start
+                  </label>
+                  <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted[actionIndex]?"":" disabled")} onClick={self.handleActionClick.bind(self, false, actionIndex)}>
+                    <input type="radio" name="options" id="option2" autoComplete="off" /> End
+                  </label>
+                </div>
+
+                <div className="label-slider" id={"action-label-slider"+self.props.id+"-"+actionIndex}>
+                  <Nouislider
+                    ref={"Nouislider"}
+                    range={{min: 0, max: self.props.numFrames==0?1:self.props.numFrames-1}}
+                    step={1}
+                    margin={1}
+                    start={actionHandles}
+                    animate={false}
+                    onChange={self.handleActionChange.bind(self. actionIndex)}
+                    disabled={self.state.hasStarted[actionIndex] || self.props.isPlaying}
+                    tooltips
+                  />
+                  {
+                    actionIntervals.map(function(interval, index) {
+                      var bg = " slider-danger";
+
+                      if (index == 0) {
+                        bg += " slider-left"
+                      }
+                      if (index == actionLabels.length-1) {
+                        bg += " slider-right"
+                      }
+
+                      return (
+                        <div className={"slider-connect"+bg} key={index} style={{left: interval[0]+"%", width: interval[1]+"%"}}></div>
+                      );
+                    })
+                  }
+                </div>
+              </div>
+            );
+          })
+        }
       </div>
     );
   }

@@ -111,10 +111,14 @@ body {
       background-color: $color-object;
       border-style: solid;
       border-color: darken($color-object, 20%);
+    }
 
-      .handle-invisible {
-        display: none;
-      }
+    .action-label-info {
+      padding-top: 10px;
+      margin-top: 50px;
+      border-top-style: dotted;
+      border-top-width: 2px;
+      border-top-color: $gray-even-darker;
     }
 
     .label-header {
@@ -136,24 +140,9 @@ body {
       }
     }
 
-    .label-subheader {
-      width: 100%;
-      margin: 0 0 10px 0;
-
-      .label-text {
-        float: left;
-        padding: 14px 0 4px 0;
-        margin: 10px 0 0 0;
-        font-size: 16px;
-        border-top-style: dotted;
-        border-top-width: 2px;
-        border-top-color: $gray-even-darker;
-      }
-    }
-
     .label-action-select {
       top: -50%;
-      
+
       .Select-control {
         z-index: 100;
         width: 30px;
