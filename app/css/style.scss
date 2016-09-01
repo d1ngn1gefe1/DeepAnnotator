@@ -131,11 +131,6 @@ body {
         float: left;
       }
 
-      .label-category {
-        float: left;
-        width: 33.33%;
-      }
-
       .Select-menu-outer {
         z-index: 100;
       }
@@ -159,7 +154,7 @@ body {
     .label-action-select {
       .Select-control {
         z-index: 100;
-        width: 50px;
+        width: 30px;
         margin: 0 auto;
       }
 
@@ -265,73 +260,21 @@ body {
       }
 
       .frame-label-customize {
-        padding: 10px;
-        margin: 0px;
-
-        button {
-          height: 34px;
-        }
-
-        .frame-label-customize-control {
-          padding: 0px;
-        }
-
-        .add-category {
-          float: left;
-        }
-
-        .add-class {
-          float: left;
-
-          .Select-control {
-            border-top-right-radius: 0px;
-            border-bottom-right-radius: 0px;
-          }
-        }
-
-        .remove-class {
-          input {
-            z-index: 0;
-          }
-
-          .Select-control {
-            border-radius: 0px;
-          }
-        }
-
-        .Select {
-          display: table-cell;
-          vertical-align: middle;
-          width: 40%;
-
-          .Select-control {
-            border-width: 0px;
-            height: 34px;
-          }
-        }
-
-        .row {
-          margin: 0px;
-          padding: 5px;
-        }
-
-        .Select-menu-outer {
-          z-index: 100;
-          top: initial;
-          bottom: 100%;
-        }
       }
 
       .object-label-customize {
+        background-color: $gray-darker;
+      }
+
+      .label-customize {
         padding: 10px;
         margin: 0px;
-        background-color: $gray-darker;
 
         button {
           height: 34px;
         }
 
-        .object-label-customize-control {
+        .label-customize-control {
           padding: 0px;
         }
 

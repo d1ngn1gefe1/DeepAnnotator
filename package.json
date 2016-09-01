@@ -68,7 +68,7 @@
     "react-dom": "^15.2.1",
     "react-konva": "^1.0.4",
     "react-router": "^2.5.2",
-    "react-select-plus": "^1.0.0-beta14.patch1",
+    "react-select": "^1.0.0-beta14",
     "videojs-contrib-hls": "^3.5.3"
   }
 }

@@ -1,8 +1,8 @@
 import React from "react";
 import Nouislider from "./slider/NouisliderWrapper.jsx";
 
-import Select from "react-select-plus";
-import "react-select-plus/dist/react-select-plus.css";
+import Select from "react-select";
+import "react-select/dist/react-select.css";
 
 export default class ObjectLabel extends React.Component {
   // similar to componentWillMount in ES5
@@ -16,15 +16,22 @@ export default class ObjectLabel extends React.Component {
       */
       objectLabels: [],
       actionLabels: [],
-      select: null,
+      objectSelect: null,
+      actionSelects: [],
       hasStarted: false
     };
 
-    this.handleSelect = this.handleSelect.bind(this);
+    this.handleObjectSelect = this.handleObjectSelect.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleObjectChange = this.handleObjectChange.bind(this);
     this.handleActionChange = this.handleActionChange.bind(this);
+
+    this.actionSelectOptions = [
+      { value: "one", label: "1. One" },
+      { value: "two", label: "2. Two" },
+      { value: "asdfsadfasdffff", label: "3. fffffffffffffffffffffff" }
+    ];
   }
 
   componentDidMount() {
@@ -57,14 +64,18 @@ export default class ObjectLabel extends React.Component {
   getData() {
     var data = {}
     data["objectLabels"] = this.state.objectLabels;
-    data["select"] = this.state.select;
+    data["objectSelect"] = this.state.objectSelect;
+    data["actionLabels"] = this.state.actionLabels;
+    data["actionSelects"] = this.state.actionSelects;
     return data;
   }
 
   setData(data) {
     this.setState({
-      objectLabels: data["objectLabels"],
-      select: data["select"]
+      objectLabels: data["objectLabels"] == null ? [] : data["objectLabels"],
+      objectSelect: data["objectSelect"],
+      actionLabels: data["actionLabels"] == null ? [] : data["actionLabels"],
+      actionSelects: data["actionSelects"] == null ? [] : data["actionSelects"]
     });
     this.props.isSaved(true);
   }
@@ -303,12 +314,25 @@ export default class ObjectLabel extends React.Component {
     return intervals;
   }
 
-  handleSelect(select) {
+  handleObjectSelect(objectSelect) {
     var self = this;
-    console.log("selected value", select);
+    console.log("selected value", objectSelect);
 
     self.setState({
-      select: select
+      objectSelect: objectSelect
+    });
+    self.props.isSaved(false);
+  }
+
+  handleActionSelect(index, actionSelect) {
+    var self = this;
+    console.log("selected value", actionSelect, index);
+
+    var actionSelects = self.state.actionSelects;
+    actionSelects[index] = actionSelect;
+
+    self.setState({
+      actionSelects: actionSelects
     });
     self.props.isSaved(false);
   }
@@ -328,13 +352,6 @@ export default class ObjectLabel extends React.Component {
     var objectIntervals = self.getObjectIntervals();
     var actionIntervals = self.getActionIntervals();
 
-    var options = [
-      { value: "one", label: "One" },
-      { value: "two", label: "Two" },
-      { value: "asdfsadfasdffff", label: "fffffffffffffffffffffff" }
-    ];
-
-
     return (
       <div className={"label-info object-label-info"}>
         <button type="button" className="close" aria-label="Close" onClick={self.props.closeLabel.bind(self, self.props.id)}>
@@ -344,8 +361,8 @@ export default class ObjectLabel extends React.Component {
         <div className="label-header row">
           <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Object "+self.props.id}</p>
           <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
-            name="form-field-name" options={self.props.selectOptions}
-            onChange={self.handleSelect} value={self.state.select}
+            name="form-field-name" options={self.props.objectSelectOptions}
+            onChange={self.handleObjectSelect} value={self.state.objectSelect}
             searchable={true} clearable={false} autoBlur={true}
             onFocus={self.handleFocus} onBlur={self.handleBlur}
           />
@@ -440,10 +457,11 @@ export default class ObjectLabel extends React.Component {
               return (
                 <div className={"slider-connect"+bg} key={index} style={{left: interval[0]+"%", width: interval[1]+"%"}}>
                   <Select className="label-action-select"
-                    name="form-field-name" options={options}
-                    value={"one"}
-                    searchable={true} clearable={false}
+                    name="form-field-name" options={self.actionSelectOptions}
+                    onChange={self.handleActionSelect.bind(self, index)} value={self.state.actionSelects[index]}
+                    searchable={false} clearable={false}
                     onFocus={self.handleFocus} onBlur={self.handleBlur}
+                    placeholder="+"
                   />
                 </div>
               );
