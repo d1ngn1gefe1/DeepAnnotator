@@ -46,7 +46,6 @@ export default class FrameLabel extends React.Component {
   }
 
   setData(data) {
-    console.log("setdata", data["frameLabels"]);
     this.setState({
       frameLabels: data["frameLabels"] == null ? [] : data["frameLabels"],
       frameSelect: data["objeframeSelectctLabels"]

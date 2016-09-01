@@ -345,6 +345,11 @@ export default class ObjectLabel extends React.Component {
     this.props.isFocus(false);
   }
 
+  handleValueRenderer(option) {
+    console.log("handleValueRenderer", option);
+    return option.label[0];
+  }
+
   render() {
     var self = this;
     var objectHandles = self.getObjectHandles();
@@ -459,8 +464,8 @@ export default class ObjectLabel extends React.Component {
                   <Select className="label-action-select"
                     name="form-field-name" options={self.actionSelectOptions}
                     onChange={self.handleActionSelect.bind(self, index)} value={self.state.actionSelects[index]}
-                    searchable={false} clearable={false}
-                    onFocus={self.handleFocus} onBlur={self.handleBlur}
+                    searchable={false} clearable={false} autoBlur={true} autosize={false}
+                    onFocus={self.handleFocus} onBlur={self.handleBlur} valueRenderer={self.handleValueRenderer.bind(self)}
                     placeholder="+"
                   />
                 </div>
