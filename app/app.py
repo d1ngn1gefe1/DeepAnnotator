@@ -48,9 +48,11 @@ def save_option_info():
 
     frame_options = request.json['frame_options']
     object_options = request.json['object_options']
+    action_options = request.json['action_options']
     options = {
         'frame_options': frame_options,
-        'object_options': object_options
+        'object_options': object_options,
+        'action_options': action_options
     }
 
     s.query(OptionInfo).filter_by(
@@ -58,6 +60,9 @@ def save_option_info():
         dict(options=json.dumps(frame_options)))
     s.query(OptionInfo).filter_by(
         option_name='object_options').update(
+        dict(options=json.dumps(object_options)))
+    s.query(OptionInfo).filter_by(
+        option_name='action_options').update(
         dict(options=json.dumps(object_options)))
 
     s.commit()
@@ -78,6 +83,8 @@ def get_option_info():
             options['frame_options'] = json.loads(option.options)
         elif option.option_name == 'object_options':
             options['object_options'] = json.loads(option.options)
+        elif option.option_name == 'action_options':
+            options['action_options'] = json.loads(option.options)
     s.close()
     return json.dumps(options)
 

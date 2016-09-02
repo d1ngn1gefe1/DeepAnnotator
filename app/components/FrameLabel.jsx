@@ -12,7 +12,7 @@ export default class FrameLabel extends React.Component {
     this.state = {
       frameLabels: [],
       frameSelect: null,
-      hasStarted: false
+      hasStarted: false,
     };
 
     this.handleFrameSelect = this.handleFrameSelect.bind(this);
@@ -48,7 +48,7 @@ export default class FrameLabel extends React.Component {
   setData(data) {
     this.setState({
       frameLabels: data["frameLabels"] == null ? [] : data["frameLabels"],
-      frameSelect: data["objeframeSelectctLabels"]
+      frameSelect: data["frameSelect"]
     });
     this.props.isSaved(true);
   }

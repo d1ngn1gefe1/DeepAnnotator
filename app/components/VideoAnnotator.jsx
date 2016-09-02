@@ -116,7 +116,8 @@ export default class VideoAnnotator extends React.Component {
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
         sources: [{
-          src: "http://"+self.public+"/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          // src: "http://"+self.public+"/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          src: "http://128.12.137.178/emma/DeepAnnotator/public/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
           type: "video/mp4"
         }],
         name: "Video "+i,
@@ -278,17 +279,19 @@ export default class VideoAnnotator extends React.Component {
          console.log("Option info:", options);
          self.setState({
            frameSelectOptions: options.frame_options,
-           objectSelectOptions: options.object_options
+           objectSelectOptions: options.object_options,
+           actionSelectOptions: options.action_options
          })
        });
   }
 
-  saveOptionInfo(frameOptions, objectOptions) {
+  saveOptionInfo(frameOptions, objectOptions, actionOptions) {
     var self = this;
 
     var options = {
       frame_options: frameOptions,
-      object_options: objectOptions
+      object_options: objectOptions,
+      action_options: actionOptions
     };
 
     fetch(this.props.urlSaveOptions, {
@@ -534,13 +537,6 @@ export default class VideoAnnotator extends React.Component {
 
     for (var i = 0; i < self.state.labelInfos.length; i++) {
       var labels = self.refs["label"+i].getData();
-      var label = labels.labels;
-      // Remove invalid labels
-      for (var j = 0; j < label.length; j++) { //TODO
-        if (label[j][0] == -1 || label[j][1] == -1) {
-          label.splice(j, 1);
-        }
-      }
       console.log("Save data:", labels);
 
       if (self.state.labelInfos[i]["isFrameLabel"]) {
@@ -630,13 +626,12 @@ export default class VideoAnnotator extends React.Component {
 
   handleAddFrameSelectOptions() {
     var self = this;
-    var frameSelectOptions = self.state.frameSelectOptions;
+    var options = self.state.frameSelectOptions;
     var textVal = self.state.frameTextValue;
 
     var flag = false;
-    var options = frameSelectOptions[0].options;
     for (var i = 0; i < options.length; i++) {
-      if (options[i].label === textVal) {
+      if (options[i].value === textVal) {
         flag = true;
         console.log("Frame class already exist!");
         break;
@@ -644,26 +639,29 @@ export default class VideoAnnotator extends React.Component {
     }
 
     if (!flag) {
-      frameSelectOptions[0].options.push({
+      options.push({
         label: textVal,
         value: textVal
       });
     }
-    console.log("Frame Menu:", frameSelectOptions);
+    console.log("Frame Menu:", options);
 
-    self.saveOptionInfo(self.state.frameSelectOptions, frameSelectOptions);
+    self.saveOptionInfo(
+      options,
+      self.state.objectSelectOptions,
+      self.state.actionSelectOptions);
     self.setState({
-      frameSelectOptions: frameSelectOptions
+      frameSelectOptions: options,
+      frameTextValue: ""
     });
   }
 
   handleAddObjectSelectOptions() {
     var self = this;
-    var objectSelectOptions = self.state.objectSelectOptions;
+    var options = self.state.objectSelectOptions;
     var textVal = self.state.objectTextValue;
 
     var flag = false;
-    var options = objectSelectOptions[0].options;
     for (var i = 0; i < options.length; i++) {
       if (options[i].label === textVal) {
         flag = true;
@@ -673,26 +671,29 @@ export default class VideoAnnotator extends React.Component {
     }
 
     if (!flag) {
-      objectSelectOptions[0].options.push({
+      options.push({
         label: textVal,
         value: textVal
       });
     }
-    console.log("Object Menu:", objectSelectOptions);
+    console.log("Object Menu:", options);
 
-    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
+    self.saveOptionInfo(
+      self.state.frameSelectOptions,
+      options,
+      self.state.actionSelectOptions);
     self.setState({
-      objectSelectOptions: objectSelectOptions
+      objectSelectOptions: options,
+      objectTextValue: ""
     });
   }
 
   handleAddActionSelectOptions() {
     var self = this;
-    var actionSelectOptions = self.state.actionSelectOptions;
+    var options = self.state.actionSelectOptions;
     var textVal = self.state.actionTextValue;
 
     var flag = false;
-    var options = actionSelectOptions[0].options;
     for (var i = 0; i < options.length; i++) {
       if (options[i].label === textVal) {
         flag = true;
@@ -702,16 +703,20 @@ export default class VideoAnnotator extends React.Component {
     }
 
     if (!flag) {
-      actionSelectOptions[0].options.push({
+      options.push({
         label: textVal,
         value: textVal
       });
     }
-    console.log("Action Menu:", actionSelectOptions);
+    console.log("Action Menu:", options);
 
-    self.saveOptionInfo(self.state.frameSelectOptions, actionSelectOptions);
+    self.saveOptionInfo(
+      self.state.frameSelectOptions,
+      self.state.objectSelectOptions,
+      options);
     self.setState({
-      actionSelectOptions: actionSelectOptions
+      actionSelectOptions: options,
+      actionTextValue: ""
     });
   }
 
@@ -744,9 +749,8 @@ export default class VideoAnnotator extends React.Component {
 
   handleRemoveFrameSelectOptions() {
     var self = this;
-    var frameSelectOptions = self.state.frameSelectOptions;
-    var options = frameSelectOptions[0].options;
-    var textVal = self.state.frameSelect.label;
+    var options = self.state.frameSelectOptions;
+    var textVal = self.state.frameSelect.value;
 
     for (var i = 0; i < options.length; i++) {
        if (options[i].value === textVal) {
@@ -754,11 +758,15 @@ export default class VideoAnnotator extends React.Component {
           break;
        }
     }
-    console.log("Frame menu after remove:", frameSelectOptions);
+    console.log("Frame menu after remove:", options);
 
-    self.saveOptionInfo(self.state.frameSelectOptions, frameSelectOptions);
+    self.saveOptionInfo(
+      options,
+      self.state.objectSelectOptions,
+      self.state.actionSelectOptions
+    );
     self.setState({
-      frameSelectOptions: frameSelectOptions,
+      frameSelectOptions: options,
       frameSelect: null
     });
   }
@@ -766,9 +774,8 @@ export default class VideoAnnotator extends React.Component {
 
   handleRemoveObjectSelectOptions() {
     var self = this;
-    var objectSelectOptions = self.state.objectSelectOptions;
-    var options = objectSelectOptions[0].options;
-    var textVal = self.state.objectSelect.label;
+    var options = self.state.objectSelectOptions;
+    var textVal = self.state.objectSelect.value;
 
     for (var i = 0; i < options.length; i++) {
        if (options[i].value === textVal) {
@@ -776,20 +783,23 @@ export default class VideoAnnotator extends React.Component {
           break;
        }
     }
-    console.log("Object menu after remove:", objectSelectOptions);
+    console.log("Object menu after remove:", options);
 
-    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
+    self.saveOptionInfo(
+      self.state.frameSelectOptions,
+      options,
+      self.state.actionSelectOptions
+    );
     self.setState({
-      objectSelectOptions: objectSelectOptions,
+      objectSelectOptions: options,
       objectSelect: null
     });
   }
 
   handleRemoveActionSelectOptions() {
     var self = this;
-    var actionSelectOptions = self.state.actionSelectOptions;
-    var options = actionSelectOptions[0].options;
-    var textVal = self.state.actionSelect.label;
+    var options = self.state.actionSelectOptions;
+    var textVal = self.state.actionSelect.value;
 
     for (var i = 0; i < options.length; i++) {
        if (options[i].value === textVal) {
@@ -797,11 +807,15 @@ export default class VideoAnnotator extends React.Component {
           break;
        }
     }
-    console.log("Action menu after remove:", actionSelectOptions);
+    console.log("Action menu after remove:", options);
 
-    self.saveOptionInfo(self.state.frameSelectOptions, actionSelectOptions);
+    self.saveOptionInfo(
+      self.state.frameSelectOptions,
+      self.state.objectSelectOptions,
+      options
+    );
     self.setState({
-      actionSelectOptions: actionSelectOptions,
+      actionSelectOptions: options,
       actionSelect: null
     });
   }
