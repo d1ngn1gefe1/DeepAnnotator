@@ -37,11 +37,13 @@ body {
     padding: 70px 0px 0px 0px;
     margin: 0px;
     overflow: hidden;
+    height: 100vh;
+    background-color: $gray-even-darker;
 
    p {
     font-size: 18px;
     color: white;
-  }
+   }
  }
 
   .video-js {
@@ -54,8 +56,9 @@ body {
     overflow-y: overlay;
     overflow-x: hidden;
     padding: 0px 10px 0px 5px;
-    height: $height*$scaling+380;
     min-width: 500px;
+    min-height: $height*$scaling+380;
+    height: 100%;
 
     .control-panel-buttons {
       padding: 15px;
@@ -193,7 +196,8 @@ body {
   }
 
   .vjs-playlist {
-    height: $height*$scaling+380;
+    min-height: $height*$scaling+380;
+    height: 100%;
   }
 
   .videojs-wrapper {
