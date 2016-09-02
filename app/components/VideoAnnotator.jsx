@@ -83,21 +83,6 @@ export default class VideoAnnotator extends React.Component {
     this.handleIsSaved = this.handleIsSaved.bind(this);
     this.handleOpenInstructionsModal = this.handleOpenInstructionsModal.bind(this);
     this.handleClickPlaylist = this.handleClickPlaylist.bind(this);
-
-    this.handleObjectTextChange = this.handleObjectTextChange.bind(this);
-    this.handleRemoveObjectSelectOptions = this.handleRemoveObjectSelectOptions.bind(this);
-    this.handleObjectSelect = this.handleObjectSelect.bind(this);
-    this.handleAddObjectSelectOptions = this.handleAddObjectSelectOptions.bind(this);
-
-    this.handleFrameTextChange = this.handleFrameTextChange.bind(this);
-    this.handleRemoveFrameSelectOptions = this.handleRemoveFrameSelectOptions.bind(this);
-    this.handleFrameSelect = this.handleFrameSelect.bind(this);
-    this.handleAddFrameSelectOptions = this.handleAddFrameSelectOptions.bind(this);
-
-    this.handleActionTextChange = this.handleActionTextChange.bind(this);
-    this.handleRemoveActionSelectOptions = this.handleRemoveActionSelectOptions.bind(this);
-    this.handleActionSelect = this.handleActionSelect.bind(this);
-    this.handleAddActionSelectOptions = this.handleAddActionSelectOptions.bind(this);
   }
 
   componentWillMount() {
@@ -594,40 +579,28 @@ export default class VideoAnnotator extends React.Component {
     self.player.currentTime(currentFrame/FPS);
   }
 
-  handleFrameTextChange(event) {
+  handleTextChange(id, event) {
     var self = this;
     var text = event.target.value;
     console.log("Text value", text);
 
-    self.setState({
-      frameTextValue: text
-    });
+    if (id === 0) {
+      self.setState({
+        frameTextValue: text
+      });
+    } else if (id === 1) {
+      self.setState({
+        objectTextValue: text
+      });
+    } else if (id === 2) {
+      self.setState({
+        actionTextValue: text
+      });
+    }
   }
 
-  handleObjectTextChange(event) {
+  handleAddSelectOptions(options, textVal, id) {
     var self = this;
-    var text = event.target.value;
-    console.log("Text value", text);
-
-    self.setState({
-      objectTextValue: text
-    });
-  }
-
-  handleActionTextChange(event) {
-    var self = this;
-    var text = event.target.value;
-    console.log("Text value", text);
-
-    self.setState({
-      actionTextValue: text
-    });
-  }
-
-  handleAddFrameSelectOptions() {
-    var self = this;
-    var options = self.state.frameSelectOptions;
-    var textVal = self.state.frameTextValue;
 
     var flag = false;
     for (var i = 0; i < options.length; i++) {
@@ -646,178 +619,94 @@ export default class VideoAnnotator extends React.Component {
     }
     console.log("Frame Menu:", options);
 
-    self.saveOptionInfo(
-      options,
-      self.state.objectSelectOptions,
-      self.state.actionSelectOptions);
-    self.setState({
-      frameSelectOptions: options,
-      frameTextValue: ""
-    });
-  }
-
-  handleAddObjectSelectOptions() {
-    var self = this;
-    var options = self.state.objectSelectOptions;
-    var textVal = self.state.objectTextValue;
-
-    var flag = false;
-    for (var i = 0; i < options.length; i++) {
-      if (options[i].label === textVal) {
-        flag = true;
-        console.log("Object class already exist!");
-        break;
-      }
-    }
-
-    if (!flag) {
-      options.push({
-        label: textVal,
-        value: textVal
+    if (id === 0) {
+      self.saveOptionInfo(
+        options,
+        self.state.objectSelectOptions,
+        self.state.actionSelectOptions);
+      self.setState({
+        frameSelectOptions: options,
+        frameTextValue: ""
+      });
+    } else if (id === 1) {
+      self.saveOptionInfo(
+        self.state.frameSelectOptions,
+        options,
+        self.state.actionSelectOptions);
+      self.setState({
+        objectSelectOptions: options,
+        objectTextValue: ""
+      });
+    } else if (id === 2) {
+      self.saveOptionInfo(
+        self.state.frameSelectOptions,
+        self.state.objectSelectOptions,
+        options);
+      self.setState({
+        actionSelectOptions: options,
+        actionTextValue: ""
       });
     }
-    console.log("Object Menu:", options);
-
-    self.saveOptionInfo(
-      self.state.frameSelectOptions,
-      options,
-      self.state.actionSelectOptions);
-    self.setState({
-      objectSelectOptions: options,
-      objectTextValue: ""
-    });
   }
 
-  handleAddActionSelectOptions() {
+  handleSelect(id, select) {
     var self = this;
-    var options = self.state.actionSelectOptions;
-    var textVal = self.state.actionTextValue;
+    console.log("selected value", select.value);
 
-    var flag = false;
-    for (var i = 0; i < options.length; i++) {
-      if (options[i].label === textVal) {
-        flag = true;
-        console.log("Action class already exist!");
-        break;
-      }
-    }
-
-    if (!flag) {
-      options.push({
-        label: textVal,
-        value: textVal
+    if (id === 0) {
+      self.setState({
+        frameSelect: select
+      });
+    } else if (id === 1) {
+      self.setState({
+        objectSelect: select
+      });
+    } else if (id === 2) {
+      self.setState({
+        actionSelect: select
       });
     }
-    console.log("Action Menu:", options);
-
-    self.saveOptionInfo(
-      self.state.frameSelectOptions,
-      self.state.objectSelectOptions,
-      options);
-    self.setState({
-      actionSelectOptions: options,
-      actionTextValue: ""
-    });
   }
 
-  handleFrameSelect(select) {
+  handleRemoveSelectOptions(options, select, id) {
     var self = this;
-    console.log("selected value", select.value);
-
-    self.setState({
-      frameSelect: select
-    });
-  }
-
-  handleObjectSelect(select) {
-    var self = this;
-    console.log("selected value", select.value);
-
-    self.setState({
-      objectSelect: select
-    });
-  }
-
-  handleActionSelect(select) {
-    var self = this;
-    console.log("selected value", select.value);
-
-    self.setState({
-      actionSelect: select
-    });
-  }
-
-  handleRemoveFrameSelectOptions() {
-    var self = this;
-    var options = self.state.frameSelectOptions;
-    var textVal = self.state.frameSelect.value;
-
+    var textVal = select.value;
     for (var i = 0; i < options.length; i++) {
-       if (options[i].value === textVal) {
-          options.splice(i, 1);
-          break;
-       }
+      if (options[i].value === textVal) {
+        options.splice(i, 1);
+        break;
+      }
     }
     console.log("Frame menu after remove:", options);
 
-    self.saveOptionInfo(
-      options,
-      self.state.objectSelectOptions,
-      self.state.actionSelectOptions
-    );
-    self.setState({
-      frameSelectOptions: options,
-      frameSelect: null
-    });
-  }
-
-
-  handleRemoveObjectSelectOptions() {
-    var self = this;
-    var options = self.state.objectSelectOptions;
-    var textVal = self.state.objectSelect.value;
-
-    for (var i = 0; i < options.length; i++) {
-       if (options[i].value === textVal) {
-          options.splice(i, 1);
-          break;
-       }
+    if (id === 0) {
+      self.saveOptionInfo(
+        options,
+        self.state.objectSelectOptions,
+        self.state.actionSelectOptions);
+      self.setState({
+        frameSelectOptions: options,
+        frameSelect: null
+      });
+    } else if (id === 1) {
+      self.saveOptionInfo(
+        self.state.frameSelectOptions,
+        options,
+        self.state.actionSelectOptions);
+      self.setState({
+        objectSelectOptions: options,
+        objectSelect: null
+      });
+    } else if (id === 2) {
+      self.saveOptionInfo(
+        self.state.frameSelectOptions,
+        self.state.objectSelectOptions,
+        options);
+      self.setState({
+        actionSelectOptions: options,
+        actionSelect: null
+      });
     }
-    console.log("Object menu after remove:", options);
-
-    self.saveOptionInfo(
-      self.state.frameSelectOptions,
-      options,
-      self.state.actionSelectOptions
-    );
-    self.setState({
-      objectSelectOptions: options,
-      objectSelect: null
-    });
-  }
-
-  handleRemoveActionSelectOptions() {
-    var self = this;
-    var options = self.state.actionSelectOptions;
-    var textVal = self.state.actionSelect.value;
-
-    for (var i = 0; i < options.length; i++) {
-       if (options[i].value === textVal) {
-          options.splice(i, 1);
-          break;
-       }
-    }
-    console.log("Action menu after remove:", options);
-
-    self.saveOptionInfo(
-      self.state.frameSelectOptions,
-      self.state.objectSelectOptions,
-      options
-    );
-    self.setState({
-      actionSelectOptions: options,
-      actionSelect: null
-    });
   }
 
   handleChangePlaybackRate(arg0, arg1, arg2) {
@@ -972,11 +861,11 @@ export default class VideoAnnotator extends React.Component {
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
                       <input type="text" className="form-control" id="name" placeholder="Frame Label"
-                        value={self.state.frameTextValue} onChange={self.handleFrameTextChange}
+                        value={self.state.frameTextValue} onChange={self.handleTextChange.bind(self, 0)}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleAddFrameSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleAddSelectOptions.bind(self, self.state.frameSelectOptions, self.state.frameTextValue, 0)}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
@@ -984,13 +873,13 @@ export default class VideoAnnotator extends React.Component {
                     <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                       <Select
                         name="form-field-name" options={self.state.frameSelectOptions}
-                        onChange={self.handleFrameSelect} value={self.state.frameSelect}
+                        onChange={self.handleSelect.bind(self, 0)} value={self.state.frameSelect}
                         searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Frame Label"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleRemoveFrameSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.frameSelectOptions, self.state.frameSelect, 0)}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
@@ -1005,11 +894,11 @@ export default class VideoAnnotator extends React.Component {
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
                       <input type="text" className="form-control" id="name" placeholder="Object Label"
-                        value={self.state.objectTextValue} onChange={self.handleObjectTextChange}
+                        value={self.state.objectTextValue} onChange={self.handleTextChange.bind(self, 1)}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleAddObjectSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleAddSelectOptions.bind(self, self.state.objectSelectOptions, self.state.objectTextValue, 1)}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
@@ -1017,13 +906,13 @@ export default class VideoAnnotator extends React.Component {
                     <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                       <Select
                         name="form-field-name" options={self.state.objectSelectOptions}
-                        onChange={self.handleObjectSelect} value={self.state.objectSelect}
+                        onChange={self.handleSelect.bind(self, 1)} value={self.state.objectSelect}
                         searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Object Label"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleRemoveObjectSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.objectSelectOptions, self.state.objectSelect, 1)}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
@@ -1033,11 +922,11 @@ export default class VideoAnnotator extends React.Component {
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
                       <input type="text" className="form-control" id="name" placeholder="Action Label"
-                        value={self.state.actionTextValue} onChange={self.handleActionTextChange}
+                        value={self.state.actionTextValue} onChange={self.handleTextChange.bind(self, 2)}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleAddActionSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleAddSelectOptions.bind(self, self.state.actionSelectOptions, self.state.actionTextValue, 2)}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
@@ -1045,13 +934,13 @@ export default class VideoAnnotator extends React.Component {
                     <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                       <Select
                         name="form-field-name" options={self.state.actionSelectOptions}
-                        onChange={self.handleActionSelect} value={self.state.actionSelect}
+                        onChange={self.handleSelect.bind(self, 2)} value={self.state.actionSelect}
                         searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                         placeholder="Action Label"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleRemoveActionSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.actionSelectOptions, self.state.actionTextValue, 2)}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
