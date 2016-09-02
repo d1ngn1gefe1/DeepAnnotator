@@ -599,56 +599,6 @@ export default class VideoAnnotator extends React.Component {
     }
   }
 
-  handleAddSelectOptions(options, textVal, id) {
-    var self = this;
-
-    var flag = false;
-    for (var i = 0; i < options.length; i++) {
-      if (options[i].value === textVal) {
-        flag = true;
-        console.log("Frame class already exist!");
-        break;
-      }
-    }
-
-    if (!flag) {
-      options.push({
-        label: textVal,
-        value: textVal
-      });
-    }
-    console.log("Frame Menu:", options);
-
-    if (id === 0) {
-      self.saveOptionInfo(
-        options,
-        self.state.objectSelectOptions,
-        self.state.actionSelectOptions);
-      self.setState({
-        frameSelectOptions: options,
-        frameTextValue: ""
-      });
-    } else if (id === 1) {
-      self.saveOptionInfo(
-        self.state.frameSelectOptions,
-        options,
-        self.state.actionSelectOptions);
-      self.setState({
-        objectSelectOptions: options,
-        objectTextValue: ""
-      });
-    } else if (id === 2) {
-      self.saveOptionInfo(
-        self.state.frameSelectOptions,
-        self.state.objectSelectOptions,
-        options);
-      self.setState({
-        actionSelectOptions: options,
-        actionTextValue: ""
-      });
-    }
-  }
-
   handleSelect(id, select) {
     var self = this;
     console.log("selected value", select.value);
@@ -668,6 +618,28 @@ export default class VideoAnnotator extends React.Component {
     }
   }
 
+  handleAddSelectOptions(options, textVal, id) {
+    var self = this;
+
+    var flag = false;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value === textVal) {
+        flag = true;
+        console.log("Frame class already exist!");
+        break;
+      }
+    }
+
+    if (!flag) {
+      options.push({
+        label: textVal,
+        value: textVal
+      });
+    }
+
+    self.saveOptionsWrapper(options, id);
+  }
+
   handleRemoveSelectOptions(options, select, id) {
     var self = this;
     var textVal = select.value;
@@ -677,7 +649,12 @@ export default class VideoAnnotator extends React.Component {
         break;
       }
     }
-    console.log("Frame menu after remove:", options);
+
+    self.saveOptionsWrapper(options, id);
+  }
+
+  saveOptionsWrapper(options, id) {
+    var self = this;
 
     if (id === 0) {
       self.saveOptionInfo(
@@ -686,7 +663,8 @@ export default class VideoAnnotator extends React.Component {
         self.state.actionSelectOptions);
       self.setState({
         frameSelectOptions: options,
-        frameSelect: null
+        frameSelect: null,
+        frameTextValue: ""
       });
     } else if (id === 1) {
       self.saveOptionInfo(
@@ -695,7 +673,8 @@ export default class VideoAnnotator extends React.Component {
         self.state.actionSelectOptions);
       self.setState({
         objectSelectOptions: options,
-        objectSelect: null
+        objectSelect: null,
+        objectTextValue: ""
       });
     } else if (id === 2) {
       self.saveOptionInfo(
@@ -704,10 +683,12 @@ export default class VideoAnnotator extends React.Component {
         options);
       self.setState({
         actionSelectOptions: options,
-        actionSelect: null
+        actionSelect: null,
+        actionTextValue: ""
       });
     }
   }
+
 
   handleChangePlaybackRate(arg0, arg1, arg2) {
     var self = this;
@@ -940,7 +921,7 @@ export default class VideoAnnotator extends React.Component {
                         placeholder="Action Label"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.actionSelectOptions, self.state.actionTextValue, 2)}>
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.actionSelectOptions, self.state.actionSelect, 2)}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
