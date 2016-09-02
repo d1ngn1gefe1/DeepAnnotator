@@ -158,12 +158,10 @@ export default class ObjectLabel extends React.Component {
 
   handleActionClick(isStartButton, index) {
     var self = this;
-    console.log("handleActionClick!", isStartButton, index);
 
     var hasStarted = self.state.hasStarted;
 
     if (hasStarted[index] == isStartButton) {
-      console.log("bad", hasStarted[index], isStartButton);
       return;
     }
 
@@ -171,7 +169,6 @@ export default class ObjectLabel extends React.Component {
     var actionLabelsList = self.state.actionLabelsList;
 
     if (hasStarted[index]) {
-      console.log("good1");
       for (var i = 0; i < actionLabelsList[index].length; i++) {
         if (actionLabelsList[index][i][1] == -1) {
           if (currentFrame > actionLabelsList[index][i][0]) {
@@ -189,10 +186,8 @@ export default class ObjectLabel extends React.Component {
       }
     } else {
       if (actionLabelsList[index].length == 0 || currentFrame >= actionLabelsList[index][actionLabelsList[index].length-1][0]) {
-        console.log("good2");
         actionLabelsList[index].push([currentFrame, -1]);
       } else {
-        console.log("good3");
         for (var i = 0; i < actionLabelsList[index].length; i++) {
           if (actionLabelsList[index][i][0] > currentFrame) {
             actionLabelsList[index].splice(i, 0, [currentFrame, -1]);
@@ -202,10 +197,7 @@ export default class ObjectLabel extends React.Component {
       }
     }
 
-
     hasStarted[index] = !hasStarted[index];
-
-    console.log(hasStarted, actionLabelsList);
 
     self.setState({
       actionLabelsList: actionLabelsList,
@@ -401,8 +393,8 @@ export default class ObjectLabel extends React.Component {
 
         <div className="label-header row">
           <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Object "+self.props.id}</p>
-          <button className="btn btn-default col-lg-1 col-md-1 col-sm-1 col-lg-offset-1 col-md-offset-1 col-sm-offset-1" onClick={self.handleAddAction}>
-            <span className="glyphicon glyphicon-plus-sign"></span>
+          <button className="btn btn-default col-lg-2 col-md-2 col-sm-2" onClick={self.handleAddAction}>
+            <span className="glyphicon glyphicon-plus-sign"></span> Action
           </button>
           <Select className="label-select col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
             name="form-field-name" options={self.props.objectSelectOptions}
@@ -474,7 +466,7 @@ export default class ObjectLabel extends React.Component {
                 </button>
 
                 <div className="label-header row">
-                  <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Action"}</p>
+                  <p className="label-text col-lg-3 col-md-3 col-sm-3"><span className="glyphicon glyphicon-pushpin"></span>{" Action"}</p>
                   <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
                     name="form-field-name" options={self.props.actionSelectOptions}
                     onChange={self.handleActionSelect.bind(self, actionIndex)} value={self.state.actionSelects[actionIndex]}

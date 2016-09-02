@@ -119,6 +119,10 @@ body {
       border-top-style: dotted;
       border-top-width: 2px;
       border-top-color: $gray-even-darker;
+
+      .label-text {
+        text-align: center;
+      }
     }
 
     .label-header {

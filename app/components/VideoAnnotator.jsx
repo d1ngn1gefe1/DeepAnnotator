@@ -848,7 +848,7 @@ export default class VideoAnnotator extends React.Component {
                 <span className="glyphicon glyphicon-plus-sign"></span> Object Labels
               </button>
               <button type="button" className="btn btn-save save" onClick={self.handleSave}>
-                <span className="glyphicon glyphicon glyphicon-floppy-disk"></span> Save <span className={self.state.isSaved?"saved":"unsaved"}>●</span>
+                <span className="glyphicon glyphicon-floppy-disk"></span> Save <span className={self.state.isSaved?"saved":"unsaved"}>●</span>
               </button>
             </div>
             {
