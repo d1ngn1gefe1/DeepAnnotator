@@ -447,11 +447,13 @@ export default class VideoAnnotator extends React.Component {
       isSaveModalOpen: false
     });
     self.player.playlist.currentItem(self.state.currentItem);
+    self.player.pause();
   }
 
   handleSaveModalOK() {
     var self = this;
     var currentItem = self.player.playlist.currentItem();
+    self.player.pause();
 
     self.setState({
       currentFrame: 0,
@@ -925,7 +927,7 @@ export default class VideoAnnotator extends React.Component {
               })
             }
 
-            <video id="player" className="video-js" controls autoPlay preload="auto">
+            <video id="player" className="video-js" controls preload="auto">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>
 
