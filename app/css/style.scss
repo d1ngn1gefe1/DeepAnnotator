@@ -37,6 +37,7 @@ body {
     padding: 70px 0px 0px 0px;
     margin: 0px;
     overflow: hidden;
+    min-height: 880px;
     height: 100vh;
     background-color: $gray-even-darker;
 
@@ -57,7 +58,7 @@ body {
     overflow-x: hidden;
     padding: 0px 10px 0px 5px;
     min-width: 500px;
-    min-height: $height*$scaling+380;
+    min-height: $height*$scaling+330;
     height: 100%;
 
     .control-panel-buttons {
@@ -196,7 +197,7 @@ body {
   }
 
   .vjs-playlist {
-    min-height: $height*$scaling+380;
+    min-height: $height*$scaling+330;
     height: 100%;
   }
 

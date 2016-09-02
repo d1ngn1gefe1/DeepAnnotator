@@ -957,7 +957,7 @@ export default class VideoAnnotator extends React.Component {
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 label-customize-control">
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
-                      <input type="text" className="form-control" id="name" placeholder="New Frame Label"
+                      <input type="text" className="form-control" id="name" placeholder="Frame Label"
                         value={self.state.frameTextValue} onChange={self.handleFrameTextChange}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
@@ -990,7 +990,7 @@ export default class VideoAnnotator extends React.Component {
                 <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 label-customize-control">
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
-                      <input type="text" className="form-control" id="name" placeholder="New Object Label"
+                      <input type="text" className="form-control" id="name" placeholder="Object Label"
                         value={self.state.objectTextValue} onChange={self.handleObjectTextChange}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
@@ -1018,7 +1018,7 @@ export default class VideoAnnotator extends React.Component {
 
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
-                      <input type="text" className="form-control" id="name" placeholder="New Action Label"
+                      <input type="text" className="form-control" id="name" placeholder="Action Label"
                         value={self.state.actionTextValue} onChange={self.handleActionTextChange}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />

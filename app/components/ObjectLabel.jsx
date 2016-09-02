@@ -393,10 +393,10 @@ export default class ObjectLabel extends React.Component {
 
         <div className="label-header row">
           <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Object "+self.props.id}</p>
-          <button className="btn btn-default col-lg-2 col-md-2 col-sm-2" onClick={self.handleAddAction}>
+          <button className="btn btn-default col-lg-3 col-md-3 col-sm-3" onClick={self.handleAddAction}>
             <span className="glyphicon glyphicon-plus-sign"></span> Action
           </button>
-          <Select className="label-select col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
+          <Select className="label-select col-lg-6 col-md-6 col-sm-6"
             name="form-field-name" options={self.props.objectSelectOptions}
             onChange={self.handleObjectSelect} value={self.state.objectSelect}
             searchable={true} clearable={false} autoBlur={true}
