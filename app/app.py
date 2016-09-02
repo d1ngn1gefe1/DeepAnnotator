@@ -63,7 +63,7 @@ def save_option_info():
         dict(options=json.dumps(object_options)))
     s.query(OptionInfo).filter_by(
         option_name='action_options').update(
-        dict(options=json.dumps(object_options)))
+        dict(options=json.dumps(action_options)))
 
     s.commit()
     return json.dumps(options)
