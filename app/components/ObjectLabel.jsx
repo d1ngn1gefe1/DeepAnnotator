@@ -230,13 +230,13 @@ export default class ObjectLabel extends React.Component {
 
   handleActionChange(handles, index) {
     var self = this;
-    var actionLabels = self.state.actionLabels;
+    var actionLabelsList = self.state.actionLabelsList;
 
     var value = parseInt(handles[index]);
-    actionLabels[Math.floor(index/2)][index%2] = value;
+    actionLabelsList[index][Math.floor(index/2)][index%2] = value;
 
     self.setState({
-      actionLabels: actionLabels
+      actionLabelsList: actionLabelsList
     });
     self.props.setCurrentFrame(value);
     self.props.isSaved(false);
