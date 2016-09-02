@@ -22,7 +22,7 @@ export default class FrameLabel extends React.Component {
   }
 
   componentDidMount() {
-    this.handleClick(true);
+    this.handleFrameClick(true);
   }
 
   getCurrentOption() {
@@ -93,7 +93,7 @@ export default class FrameLabel extends React.Component {
     return stack;
   }
 
-  handleClick(isStartButton) {
+  handleFrameClick(isStartButton) {
     var self = this;
 
     if (self.state.hasStarted == isStartButton) {
@@ -108,14 +108,18 @@ export default class FrameLabel extends React.Component {
         if (frameLabels[i][1] == -1) {
           if (currentFrame > frameLabels[i][0]) {
             frameLabels[i][1] = currentFrame;
-            frameLabels = self.mergeIntervals(frameLabels);
           } else if (currentFrame < frameLabels[i][0]) {
             frameLabels[i][1] = frameLabels[i][0];
             frameLabels[i][0] = currentFrame;
-            frameLabels = self.mergeIntervals(frameLabels);
           } else {
-            frameLabels.splice(i, 1); // remove interval of length 0
+            if (currentFrame == self.props.numFrames-1) {
+              frameLabels[i][0] = currentFrame-1;
+              frameLabels[i][1] = currentFrame;
+            } else {
+              frameLabels[i][1] = currentFrame+1;
+            }
           }
+          frameLabels = self.mergeIntervals(frameLabels);
           break;
         }
       }
@@ -230,10 +234,10 @@ export default class FrameLabel extends React.Component {
         </div>
 
         <div className="btn-group" data-toggle="buttons">
-          <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" disabled":"")} onClick={self.handleClick.bind(self, true)}>
+          <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" disabled":"")} onClick={self.handleFrameClick.bind(self, true)}>
             <input type="radio" name="options" id="option1" autoComplete="off" /> Start
           </label>
-          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" disabled")} onClick={self.handleClick.bind(self, false)}>
+          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" disabled")} onClick={self.handleFrameClick.bind(self, false)}>
             <input type="radio" name="options" id="option2" autoComplete="off" /> End
           </label>
         </div>

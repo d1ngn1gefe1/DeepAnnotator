@@ -173,14 +173,18 @@ export default class ObjectLabel extends React.Component {
         if (actionLabelsList[index][i][1] == -1) {
           if (currentFrame > actionLabelsList[index][i][0]) {
             actionLabelsList[index][i][1] = currentFrame;
-            actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
           } else if (currentFrame < actionLabelsList[index][i][0]) {
             actionLabelsList[index][i][1] = actionLabelsList[index][i][0];
             actionLabelsList[index][i][0] = currentFrame;
-            actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
           } else {
-            actionLabelsList[index].splice(i, 1); // remove interval of length 0
+            if (currentFrame == self.props.numFrames-1) {
+              actionLabelsList[index][i][0] = currentFrame-1;
+              actionLabelsList[index][i][1] = currentFrame;
+            } else {
+              actionLabelsList[index][i][1] = currentFrame+1;
+            }
           }
+          actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
           break;
         }
       }
