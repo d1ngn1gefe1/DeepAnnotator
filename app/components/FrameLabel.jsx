@@ -16,7 +16,7 @@ export default class FrameLabel extends React.Component {
     };
 
     this.handleFrameSelect = this.handleFrameSelect.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handleFrameChange = this.handleFrameChange.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
   }
@@ -139,7 +139,7 @@ export default class FrameLabel extends React.Component {
     self.props.isSaved(false);
   }
 
-  handleChange(handles, index) {
+  handleFrameChange(handles, index) {
     var self = this;
     var frameLabels = self.state.frameLabels;
 
@@ -246,7 +246,7 @@ export default class FrameLabel extends React.Component {
             margin={1}
             start={handles}
             animate={false}
-            onChange={self.handleChange}
+            onChange={self.handleFrameChange}
             disabled={self.state.hasStarted || self.props.isPlaying}
             tooltips
           />

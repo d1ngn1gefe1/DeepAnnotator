@@ -228,12 +228,12 @@ export default class ObjectLabel extends React.Component {
     self.props.isSaved(false);
   }
 
-  handleActionChange(handles, index) {
+  handleActionChange(actionIndex, handles, index) {
     var self = this;
     var actionLabelsList = self.state.actionLabelsList;
 
     var value = parseInt(handles[index]);
-    actionLabelsList[index][Math.floor(index/2)][index%2] = value;
+    actionLabelsList[actionIndex][Math.floor(index/2)][index%2] = value;
 
     self.setState({
       actionLabelsList: actionLabelsList
@@ -492,7 +492,7 @@ export default class ObjectLabel extends React.Component {
                     margin={1}
                     start={actionHandles}
                     animate={false}
-                    onChange={self.handleActionChange.bind(self. actionIndex)}
+                    onChange={self.handleActionChange.bind(self, actionIndex)}
                     disabled={self.state.hasStarted[actionIndex] || self.props.isPlaying}
                     tooltips
                   />
