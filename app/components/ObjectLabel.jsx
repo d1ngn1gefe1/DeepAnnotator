@@ -173,14 +173,18 @@ export default class ObjectLabel extends React.Component {
         if (actionLabelsList[index][i][1] == -1) {
           if (currentFrame > actionLabelsList[index][i][0]) {
             actionLabelsList[index][i][1] = currentFrame;
-            actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
           } else if (currentFrame < actionLabelsList[index][i][0]) {
             actionLabelsList[index][i][1] = actionLabelsList[index][i][0];
             actionLabelsList[index][i][0] = currentFrame;
-            actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
           } else {
-            actionLabelsList[index].splice(i, 1); // remove interval of length 0
+            if (currentFrame == self.props.numFrames-1) {
+              actionLabelsList[index][i][0] = currentFrame-1;
+              actionLabelsList[index][i][1] = currentFrame;
+            } else {
+              actionLabelsList[index][i][1] = currentFrame+1;
+            }
           }
+          actionLabelsList[index] = self.mergeIntervals(actionLabelsList[index]);
           break;
         }
       }
@@ -228,15 +232,15 @@ export default class ObjectLabel extends React.Component {
     self.props.isSaved(false);
   }
 
-  handleActionChange(handles, index) {
+  handleActionChange(actionIndex, handles, index) {
     var self = this;
-    var actionLabels = self.state.actionLabels;
+    var actionLabelsList = self.state.actionLabelsList;
 
     var value = parseInt(handles[index]);
-    actionLabels[Math.floor(index/2)][index%2] = value;
+    actionLabelsList[actionIndex][Math.floor(index/2)][index%2] = value;
 
     self.setState({
-      actionLabels: actionLabels
+      actionLabelsList: actionLabelsList
     });
     self.props.setCurrentFrame(value);
     self.props.isSaved(false);
@@ -492,7 +496,7 @@ export default class ObjectLabel extends React.Component {
                     margin={1}
                     start={actionHandles}
                     animate={false}
-                    onChange={self.handleActionChange.bind(self. actionIndex)}
+                    onChange={self.handleActionChange.bind(self, actionIndex)}
                     disabled={self.state.hasStarted[actionIndex] || self.props.isPlaying}
                     tooltips
                   />
