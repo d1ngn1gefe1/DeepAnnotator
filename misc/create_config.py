@@ -27,21 +27,21 @@ def main(params):
     if not os.path.exists(params['config_root']):
       os.makedirs(params['config_root'])
 
-    # config = {}
-    # config['video_root'] = params['video_root']
-    # config['server'] = params['server']
-    # config['database'] = params['database']
-    # config['db_password'] = raw_input("Database password: ")
-    # config_path = os.path.join(params['config_root'], 'config.json')
-    # write_json(config, config_path)
-    #
-    # user_config_path = os.path.join(params['config_root'], 'users.json')
-    # if not os.path.exists:
-    #   users = {}
-    # else:
-    #   users = read_json(user_config_path)
-    # update_user_config(users)
-    # write_json(users, user_config_path)
+    config = {}
+    config['video_root'] = params['video_root']
+    config['server'] = params['server']
+    config['database'] = params['database']
+    config['db_password'] = raw_input("Database password: ")
+    config_path = os.path.join(params['config_root'], 'config.json')
+    write_json(config, config_path)
+
+    user_config_path = os.path.join(params['config_root'], 'users.json')
+    if not os.path.exists(user_config_path):
+      users = {}
+    else:
+      users = read_json(user_config_path)
+    update_user_config(users)
+    write_json(users, user_config_path)
 
     options = {}
     option_config_path = os.path.join(params['config_root'], 'options.json')
