@@ -35,8 +35,10 @@ except:
 options = read_json(OPTION_CONFIG)
 frame_options = OptionInfo('frame_options', json.dumps(options['frame_options']))
 object_options = OptionInfo('object_options', json.dumps(options['object_options']))
+action_options = OptionInfo('action_options', json.dumps(options['action_options']))
 session.add(frame_options)
 session.add(object_options)
+session.add(action_options)
 
 # commit the record of the database
 session.commit()

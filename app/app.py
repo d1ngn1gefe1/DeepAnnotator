@@ -48,9 +48,11 @@ def save_option_info():
 
     frame_options = request.json['frame_options']
     object_options = request.json['object_options']
+    action_options = request.json['action_options']
     options = {
         'frame_options': frame_options,
-        'object_options': object_options
+        'object_options': object_options,
+        'action_options': action_options
     }
 
     s.query(OptionInfo).filter_by(
@@ -59,6 +61,9 @@ def save_option_info():
     s.query(OptionInfo).filter_by(
         option_name='object_options').update(
         dict(options=json.dumps(object_options)))
+    s.query(OptionInfo).filter_by(
+        option_name='action_options').update(
+        dict(options=json.dumps(action_options)))
 
     s.commit()
     return json.dumps(options)
@@ -78,6 +83,9 @@ def get_option_info():
             options['frame_options'] = json.loads(option.options)
         elif option.option_name == 'object_options':
             options['object_options'] = json.loads(option.options)
+        elif option.option_name == 'action_options':
+            options['action_options'] = json.loads(option.options)
+    s.close()
     return json.dumps(options)
 
 
@@ -93,6 +101,7 @@ def get_video_info():
     data = [ {'videoId': video.video_id, 'playlistName': video.playlist_name,
              'frameLabel': video.frame_label, 'objectLabel': video.object_label,
              'bboxes': video.bboxes} for video in videos ]
+    s.close()
     return json.dumps({'data': data})
 
 
@@ -118,7 +127,7 @@ def save_label():
             dict(frame_label=frame_label, object_label=object_label,
                  bboxes=bboxes))
     s.commit()
-
+    s.close()
     return json.dumps({'video_id': video_id, 'playlist_name': playlist_name,
                        'status': 'success'})
 
@@ -141,6 +150,7 @@ def login():
             return redirect(url_for('home'))
         else:
             error = 'Invalid Credentials. Please try again.'
+        s.close()
     return render_template('login.html', error=error)
 
 
@@ -148,6 +158,7 @@ def login():
 @login_required
 def logout():
     session.pop('logged_in', None)
+    session.close()
     return render_template('logout.html')
 
 
@@ -160,4 +171,4 @@ if __name__ == '__main__':
     params = vars(args)
 
     app.secret_key = os.urandom(12)
-    app.run(host='0.0.0.0', port=int(params['port']), debug=True, threaded=True)
+    app.run(host='0.0.0.0', port=int(params['port']), debug=False, threaded=True)

@@ -8,7 +8,7 @@ import mediaEvents from "./video/media-events.js";
 import mediaProperties from "./video/media-properties.js";
 import {Modal, ModalHeader, ModalTitle, ModalClose, ModalBody, ModalFooter} from "react-modal-bootstrap"
 import {Layer, Rect, Stage, Group} from "react-konva";
-import Select from "react-select-plus";
+import Select from "react-select";
 
 import AnnotatorNavigation from "./AnnotatorNavigation.jsx";
 import FrameLabel from "./FrameLabel.jsx";
@@ -18,7 +18,9 @@ import Nouislider from "./slider/NouisliderWrapper.jsx";
 
 import "video.js/dist/video-js.min.css";
 import "videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css";
-import "react-select-plus/dist/react-select-plus.css";
+import "react-select/dist/react-select.css";
+
+import json from "../sql/configs/config.json";
 
 // don't change these!
 var HEIGHT = 240;
@@ -47,23 +49,26 @@ export default class VideoAnnotator extends React.Component {
       isPlaying: false,
       isSaved: true,
       labelToBoxData: [],
-      objectSelectOptions: [],
-      frameSelectOptions: [],
-      categories: null,
       playbackRate: 1.0,
       showAdvanced: false,
-      frameCatVal: "",
-      frameClassVal: "",
-      frameCategoryRemove: null,
-      frameCategoryAdd: null,
+
+      frameSelectOptions: [],
+      objectSelectOptions: [],
+      actionSelectOptions: [],
+
       frameSelect: null,
       objectSelect: null,
-      objTextVal: ""
+      actionSelect: null,
+
+      frameTextValue: "",
+      objectTextValue: "",
+      actionTextValue: ""
     };
 
     this.currentKey = 0;
     this.currentLabels = [];
     this.isFocus = false;
+    this.public = json.public;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
@@ -73,21 +78,11 @@ export default class VideoAnnotator extends React.Component {
     this.handleSaveModalOK = this.handleSaveModalOK.bind(this);
     this.handleInstructionsModalCancel = this.handleInstructionsModalCancel.bind(this);
     this.handleSetCurrentFrame = this.handleSetCurrentFrame.bind(this);
-    this.handleAddObjectSelectOptions = this.handleAddObjectSelectOptions.bind(this);
-    this.handleAddFrameCategory = this.handleAddFrameCategory.bind(this);
-    this.handleAddFrameClass = this.handleAddFrameClass.bind(this);
     this.handleChangePlaybackRate = this.handleChangePlaybackRate.bind(this);
     this.handleShowAdvanced = this.handleShowAdvanced.bind(this);
     this.handleIsSaved = this.handleIsSaved.bind(this);
-    this.handleFrameSelectRemove = this.handleFrameSelectRemove.bind(this);
-    this.handleFrameSelectAdd = this.handleFrameSelectAdd.bind(this);
-    this.handleObjectSelect = this.handleObjectSelect.bind(this);
     this.handleOpenInstructionsModal = this.handleOpenInstructionsModal.bind(this);
-    this.handleObjTextChange = this.handleObjTextChange.bind(this);
-    this.handleRemoveObjectSelectOptions = this.handleRemoveObjectSelectOptions.bind(this);
-    this.handleFrameCatChange = this.handleFrameCatChange.bind(this);
-    this.handleFrameClassChange = this.handleFrameClassChange.bind(this);
-    this.handleRemoveFrameClass = this.handleRemoveFrameClass.bind(this);
+    this.handleClickPlaylist = this.handleClickPlaylist.bind(this);
   }
 
   componentWillMount() {
@@ -105,18 +100,18 @@ export default class VideoAnnotator extends React.Component {
     var playlist = [];
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
-        "sources": [{
-          "src": "/static/video/"+self.playlistName+"/"+i+"/depth.mp4", "type": "video/mp4"
+        sources: [{
+          // src: "http://"+self.public+"/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          src: "http://128.12.137.178/emma/DeepAnnotator/public/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          type: "video/mp4"
         }],
-        "name": "Video "+i,
-        "thumbnail": "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg"
+        name: "Video "+i,
+        thumbnail: "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg",
+        poster: "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg"
       });
     }
 
     self.player = videojs("player", {
-      control: true,
-      preload: "auto",
-      autoplay: false,
       plugins: {
         framebyframe: {
           fps: FPS,
@@ -131,67 +126,72 @@ export default class VideoAnnotator extends React.Component {
     }, function() {
       self.player.playlist(playlist);
       self.player.playlistUi();
+
+      self.player.on("loadeddata", function() {
+        console.log("loadeddata", self.player.playlist.currentItem());
+        var currentItem = self.player.playlist.currentItem();
+
+        if (self.player.seekable().end(0) == 0) {
+          console.log("error: not seekable");
+        }
+
+        if (currentItem == self.state.currentItem) {
+          return;
+        } else if (!self.state.isSaved) {
+          self.setState({
+            isSaveModalOpen: true
+          });
+        } else {
+          self.setState({
+            labelInfos: [],
+            currentFrame: 0,
+            currentItem: currentItem,
+            isSaveModalOpen: false,
+            isPlaying: false,
+            isSaved: true
+          });
+
+          self.player.pause();
+
+          self.getOptionsInfo();
+          // Reinitialize labels from server when saved and go to next video or
+          // load page for the first time
+          self.getVideoInfo();
+        }
+      });
+
+      self.player.on("durationchange", function() {
+        console.log("durationchange");
+        self.setState({
+          numFrames: Math.round(self.player.duration()*FPS)
+        });
+      });
+
+      self.player.on("playing", function() {
+        self.setState({
+          isPlaying: true
+        });
+      });
+      self.player.on("pause", function() {
+        self.setState({
+          isPlaying: false
+        });
+      });
+
+      self.player.on("timeupdate", function() {
+        var currentFrame = Math.round(self.player.currentTime()*FPS);
+
+        self.setState({
+          currentFrame: currentFrame
+        });
+      });
+
       boundProperties(self.player);
       mediaEvents(self.player);
       mediaProperties(self.player);
     });
 
-    self.player.on("loadstart", function() {
-      var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
-
-      if (currentItem == self.state.currentItem) {
-        return;
-      } else if (!self.state.isSaved) {
-        self.setState({
-          isSaveModalOpen: true
-        });
-      } else {
-        self.setState({
-          labelInfos: [],
-          currentFrame: 0,
-          currentItem: currentItem,
-          isSaveModalOpen: false,
-          isPlaying: false,
-          isSaved: true
-        });
-        self.getOptionsInfo();
-        // Reinitialize labels from server when saved and go to next video or
-        // load page for the first time
-        self.getVideoInfo();
-        self.player.pause();
-      }
-    });
-
-    self.player.on("durationchange", function() {
-      console.log("durationchange");
-      self.setState({
-        numFrames: Math.round(self.player.duration()*FPS)
-      });
-    });
-
-    self.player.on("play", function() {
-      console.log("on play");
-      self.setState({
-        isPlaying: true
-      });
-    });
-
-    self.player.on("pause", function() {
-      console.log("on pause");
-      self.setState({
-        isPlaying: false
-      });
-    });
-
-    self.player.on("timeupdate", function() {
-      var currentFrame = Math.round(self.player.currentTime()*FPS);
-
-      self.setState({
-        currentFrame: currentFrame
-      });
-    });
-
-    window.onpopstate = function() {
+    window.onpopstate = function(e) {
       console.log("Back button pressed!");
       window.location.href = "/";
     };
@@ -204,6 +204,7 @@ export default class VideoAnnotator extends React.Component {
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()-dist);
+        return false;
       } else if (e.keyCode == 39) { // right
         if (self.isFocus) {
           return true;
@@ -211,14 +212,16 @@ export default class VideoAnnotator extends React.Component {
         self.player.pause();
         var dist = 5.0/FPS;
         self.player.currentTime(self.player.currentTime()+dist);
+        return false;
       } else if (e.keyCode == 32) { // space
-        console.log("space", self.state.isPlaying);
-        if (self.isFocus) {
-          return true;
-        } else if (self.state.isPlaying) {
-          self.player.pause();
+        if (self.player.paused()) {
+          setTimeout(function () {
+            self.player.play();
+          }, 150);
         } else {
-          self.player.play();
+          setTimeout(function () {
+            self.player.pause();
+          }, 150);
         }
         return false;
       } else if(e.ctrlKey && e.keyCode == 83) { // ctrl + s
@@ -226,6 +229,13 @@ export default class VideoAnnotator extends React.Component {
         return false;
       }
     };
+  }
+
+  handleClickPlaylist() {
+    var items = document.getElementsByClassName("vjs-playlist-item");
+    for (var i = 0; i < items.length; i++) {
+      items[i].blur();
+    }
   }
 
   componentWillUpdate() {
@@ -252,21 +262,21 @@ export default class VideoAnnotator extends React.Component {
         return response.json(); })
       .then(function(options) {
          console.log("Option info:", options);
-         var categories = self.getCategories(options.frame_options)
          self.setState({
            frameSelectOptions: options.frame_options,
            objectSelectOptions: options.object_options,
-           categories: categories
+           actionSelectOptions: options.action_options
          })
        });
   }
 
-  saveOptionInfo(frameOptions, objectOptions) {
+  saveOptionInfo(frameOptions, objectOptions, actionOptions) {
     var self = this;
 
     var options = {
       frame_options: frameOptions,
-      object_options: objectOptions
+      object_options: objectOptions,
+      action_options: actionOptions
     };
 
     fetch(this.props.urlSaveOptions, {
@@ -283,7 +293,7 @@ export default class VideoAnnotator extends React.Component {
   }
 
   getVideoInfo() {
-    console.log(this.props.url);
+    // console.log(this.props.url);
 
     var self = this;
     fetch(this.props.url, {method: "post"})
@@ -321,13 +331,27 @@ export default class VideoAnnotator extends React.Component {
             tag = "glyphicon glyphicon-ok";
           }
 
-          var index = serverData[i].videoId;
-          if (playlist.childNodes[index].childNodes.length <= 2) {
+          if (count > 0) {
+            var index = serverData[i].videoId - self.start;
+            // console.log("index:", index);
+            var node = playlist.childNodes[index];
             var span = document.createElement("span");
             span.setAttribute("class", tag);
-            playlist.childNodes[index].appendChild(span);
-          } else {
-            playlist.childNodes[index].childNodes[2].setAttribute("class", tag);
+            if (node.childNodes.length <= 2) {
+              var linebreak = document.createElement("br");
+              node.appendChild(span);
+              node.appendChild(linebreak);
+            } else {
+              var className = node.childNodes[2].className;
+              if (className === "glyphicon glyphicon-pencil" ||
+                  className === "glyphicon glyphicon-ok") {
+                node.childNodes[2].setAttribute("class", tag);
+              } else {
+                var linebreak = document.createElement("br");
+                node.insertBefore(span, node.childNodes[2]);
+                node.insertBefore(linebreak, node.childNodes[3]);
+              }
+            }
           }
         }
       }
@@ -340,12 +364,12 @@ export default class VideoAnnotator extends React.Component {
       var frameLabel = Array();
       var objectLabel = Array();
       var bboxes = Array();
-      var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+      var currentItem = self.player.playlist.currentItem();
       console.log("Src currentItem", currentItem);
 
       for (var i = 0; i < serverData.length; i++) {
         if (self.playlistName == serverData[i].playlistName &&
-            currentItem == serverData[i].videoId) {
+            currentItem == serverData[i].videoId - self.start) {
           frameLabel.push.apply(frameLabel,
             JSON.parse(serverData[i].frameLabel)["label"]);
           objectLabel.push.apply(objectLabel,
@@ -410,13 +434,14 @@ export default class VideoAnnotator extends React.Component {
     self.setState({
       isSaveModalOpen: false
     });
-    // Need to subtract self.start to get correct index in playlist
-    self.player.playlist.currentItem(self.state.currentItem - self.start);
+    self.player.playlist.currentItem(self.state.currentItem);
+    self.player.pause();
   }
 
   handleSaveModalOK() {
     var self = this;
-    var currentItem = parseInt(self.player.currentSrc().split("/")[6]);
+    var currentItem = self.player.playlist.currentItem();
+    self.player.pause();
 
     self.setState({
       currentFrame: 0,
@@ -498,6 +523,7 @@ export default class VideoAnnotator extends React.Component {
     for (var i = 0; i < self.state.labelInfos.length; i++) {
       var labels = self.refs["label"+i].getData();
       console.log("Save data:", labels);
+
       if (self.state.labelInfos[i]["isFrameLabel"]) {
         frameData.push(labels);
       } else {
@@ -518,7 +544,7 @@ export default class VideoAnnotator extends React.Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        videoId: self.state.currentItem,
+        videoId: self.start+self.state.currentItem,
         playlistName: self.playlistName,
         frameLabel: JSON.stringify(frameLabel),
         objectLabel: JSON.stringify(objectLabel),
@@ -553,196 +579,116 @@ export default class VideoAnnotator extends React.Component {
     self.player.currentTime(currentFrame/FPS);
   }
 
-  handleObjTextChange(event) {
+  handleTextChange(id, event) {
     var self = this;
     var text = event.target.value;
     console.log("Text value", text);
 
-    self.setState({
-      objTextVal: text
-    });
+    if (id === 0) {
+      self.setState({
+        frameTextValue: text
+      });
+    } else if (id === 1) {
+      self.setState({
+        objectTextValue: text
+      });
+    } else if (id === 2) {
+      self.setState({
+        actionTextValue: text
+      });
+    }
   }
 
-  handleAddObjectSelectOptions() {
+  handleSelect(id, select) {
     var self = this;
-    var objectSelectOptions = self.state.objectSelectOptions;
-    var textVal = self.state.objTextVal;
+    console.log("selected value", select.value);
+
+    if (id === 0) {
+      self.setState({
+        frameSelect: select
+      });
+    } else if (id === 1) {
+      self.setState({
+        objectSelect: select
+      });
+    } else if (id === 2) {
+      self.setState({
+        actionSelect: select
+      });
+    }
+  }
+
+  handleAddSelectOptions(options, textVal, id) {
+    var self = this;
 
     var flag = false;
-    var options = objectSelectOptions[0].options;
     for (var i = 0; i < options.length; i++) {
-      if (options[i].label === textVal) {
+      if (options[i].value === textVal) {
         flag = true;
-        console.log("Object class already exist!");
+        console.log("Frame class already exist!");
         break;
       }
     }
 
     if (!flag) {
-      objectSelectOptions[0].options.push({
+      options.push({
         label: textVal,
         value: textVal
       });
     }
-    console.log("Obj Menu:", objectSelectOptions);
 
-    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
-    self.setState({
-      objectSelectOptions: objectSelectOptions
-    });
+    self.saveOptionsWrapper(options, id);
   }
 
-  handleObjectSelect(select) {
+  handleRemoveSelectOptions(options, select, id) {
     var self = this;
-    console.log("selected value", select.value);
-
-    self.setState({
-      objectSelect: select
-    });
-  }
-
-  handleRemoveObjectSelectOptions() {
-    var self = this;
-    var objectSelectOptions = self.state.objectSelectOptions;
-    var options = objectSelectOptions[0].options;
-    var textVal = self.state.objectSelect.label;
-
+    var textVal = select.value;
     for (var i = 0; i < options.length; i++) {
-       if (options[i].value === textVal) {
-          options.splice(i, 1);
-          break;
-       }
-    }
-    console.log("Obj menu after remove:", objectSelectOptions);
-
-    self.saveOptionInfo(self.state.frameSelectOptions, objectSelectOptions);
-    self.setState({
-      objectSelectOptions: objectSelectOptions,
-      objectSelect: null
-    });
-  }
-
-  handleFrameCatChange(event) {
-    var self = this;
-    var text = event.target.value;
-    console.log("New Cat value", text);
-
-    self.setState({
-      frameCatVal: text
-    });
-  }
-
-  handleFrameClassChange(event) {
-    var self = this;
-    var text = event.target.value;
-    console.log("New Class value", text);
-
-    self.setState({
-      frameClassVal: text
-    });
-  }
-
-  handleAddFrameCategory() {
-    var self = this;
-    var frameSelectOptions = self.state.frameSelectOptions;
-    var textVal = self.state.frameCatVal;
-
-    var flag = false;
-    for (var i = 0; i < frameSelectOptions.length; i++) {
-      if (frameSelectOptions[i].label === textVal) {
-        flag = true;
-        console.log("Frame category already exist!");
+      if (options[i].value === textVal) {
+        options.splice(i, 1);
         break;
       }
     }
 
-    if (!flag) {
-      frameSelectOptions.push({
-        label: textVal,
-        options: []
+    self.saveOptionsWrapper(options, id);
+  }
+
+  saveOptionsWrapper(options, id) {
+    var self = this;
+
+    if (id === 0) {
+      self.saveOptionInfo(
+        options,
+        self.state.objectSelectOptions,
+        self.state.actionSelectOptions);
+      self.setState({
+        frameSelectOptions: options,
+        frameSelect: null,
+        frameTextValue: ""
+      });
+    } else if (id === 1) {
+      self.saveOptionInfo(
+        self.state.frameSelectOptions,
+        options,
+        self.state.actionSelectOptions);
+      self.setState({
+        objectSelectOptions: options,
+        objectSelect: null,
+        objectTextValue: ""
+      });
+    } else if (id === 2) {
+      self.saveOptionInfo(
+        self.state.frameSelectOptions,
+        self.state.objectSelectOptions,
+        options);
+      self.setState({
+        actionSelectOptions: options,
+        actionSelect: null,
+        actionTextValue: ""
       });
     }
-    console.log("Frame Menu:", frameSelectOptions);
-
-    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
-
-    var categories = self.getCategories(frameSelectOptions);
-    self.setState({
-      frameSelectOptions: frameSelectOptions,
-      categories: categories
-    });
   }
 
-  handleAddFrameClass() {
-    var self = this;
-    var frameSelectOptions = self.state.frameSelectOptions;
-    var category = self.state.frameCategoryAdd.value;
-    var textVal = self.state.frameClassVal;
-
-    console.log("New category:", category);
-
-    for (var i = 0; i < frameSelectOptions.length; i++) {
-      if (frameSelectOptions[i].label === category) {
-        var options = frameSelectOptions[i].options;
-        var flag = false;
-        for (var j = 0; j < options.length; j++) {
-          if (options[j].label === textVal) {
-            flag = true;
-            console.log("Frame class already exist!");
-            break;
-          }
-        }
-        if (!flag) {
-          frameSelectOptions[i].options.push({
-            label: textVal,
-            value: category + " - " + textVal
-          });
-        }
-        break;
-       }
-    }
-    console.log("Frame Menu:", frameSelectOptions);
-    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
-
-    self.setState({
-      frameSelectOptions: frameSelectOptions
-    });
-  }
-
-  handleRemoveFrameClass() {
-    var self = this;
-    var frameSelectOptions = self.state.frameSelectOptions;
-    var category = self.state.frameCategoryRemove;
-    var frameClass = self.state.frameSelect.label;
-
-    for (var i = 0; i < frameSelectOptions.length; i++) {
-       if (frameSelectOptions[i].label === category) {
-          var options = frameSelectOptions[i].options;
-          for (var j = 0; j < options.length; j++) {
-            if (options[j].label === frameClass) {
-              options.splice(j, 1);
-              break;
-            }
-          }
-          if (options.length == 0) {
-            frameSelectOptions.splice(i, 1);
-            break;
-          }
-       }
-    }
-    console.log("Frame menu after remove:", frameSelectOptions);
-    self.saveOptionInfo(frameSelectOptions, self.state.objectSelectOptions);
-
-    var categories = self.getCategories(frameSelectOptions);
-    self.setState({
-      frameSelectOptions: frameSelectOptions,
-      frameSelect: null,
-      frameCategoryRemove: null,
-      frameCategoryAdd: null,
-      frameClassVal: "",
-      categories: categories
-    });
-  }
 
   handleChangePlaybackRate(arg0, arg1, arg2) {
     var self = this;
@@ -760,37 +706,6 @@ export default class VideoAnnotator extends React.Component {
     self.setState({
       showAdvanced: !self.state.showAdvanced
     });
-  }
-
-  handleFrameSelectRemove(select) {
-    var self = this;
-    console.log("selected value", select);
-
-    self.setState({
-      frameSelect: select,
-      frameCategoryRemove: select.value.split(" - ")[0]
-    });
-  }
-
-  handleFrameSelectAdd(select) {
-    var self = this;
-    console.log("selected value", select);
-
-    self.setState({
-      frameCategoryAdd: select
-    });
-  }
-
-  getCategories(frameSelectOptions) {
-    var self = this;
-    var categories = [{options: []}];
-
-    for (var i = 0; i < frameSelectOptions.length; i++) {
-      var category = frameSelectOptions[i].label;
-      categories[0].options.push({label: category, value: category});
-    }
-
-    return categories;
   }
 
   handleOpenInstructionsModal() {
@@ -819,7 +734,7 @@ export default class VideoAnnotator extends React.Component {
                 <span className="glyphicon glyphicon-plus-sign"></span> Object Labels
               </button>
               <button type="button" className="btn btn-save save" onClick={self.handleSave}>
-                <span className="glyphicon glyphicon glyphicon-floppy-disk"></span> Save <span className={self.state.isSaved?"saved":"unsaved"}>●</span>
+                <span className="glyphicon glyphicon-floppy-disk"></span> Save <span className={self.state.isSaved?"saved":"unsaved"}>●</span>
               </button>
             </div>
             {
@@ -830,7 +745,7 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
                       numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.state.frameSelectOptions}
+                      isPlaying={self.state.isPlaying} frameSelectOptions={self.state.frameSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                       isFocus={self.handleIsFocus.bind(self)}
                     />
@@ -841,7 +756,7 @@ export default class VideoAnnotator extends React.Component {
                       ref={"label"+index} currentFrame={self.state.currentFrame}
                       closeLabel={self.handleCloseLabel} isSaved={self.handleIsSaved}
                       numFrames={self.state.numFrames}
-                      isPlaying={self.state.isPlaying} selectOptions={self.state.objectSelectOptions}
+                      isPlaying={self.state.isPlaying} objectSelectOptions={self.state.objectSelectOptions} actionSelectOptions={self.state.actionSelectOptions}
                       setCurrentFrame={self.handleSetCurrentFrame}
                       isFocus={self.handleIsFocus.bind(self)}
                     />
@@ -896,7 +811,7 @@ export default class VideoAnnotator extends React.Component {
               })
             }
 
-            <video id="player" className="video-js" controls preload="auto" crossOrigin="anonymous">
+            <video id="player" className="video-js" controls preload="auto">
               <p className="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
             </video>
 
@@ -921,53 +836,31 @@ export default class VideoAnnotator extends React.Component {
                 </div>
               </div>
 
-              <div className="frame-label-customize row">
+              <div className="label-customize frame-label-customize row">
                 <p className="col-lg-1 col-md-1 col-sm-1">Frame</p>
-                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 frame-label-customize-control">
+                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 label-customize-control">
                   <div className="row">
-                    <div className="input-group add-category col-lg-6 col-md-6 col-sm-6">
-                      <input type="text" className="form-control" id="name" placeholder="New Category" value={self.state.frameCatVal} onChange={self.handleFrameCatChange}
+                    <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
+                      <input type="text" className="form-control" id="name" placeholder="Frame Label"
+                        value={self.state.frameTextValue} onChange={self.handleTextChange.bind(self, 0)}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleAddFrameCategory}>
-                          <span className="glyphicon glyphicon-plus-sign"></span> Add Category
-                        </button>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="input-group add-class">
-                      <Select
-                        name="form-field-name" options={self.state.categories}
-                        onChange={self.handleFrameSelectAdd} value={self.state.frameCategoryAdd}
-                        searchable={true} clearable={false}
-                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
-                        placeholder="Category"
-                      />
-                      <input type="text" className="form-control" id="name" placeholder="New Class" value={self.state.frameClassVal} onChange={self.handleFrameClassChange}
-                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
-                      />
-                      <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleAddFrameClass}>
+                        <button type="button" className="btn btn-default" onClick={self.handleAddSelectOptions.bind(self, self.state.frameSelectOptions, self.state.frameTextValue, 0)}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
                     </div>
-                  </div>
-                  <div className="row">
-                    <div className="input-group remove-class">
-                      <input type="text" className="form-control"
-                        placeholder="Category" value={self.state.frameCategoryRemove?self.state.frameCategoryRemove:""} readOnly />
+                    <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                       <Select
                         name="form-field-name" options={self.state.frameSelectOptions}
-                        onChange={self.handleFrameSelectRemove} value={self.state.frameSelect}
-                        searchable={true} clearable={false}
+                        onChange={self.handleSelect.bind(self, 0)} value={self.state.frameSelect}
+                        searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
-                        placeholder="Class"
+                        placeholder="Frame Label"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleRemoveFrameClass}>
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.frameSelectOptions, self.state.frameSelect, 0)}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
@@ -976,17 +869,17 @@ export default class VideoAnnotator extends React.Component {
                 </div>
               </div>
 
-              <div className="object-label-customize row">
+              <div className="label-customize object-label-customize row">
                 <p className="col-lg-1 col-md-1 col-sm-1">Object</p>
-                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 object-label-customize-control">
+                <div className="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 label-customize-control">
                   <div className="row">
                     <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
-                      <input type="text" className="form-control" id="name" placeholder="New Class"
-                        value={self.state.objTextVal} onChange={self.handleObjTextChange}
+                      <input type="text" className="form-control" id="name" placeholder="Object Label"
+                        value={self.state.objectTextValue} onChange={self.handleTextChange.bind(self, 1)}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleAddObjectSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleAddSelectOptions.bind(self, self.state.objectSelectOptions, self.state.objectTextValue, 1)}>
                           <span className="glyphicon glyphicon-plus-sign"></span> Add Class
                         </button>
                       </span>
@@ -994,13 +887,41 @@ export default class VideoAnnotator extends React.Component {
                     <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
                       <Select
                         name="form-field-name" options={self.state.objectSelectOptions}
-                        onChange={self.handleObjectSelect} value={self.state.objectSelect}
-                        searchable={true} clearable={false}
+                        onChange={self.handleSelect.bind(self, 1)} value={self.state.objectSelect}
+                        searchable={true} clearable={false} autoBlur={true}
                         onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
-                        placeholder="Class"
+                        placeholder="Object Label"
                       />
                       <span className="input-group-btn">
-                        <button type="button" className="btn btn-default" onClick={self.handleRemoveObjectSelectOptions}>
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.objectSelectOptions, self.state.objectSelect, 1)}>
+                          <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="input-group add-class col-lg-5 col-md-5 col-sm-5">
+                      <input type="text" className="form-control" id="name" placeholder="Action Label"
+                        value={self.state.actionTextValue} onChange={self.handleTextChange.bind(self, 2)}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default" onClick={self.handleAddSelectOptions.bind(self, self.state.actionSelectOptions, self.state.actionTextValue, 2)}>
+                          <span className="glyphicon glyphicon-plus-sign"></span> Add Class
+                        </button>
+                      </span>
+                    </div>
+                    <div className="input-group remove-class col-lg-6 col-md-6 col-sm-6 col-lg-offset-1 col-md-offset-1 col-sm-offset-1">
+                      <Select
+                        name="form-field-name" options={self.state.actionSelectOptions}
+                        onChange={self.handleSelect.bind(self, 2)} value={self.state.actionSelect}
+                        searchable={true} clearable={false} autoBlur={true}
+                        onFocus={self.handleIsFocus.bind(self, true)} onBlur={self.handleIsFocus.bind(self, false)}
+                        placeholder="Action Label"
+                      />
+                      <span className="input-group-btn">
+                        <button type="button" className="btn btn-default" onClick={self.handleRemoveSelectOptions.bind(self, self.state.actionSelectOptions, self.state.actionSelect, 2)}>
                           <span className="glyphicon glyphicon-minus-sign"></span> Remove Class
                         </button>
                       </span>
@@ -1020,7 +941,7 @@ export default class VideoAnnotator extends React.Component {
             </div>
           </div>
 
-          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2"></ol>
+          <ol className="vjs-playlist col-lg-2 col-md-2 col-sm-2" onClick={self.handleClickPlaylist}></ol>
         </section>
 
         <section className={self.state.showAdvanced?"details":"details details-hidden"}>

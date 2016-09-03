@@ -7,7 +7,6 @@ import jQuery from 'jquery';
     "use strict"; // Start of use strict
 
     // jQuery for page scrolling feature - requires jQuery Easing plugin
-    console.log("hello?")
     $('.page-scroll a').bind('click', function(event) {
         console.log("hello!")
         var $anchor = $(this);

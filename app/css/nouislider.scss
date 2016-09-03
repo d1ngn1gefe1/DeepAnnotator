@@ -81,9 +81,9 @@
 .noUi-horizontal {
   height: 18px;
   .noUi-handle {
-    width: 34px;
+    width: 16px;
     height: 28px;
-    left: -17px;
+    left: -8px;
     top: -6px;
   }
 }
@@ -160,7 +160,7 @@
     height: 14px;
     width: 1px;
     background: #E8E7E6;
-    left: 14px;
+    left: 6px;
     top: 6px;
   }
   &:after {
@@ -170,9 +170,8 @@
     height: 14px;
     width: 1px;
     background: #E8E7E6;
-    left: 14px;
     top: 6px;
-    left: 17px;
+    left: 8px;
   }
 }
 
@@ -317,4 +316,9 @@
   padding: 5px;
   text-align: center;
   bottom: -32px;
+}
+
+.noUi-tooltip-top {
+  top: -32px;
+  bottom: initial;
 }

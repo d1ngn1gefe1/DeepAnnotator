@@ -27,52 +27,45 @@ def main(params):
     if not os.path.exists(params['config_root']):
       os.makedirs(params['config_root'])
 
-    config = {}
-    config['video_root'] = params['video_root']
-    config['server'] = params['server']
-    config['database'] = params['database']
-    config['db_password'] = raw_input("Database password: ")
-    config_path = os.path.join(params['config_root'], 'config.json')
-    write_json(config, config_path)
-
-    user_config_path = os.path.join(params['config_root'], 'users.json')
-    if not os.path.exists:
-      users = {}
-    else:
-      users = read_json(user_config_path)
-    update_user_config(users)
-    write_json(users, user_config_path)
+    # config = {}
+    # config['video_root'] = params['video_root']
+    # config['server'] = params['server']
+    # config['database'] = params['database']
+    # config['db_password'] = raw_input("Database password: ")
+    # config_path = os.path.join(params['config_root'], 'config.json')
+    # write_json(config, config_path)
+    #
+    # user_config_path = os.path.join(params['config_root'], 'users.json')
+    # if not os.path.exists:
+    #   users = {}
+    # else:
+    #   users = read_json(user_config_path)
+    # update_user_config(users)
+    # write_json(users, user_config_path)
 
     options = {}
     option_config_path = os.path.join(params['config_root'], 'options.json')
     frame_options = [{
-        "label": "Alcohol Rub",
-        "options": [{
-            "label": "No Attempt",
+            "label": "Alcohol Rub - No Attempt",
             "value": "Alcohol Rub - No Attempt"
         }, {
-            "label": "Insufficient Rub",
+            "label": "Alcohol Rub - Insufficient Rub",
             "value": "Alcohol Rub - Insufficient Rub"
         }, {
-            "label": "Sufficient Rub",
+            "label": "Alcohol Rub - sufficient Rub",
             "value": "Alcohol Rub - sufficient Rub"
-        }]
-        }, {
-        "label": "Soup and Water Wash",
-        "options": [{
-            "label": "No Attempt",
+        },{
+            "label": "Soup and Water Wash - No Attempt",
             "value": "Soup and Water Wash - No Attempt"
         }, {
-            "label": "Insufficient Rub",
+            "label": "Soup and Water Wash - Insufficient Rub",
             "value": "Soup and Water Wash - Insufficient Rub"
         }, {
-            "label": "Sufficient Rub",
-            "value": "Soup and Water Wash - Sufficient Rub"
-        }]
+            "label": "Soup and Water Wash - sufficient Rub",
+            "value": "Soup and Water Wash - sufficient Rub"
     }]
 
-    object_options = [{
-        "options": [{
+    object_options =[{
           "label": "Table",
           "value": "Table"
         }, {
@@ -87,11 +80,31 @@ def main(params):
         }, {
           "label": "Nurse",
           "value": "Nurse"
-        }]
+    }]
+
+    action_options = [{
+            "label": "Alcohol Rub - No Attempt",
+            "value": "Alcohol Rub - No Attempt"
+        }, {
+            "label": "Alcohol Rub - Insufficient Rub",
+            "value": "Alcohol Rub - Insufficient Rub"
+        }, {
+            "label": "Alcohol Rub - sufficient Rub",
+            "value": "Alcohol Rub - sufficient Rub"
+        },{
+            "label": "Soup and Water Wash - No Attempt",
+            "value": "Soup and Water Wash - No Attempt"
+        }, {
+            "label": "Soup and Water Wash - Insufficient Rub",
+            "value": "Soup and Water Wash - Insufficient Rub"
+        }, {
+            "label": "Soup and Water Wash - sufficient Rub",
+            "value": "Soup and Water Wash - sufficient Rub"
     }]
 
     options['frame_options'] = frame_options
     options['object_options'] = object_options
+    options['action_options'] = action_options
     write_json(options, option_config_path)
 
 

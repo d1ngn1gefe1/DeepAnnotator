@@ -18,11 +18,15 @@ body {
   }
 
   .glyphicon-ok {
-    color: green;
+    color: chartreuse;
+  }
+
+  .glyphicon-hand-left {
+    color: aqua;
   }
 
   .saved {
-    color: green;
+    color: chartreuse;
   }
 
   .unsaved {
@@ -33,7 +37,15 @@ body {
     padding: 70px 0px 0px 0px;
     margin: 0px;
     overflow: hidden;
-  }
+    min-height: 880px;
+    height: 100vh;
+    background-color: $gray-even-darker;
+
+   p {
+    font-size: 18px;
+    color: white;
+   }
+ }
 
   .video-js {
     width: 100%;
@@ -45,8 +57,9 @@ body {
     overflow-y: overlay;
     overflow-x: hidden;
     padding: 0px 10px 0px 5px;
-    height: $height*$scaling+380;
     min-width: 500px;
+    min-height: $height*$scaling+330;
+    height: 100%;
 
     .control-panel-buttons {
       padding: 15px;
@@ -73,10 +86,6 @@ body {
     .label-info {
       padding: 10px;
       margin: 1px 10px 1px 10px;
-
-      p {
-        color: white;
-      }
 
       .btn-group {
         width: 100%;
@@ -108,12 +117,23 @@ body {
       border-color: darken($color-object, 20%);
     }
 
+    .action-label-info {
+      padding-top: 10px;
+      margin-top: 50px;
+      border-top-style: dotted;
+      border-top-width: 2px;
+      border-top-color: $gray-even-darker;
+
+      .label-text {
+        text-align: center;
+      }
+    }
+
     .label-header {
       width: 95%;
       margin: 0 0 10px 0;
 
       .label-text {
-        font-size: 18px;
         float: left;
         padding: 4px 0 4px 0;
         margin: 0px;
@@ -123,18 +143,27 @@ body {
         float: left;
       }
 
-      .label-category {
-        float: left;
-        width: 33.33%;
-      }
-
       .Select-menu-outer {
         z-index: 100;
       }
     }
 
+    .label-action-select {
+      top: -50%;
+
+      .Select-control {
+        z-index: 100;
+        width: 30px;
+        margin: 0 auto;
+      }
+
+      .Select-menu-outer {
+        width: 200px;
+      }
+    }
+
     .label-slider {
-      margin: 15px 10px 40px 10px;
+      margin: 45px 10px 40px 10px;
       position: relative;
 
       .slider-connect {
@@ -168,7 +197,8 @@ body {
   }
 
   .vjs-playlist {
-    height: $height*$scaling+380;
+    min-height: $height*$scaling+330;
+    height: 100%;
   }
 
   .videojs-wrapper {
@@ -190,6 +220,10 @@ body {
       border-color: $gray-darkest;
 
       .vjs-volume-menu-button {
+        display: none;
+      }
+
+      .vjs-fullscreen-control {
         display: none;
       }
     }
@@ -220,80 +254,27 @@ body {
       }
 
       p {
-        color: white;
         float: left;
         padding: 0px;
         margin: 0px;
       }
 
       .frame-label-customize {
-        padding: 10px;
-        margin: 0px;
-
-        button {
-          height: 34px;
-        }
-
-        .frame-label-customize-control {
-          padding: 0px;
-        }
-
-        .add-category {
-          float: left;
-        }
-
-        .add-class {
-          float: left;
-
-          .Select-control {
-            border-top-right-radius: 0px;
-            border-bottom-right-radius: 0px;
-          }
-        }
-
-        .remove-class {
-          input {
-            z-index: 0;
-          }
-
-          .Select-control {
-            border-radius: 0px;
-          }
-        }
-
-        .Select {
-          display: table-cell;
-          vertical-align: middle;
-          width: 40%;
-
-          .Select-control {
-            border-width: 0px;
-            height: 34px;
-          }
-        }
-
-        .row {
-          margin: 0px;
-          padding: 5px;
-        }
-
-        .Select-menu-outer {
-          z-index: 100;
-          top: initial;
-          bottom: 100%;
-        }
       }
 
       .object-label-customize {
+        background-color: $gray-darker;
+      }
+
+      .label-customize {
         padding: 10px;
         margin: 0px;
-        background-color: $gray-darker;
 
         button {
           height: 34px;
         }
 
-        .object-label-customize-control {
+        .label-customize-control {
           padding: 0px;
         }
 

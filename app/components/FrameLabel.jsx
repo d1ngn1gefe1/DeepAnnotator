@@ -1,8 +1,8 @@
 import React from "react";
 import Nouislider from "./slider/NouisliderWrapper.jsx";
 
-import Select from "react-select-plus";
-import "react-select-plus/dist/react-select-plus.css";
+import Select from "react-select";
+import "react-select/dist/react-select.css";
 
 export default class FrameLabel extends React.Component {
   // similar to componentWillMount in ES5
@@ -10,27 +10,26 @@ export default class FrameLabel extends React.Component {
     super(props);
 
     this.state = {
-      labels: [],
-      select: null,
-      category: null,
+      frameLabels: [],
+      frameSelect: null,
       hasStarted: false,
     };
 
-    this.handleSelect = this.handleSelect.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handleFrameSelect = this.handleFrameSelect.bind(this);
+    this.handleFrameChange = this.handleFrameChange.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
   }
 
   componentDidMount() {
-    this.handleClick(true, true);
+    this.handleFrameClick(true);
   }
 
   getCurrentOption() {
     var self = this;
 
-    for (var i = 0; i < self.state.labels.length; i++) {
-      var label = self.state.labels[i];
+    for (var i = 0; i < self.state.frameLabels.length; i++) {
+      var label = self.state.frameLabels[i];
       if (self.props.currentFrame >= label[0] && self.props.currentFrame <= label[1]) {
         return 1;
       }
@@ -41,16 +40,15 @@ export default class FrameLabel extends React.Component {
 
   getData() {
     var data = {}
-    data["labels"] = this.state.labels;
-    data["select"] = this.state.select;
+    data["frameLabels"] = this.state.frameLabels;
+    data["frameSelect"] = this.state.frameSelect;
     return data;
   }
 
   setData(data) {
     this.setState({
-      labels: data["labels"],
-      select: data["select"],
-      category: data["select"].value.split(" - ")[0],
+      frameLabels: data["frameLabels"] == null ? [] : data["frameLabels"],
+      frameSelect: data["frameSelect"],
       hasStarted: false
     });
     this.props.isSaved(true);
@@ -96,7 +94,7 @@ export default class FrameLabel extends React.Component {
     return stack;
   }
 
-  handleClick(isStartButton) {
+  handleFrameClick(isStartButton) {
     var self = this;
 
     if (self.state.hasStarted == isStartButton) {
@@ -104,52 +102,57 @@ export default class FrameLabel extends React.Component {
     }
 
     var currentFrame = self.props.currentFrame;
-    var labels = self.state.labels;
+    var frameLabels = self.state.frameLabels;
 
     if (self.state.hasStarted) {
-      for (var i = 0; i < labels.length; i++) {
-        if (labels[i][1] == -1) {
-          if (currentFrame > labels[i][0]) {
-            labels[i][1] = currentFrame;
-            labels = self.mergeIntervals(labels);
-          } else if (currentFrame < labels[i][0]) {
-            labels[i][1] = labels[i][0];
-            labels[i][0] = currentFrame;
-            labels = self.mergeIntervals(labels);
+      for (var i = 0; i < frameLabels.length; i++) {
+        if (frameLabels[i][1] == -1) {
+          if (currentFrame > frameLabels[i][0]) {
+            frameLabels[i][1] = currentFrame;
+          } else if (currentFrame < frameLabels[i][0]) {
+            frameLabels[i][1] = frameLabels[i][0];
+            frameLabels[i][0] = currentFrame;
           } else {
-            labels.splice(i, 1); // remove interval of length 0
+            if (currentFrame == self.props.numFrames-1) {
+              frameLabels[i][0] = currentFrame-1;
+              frameLabels[i][1] = currentFrame;
+            } else {
+              frameLabels[i][1] = currentFrame+1;
+            }
           }
+          frameLabels = self.mergeIntervals(frameLabels);
           break;
         }
       }
     } else {
-      if (labels.length == 0 || currentFrame >= labels[labels.length-1][0]) {
-        labels.push([currentFrame, -1]);
+      if (frameLabels.length == 0 || currentFrame >= frameLabels[frameLabels.length-1][0]) {
+        frameLabels.push([currentFrame, -1]);
       } else {
-        for (var i = 0; i < labels.length; i++) {
-          if (labels[i][0] > currentFrame) {
-            labels.splice(i, 0, [currentFrame, -1]);
+        for (var i = 0; i < frameLabels.length; i++) {
+          if (frameLabels[i][0] > currentFrame) {
+            frameLabels.splice(i, 0, [currentFrame, -1]);
+            break;
           }
         }
       }
     }
 
     self.setState({
-      labels: labels,
+      frameLabels: frameLabels,
       hasStarted: !self.state.hasStarted
     });
     self.props.isSaved(false);
   }
 
-  handleChange(handles, index) {
+  handleFrameChange(handles, index) {
     var self = this;
-    var labels = self.state.labels;
+    var frameLabels = self.state.frameLabels;
 
     var value = parseInt(handles[index]);
-    labels[Math.floor(index/2)][index%2] = value;
+    frameLabels[Math.floor(index/2)][index%2] = value;
 
     self.setState({
-      labels: labels
+      frameLabels: frameLabels
     });
     self.props.setCurrentFrame(value);
     self.props.isSaved(false);
@@ -157,15 +160,15 @@ export default class FrameLabel extends React.Component {
 
   getHandles() {
     var self = this;
-    if (self.state.labels.length == 0) {
+    if (self.state.frameLabels.length == 0) {
       return [0];
     }
 
     var handles = [];
-    for (var i = 0; i < self.state.labels.length; i++) {
-      handles.push(self.state.labels[i][0]);
-      if (self.state.labels[i][1] != -1) {
-        handles.push(self.state.labels[i][1]);
+    for (var i = 0; i < self.state.frameLabels.length; i++) {
+      handles.push(self.state.frameLabels[i][0]);
+      if (self.state.frameLabels[i][1] != -1) {
+        handles.push(self.state.frameLabels[i][1]);
       }
     }
 
@@ -176,8 +179,8 @@ export default class FrameLabel extends React.Component {
     var self = this;
     var intervals = [];
 
-    for (var i = 0; i < self.state.labels.length; i++) {
-      var label = self.state.labels[i];
+    for (var i = 0; i < self.state.frameLabels.length; i++) {
+      var label = self.state.frameLabels[i];
 
       if (label[1] == -1) {
         continue;
@@ -192,13 +195,12 @@ export default class FrameLabel extends React.Component {
     return intervals;
   }
 
-  handleSelect(select) {
+  handleFrameSelect(frameSelect) {
     var self = this;
-    console.log("selected value", select);
+    console.log("selected value", frameSelect);
 
     self.setState({
-      select: select,
-      category: select.value.split(" - ")[0]
+      frameSelect: frameSelect
     });
     self.props.isSaved(false);
   }
@@ -223,22 +225,20 @@ export default class FrameLabel extends React.Component {
         </button>
 
         <div className="label-header row">
-          <p className="label-text col-lg-2 col-md-2 col-sm-2">{"Frame "+self.props.id}</p>
-          <input type="text" className="label-category form-control col-lg-4 col-md-4 col-sm-4 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
-            placeholder="Category" value={self.state.category?self.state.category:""} readOnly />
-          <Select className="label-select col-lg-5 col-md-5 col-sm-5"
-            name="form-field-name" options={self.props.selectOptions}
-            onChange={self.handleSelect} value={self.state.select}
-            searchable={true} clearable={false}
+          <p className="label-text col-lg-3 col-md-3 col-sm-3">{"Frame "+self.props.id}</p>
+          <Select className="label-select col-lg-8 col-md-8 col-sm-8 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"
+            name="form-field-name" options={self.props.frameSelectOptions}
+            onChange={self.handleFrameSelect} value={self.state.frameSelect}
+            searchable={true} clearable={false} autoBlur={true}
             onFocus={self.handleFocus} onBlur={self.handleBlur}
           />
         </div>
 
         <div className="btn-group" data-toggle="buttons">
-          <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" disabled":"")} onClick={self.handleClick.bind(self, true)}>
+          <label className={"btn btn-danger col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?" disabled":"")} onClick={self.handleFrameClick.bind(self, true)}>
             <input type="radio" name="options" id="option1" autoComplete="off" /> Start
           </label>
-          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" disabled")} onClick={self.handleClick.bind(self, false)}>
+          <label className={"btn btn-gray col-lg-6 col-md-6 col-sm-6"+(self.state.hasStarted?"":" disabled")} onClick={self.handleFrameClick.bind(self, false)}>
             <input type="radio" name="options" id="option2" autoComplete="off" /> End
           </label>
         </div>
@@ -251,7 +251,7 @@ export default class FrameLabel extends React.Component {
             margin={1}
             start={handles}
             animate={false}
-            onChange={self.handleChange}
+            onChange={self.handleFrameChange}
             disabled={self.state.hasStarted || self.props.isPlaying}
             tooltips
           />
@@ -262,7 +262,7 @@ export default class FrameLabel extends React.Component {
               if (index == 0) {
                 bg += " slider-left"
               }
-              if (index == self.state.labels.length-1) {
+              if (index == self.state.frameLabels.length-1) {
                 bg += " slider-right"
               }
 

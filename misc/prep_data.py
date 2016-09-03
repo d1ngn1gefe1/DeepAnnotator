@@ -92,9 +92,13 @@ def parse_frames(sensor, data_dir, fpv):
     frame_dir = os.path.join(data_dir, sensor, 'd')
     if os.path.exists(frame_dir):
         frames = [f for f in os.listdir(frame_dir) if f.find('jpg') != -1]
-        frames = natural_sort(frames)
-        max_frame_num = len(frames[-1].split('.jpg')[0])
-        os.makedirs(out_dir)
+        if len(frames) == 0:
+            frames = []
+            print 'Frames not found: ' + frame_dir
+        else:
+            frames = natural_sort(frames)
+            max_frame_num = len(frames[-1].split('.jpg')[0])
+            os.makedirs(out_dir)
     else:
         frames = []
         print 'Frames not found: ' + frame_dir
