@@ -78,7 +78,12 @@ gulp.task('copy-8', function() {
         .pipe(gulp.dest('public/sql/configs/'))
 })
 
-gulp.task('copy', ['copy-0', 'copy-1', 'copy-2', 'copy-3', 'copy-4', 'copy-5', 'copy-6', 'copy-7', 'copy-8']);
+gulp.task('copy-8', function() {
+    return gulp.src(['app/app.wsgi'])
+        .pipe(gulp.dest('public/'))
+})
+
+gulp.task('copy', ['copy-0', 'copy-1', 'copy-2', 'copy-3', 'copy-4', 'copy-5', 'copy-6', 'copy-7', 'copy-8', 'copy-9']);
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {
