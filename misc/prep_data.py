@@ -153,7 +153,7 @@ def main(params):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data_dir', default='/home/cvpr_data',
+    parser.add_argument('--data_dir', default='/mnt/bigdata/intermountain',
                         help='Root directory where all data resides')
     parser.add_argument('--out_dir', default='../public/static/video',
                         help='Output directory')

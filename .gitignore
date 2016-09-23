@@ -1,3 +1,4 @@
+/data
 /public
 /node_modules
 /app/sql/configs
@@ -5,3 +6,4 @@
 /app/sql/init_tables_aicare.py
 *.pyc
 *.log
+*.swp
