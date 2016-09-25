@@ -3,7 +3,7 @@ import React from "react";
 export default class Header extends React.Component {
   render() {
     return (
-      <header>
+      <header className="header" style={{backgroundImage: "url(./static/img/bg.jpg)"}}>
           <div className="container">
               <div className="row">
                   <div className="col-lg-12">

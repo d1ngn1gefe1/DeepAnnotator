@@ -1,6 +1,18 @@
 import React from "react";
+import $ from "jquery";
+import jQuery from "jquery";
 
 export default class Navigation extends React.Component {
+  componentDidMount() {
+    $(window).scroll(function() {
+      if ($(document).scrollTop() > 100) {
+        $(".navbar").addClass("affix");
+      } else {
+        $(".navbar").removeClass("affix");
+      }
+    });
+  }
+
   render() {
     return (
       <nav id="mainNav" className="navbar navbar-default navbar-fixed-top navbar-custom">

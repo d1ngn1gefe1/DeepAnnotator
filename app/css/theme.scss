@@ -5,8 +5,9 @@
  */
 
 body {
-  font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Roboto Slab', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   overflow-x: hidden;
+  color: $gray;
 }
 
 p {
@@ -50,17 +51,17 @@ hr {
     padding: 0 0.25em;
   }
   &.star-light {
-    border-color: white;
+    border-color: $gray-dark;
     &:after {
       background-color: $theme-secondary;
-      color: white;
+      color: $gray-dark;
     }
   }
   &.star-primary {
-    border-color: $theme-primary;
+    border-color: $gray-dark;
     &:after {
       background-color: white;
-      color: $theme-primary;
+      color: $gray-dark;
     }
   }
 }
@@ -73,9 +74,12 @@ header {
   text-align: center;
   background: $theme-secondary;
   color: white;
+  background-position: center center;
+  background-size: cover;
+  height: 100vh;
   .container {
-    padding-top: 100px;
-    padding-bottom: 50px;
+    // padding-top: 100px;
+    // padding-bottom: 50px;
   }
   img {
     display: block;
@@ -99,8 +103,8 @@ header {
 @media (min-width: 768px) {
   header {
     .container {
-      padding-top: 200px;
-      padding-bottom: 100px;
+      // padding-top: 200px;
+      // padding-bottom: 100px;
     }
     .intro-text {
       .name {
@@ -114,7 +118,7 @@ header {
 }
 
 .navbar-custom {
-  background: $theme-primary;
+  background: transparent;
   font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-transform: uppercase;
   font-weight: 700;
@@ -140,13 +144,14 @@ header {
         &:focus, &:active {
           color: white;
         }
+        border-radius: 3px;
       }
       &.active a {
         color: white;
-        background: $theme-secondary;
+        background: $gray;
         &:hover, &:focus, &:active {
           color: white;
-          background: $theme-secondary;
+          background: $gray;
         }
       }
     }
@@ -171,9 +176,9 @@ header {
 @media (min-width: 768px) {
   .navbar-custom {
     padding: 25px 0;
-    -webkit-transition: padding 0.3s;
-    -moz-transition: padding 0.3s;
-    transition: padding 0.3s;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
     .navbar-brand {
       font-size: 2em;
       -webkit-transition: all 0.3s;
@@ -182,6 +187,7 @@ header {
     }
     &.affix {
       padding: 10px 0;
+      background: $theme-primary;
       .navbar-brand {
         font-size: 1.5em;
       }
@@ -194,10 +200,10 @@ section {
   h2 {
     margin: 0;
     font-size: 3em;
+    color: $gray-dark;
   }
   &.success {
     background: $theme-secondary;
-    color: white;
   }
 }
 
@@ -344,22 +350,31 @@ footer {
 }
 
 .btn-outline {
-  color: white;
+  color: $theme-secondary;
   font-size: 20px;
-  border: solid 2px white;
-  background: transparent;
+  border: solid 2px $gray;
+  background: $gray-darker;
   transition: all 0.3s ease-in-out;
   margin-top: 15px;
   &:hover, &:focus, &:active, &.active {
     color: $theme-secondary;
-    background: white;
-    border: solid 2px white;
+    background: $gray;
+    border: solid 2px $gray;
   }
 }
 
 .btn-send {
-	@include button-variant(white, $theme-secondary, $theme-secondary);
-	font-weight: 700;
+  color: white;
+  font-size: 20px;
+  border: solid 2px $gray;
+  background: $gray-darker;
+  transition: all 0.3s ease-in-out;
+  margin-top: 15px;
+  &:hover, &:focus, &:active, &.active {
+    color: white;
+    background: $gray;
+    border: solid 2px $gray;
+  }
 }
 
 .btn-social {
