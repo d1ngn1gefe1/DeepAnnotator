@@ -5,7 +5,7 @@ import json
 
 
 # Contact admin if config files don't exist
-CONFIG = '../sql/configs/config.json'
+CONFIG = 'sql/configs/config.json'
 
 
 def read_json(data_path):
