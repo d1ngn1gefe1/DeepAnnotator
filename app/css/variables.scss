@@ -1,5 +1,5 @@
-$theme-primary:    #56A8A4;
-$theme-secondary:  #8DBAC9;
+$theme-primary:    #222222;
+$theme-secondary:  #f7f7f7;
 
 $color-success: #449d44;
 $color-info:    #5bc0de;
@@ -9,7 +9,7 @@ $color-frame:   #1a2c56;
 $color-object:  #38253c;
 
 $gray-base:        #000;
-$gray-darkest:     lighten($gray-base, 8%);     // #222
+$gray-darkest:     lighten($gray-base, 8%);
 $gray-even-darker: lighten($gray-base, 10.16%); // #1a1a1a
 $gray-darker:      lighten($gray-base, 13.5%);  // #222
 $gray-dark:        lighten($gray-base, 20%);    // #333

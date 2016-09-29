@@ -1,6 +1,36 @@
 import React from "react";
+import $ from "jquery";
+import jQuery from "jquery";
 
 export default class Navigation extends React.Component {
+  componentDidMount() {
+    // shrink navbar when scroll down
+    $(window).scroll(function() {
+      if ($(document).scrollTop() > 100) {
+        $("#mainNav").addClass("affix");
+      } else {
+        $("#mainNav").removeClass("affix");
+      }
+    });
+
+    // smooth scroll on clicking nav items
+    $('.nav a').click(function () {
+      var $href = $(this).attr('href');
+      $('body').stop().animate({
+        scrollTop: $($href).offset().top
+      }, 1000);
+      return false;
+    });
+
+    // back to top
+    $('.navbar-header a').click(function () {
+      $('body').stop().animate({
+        scrollTop: 0
+      }, 1000);
+      return false;
+    });
+  }
+
   render() {
     return (
       <nav id="mainNav" className="navbar navbar-default navbar-fixed-top navbar-custom">
@@ -16,9 +46,6 @@ export default class Navigation extends React.Component {
               {/* Collect the nav links, forms, and other content for toggling */}
               <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                   <ul className="nav navbar-nav navbar-right">
-                      <li className="hidden">
-                          <a href="#page-top"></a>
-                      </li>
                       <li className="page-scroll">
                           <a href="#video-grid">Videos</a>
                       </li>

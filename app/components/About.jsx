@@ -19,7 +19,7 @@ export default class About extends React.Component {
                       <p>Our tool makes it easy to build massive, affordable video datasets and can be deployed on a cloud. It also supports offline mode for expert annotator use. </p>
                   </div>
                   <div className="col-lg-8 col-lg-offset-2 text-center">
-                      <a href="#" className="btn btn-lg btn-outline">
+                      <a href="http://vision.stanford.edu/" className="btn btn-lg btn-outline">
                           <i className="fa fa-thumbs-o-up"></i> Like
                       </a>
                   </div>

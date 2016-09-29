@@ -12,7 +12,6 @@ import VideoGrid from "./VideoGrid.jsx";
 
 import "./theme/jqBootstrapValidation.js";
 import "./theme/contact_me.js";
-import "./theme/freelancer.js";
 
 import "../css/main.scss";
 
