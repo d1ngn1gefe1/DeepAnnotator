@@ -301,30 +301,54 @@ export default class Box extends React.Component {
     self.props.isSaved(false);
   }
 
+
+  // Return the index of the prev and next closest elements or the index
+  // of the exact match
+  static binary_search(x, low, high, a, index) {
+    if (low == high)
+        return [low];
+
+    if (low < high) {
+      var mid = low + Math.floor((high - low) / 2);
+      if (a[mid][index] == x)
+        return [mid];
+      if (mid == low) {
+        if (a[mid][index] < x && a[high][index] > x) {
+          return [mid, high];
+        } else if (a[mid][index] > x) {
+          return [mid];
+        } else {
+          return [high];
+        }
+      }
+      if (a[mid][index] < x) {
+        return Box.binary_search(x, mid, high, a, index);
+      } else {
+        return Box.binary_search(x, low, mid, a, index);
+      }
+    }
+  }
+
   getCurrentBbox() {
     var self = this;
-
     var bboxes = self.state.bboxes;
 
-    for (var i = 0; i < bboxes.length; i++) {
-      if (bboxes[i][4] == self.props.currentFrame) {
-        return bboxes[i];
-      } else if (bboxes[i][4] > self.props.currentFrame) {
-        var currentFrame = self.props.currentFrame;
-        var pastFrame = bboxes[i-1][4];
-        var futureFrame = bboxes[i][4];
+    var frameIndex = Box.binary_search(self.props.currentFrame, 0,
+        bboxes.length-1, bboxes, 4);
 
-        var ratio = 1.0*(currentFrame-pastFrame)/(futureFrame-pastFrame);
+    if (frameIndex.length == 1) {
+      return bboxes[frameIndex[0]];
+    } else {
+      var box1 = bboxes[frameIndex[0]];
+      var box2 = bboxes[frameIndex[1]];
 
-        var x1 = bboxes[i-1][0]+ratio*(bboxes[i][0]-bboxes[i-1][0]);
-        var y1 = bboxes[i-1][1]+ratio*(bboxes[i][1]-bboxes[i-1][1]);
-        var x2 = bboxes[i-1][2]+ratio*(bboxes[i][2]-bboxes[i-1][2]);
-        var y2 = bboxes[i-1][3]+ratio*(bboxes[i][3]-bboxes[i-1][3]);
+      var ratio = 1.0*(self.props.currentFrame - box1[4]) / (box2[4] - box1[4]);
+      var x1 = box1[0]+ratio*(box2[0]-box1[0]);
+      var y1 = box1[1]+ratio*(box2[1]-box1[1]);
+      var x2 = box1[2]+ratio*(box2[2]-box1[2]);
+      var y2 = box1[3]+ratio*(box2[3]-box1[3]);
 
-        return [x1, y1, x2, y2];
-      } else if (i == bboxes.length-1) {
-        return bboxes[i];
-      }
+      return [x1, y1, x2, y2, self.props.currentFrame];
     }
   }
 

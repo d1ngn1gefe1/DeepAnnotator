@@ -153,11 +153,11 @@ def main(params):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data_dir', default='/mnt/bigdata/intermountain',
+    parser.add_argument('--data_dir', default='../data',
                         help='Root directory where all data resides')
     parser.add_argument('--out_dir', default='../public/static/video',
                         help='Output directory')
-    parser.add_argument('--frame_per_video', default=500,
+    parser.add_argument('--frame_per_video', default=499,
                         help='Number of frames per video')
     parser.add_argument('--frame_per_second', default=5,
                         help='Number of frames per second (frame rate)')

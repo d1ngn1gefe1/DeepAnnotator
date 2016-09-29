@@ -27,11 +27,12 @@ def main(params):
     if not os.path.exists(params['config_root']):
       os.makedirs(params['config_root'])
 
-    config = {}
-    config['video_root'] = params['video_root']
-    config['server'] = params['server']
-    config['database'] = params['database']
-    config['db_password'] = raw_input("Database password: ")
+    config = {
+        'video_root': params['video_root'],
+        'server': params['server'],
+        'database': params['database'],
+        'db_password': raw_input("Database password: ")
+    }
     config_path = os.path.join(params['config_root'], 'config.json')
     write_json(config, config_path)
 
@@ -80,6 +81,9 @@ def main(params):
         }, {
           "label": "Nurse",
           "value": "Nurse"
+        }, {
+          "label": "Others",
+          "value": "Others"
     }]
 
     action_options = [{

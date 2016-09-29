@@ -1,8 +1,6 @@
-from sqlalchemy import *
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy import Column, Date, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
 import json
 
 
@@ -46,8 +44,8 @@ class Video(Base):
     video_id = Column(String(20), primary_key=True)
     playlist_name = Column(String(100), primary_key=True)
     frame_label = Column(String(1000))
-    object_label = Column(String(1000))
-    bboxes = Column(String(1000))
+    object_label = Column(String(10000))
+    bboxes = Column(String(40000))
 
     #----------------------------------------------------------------------
     def __init__(self, video_id, playlist_name, frame_label, object_label,

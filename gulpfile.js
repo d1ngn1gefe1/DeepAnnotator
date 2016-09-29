@@ -78,7 +78,7 @@ gulp.task('copy-8', function() {
         .pipe(gulp.dest('public/sql/configs/'))
 })
 
-gulp.task('copy-8', function() {
+gulp.task('copy-9', function() {
     return gulp.src(['app/app.wsgi'])
         .pipe(gulp.dest('public/'))
 })
