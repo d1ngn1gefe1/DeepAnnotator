@@ -1,3 +1,4 @@
+import os
 from sqlalchemy.orm import sessionmaker
 from init_tables import *
 
@@ -51,21 +52,25 @@ debug = False
 
 if not debug:
     # Insert videos to table
-    record_path = '/home/www/emma/DeepAnnotator/data/records.json'
-    records = read_json(record_path)
-    records = byteify(records)
-    videos = records['records']
+    data_dir = '/home/cvpr_data/files0928'    
+    playlists = [d for d in os.listdir(data_dir) if d.find('10.') != -1] 
+    for p in playlists:
+        record_path = os.path.join(data_dir, p, 'records.json')
+	if os.path.exists(record_path):
+            records = read_json(record_path)
+            records = byteify(records)
+            videos = records['records']
 
-    for v in videos:
-        print len(str(v['bboxes']))
-        video = Video(
-            str(v['video_id']),
-            v['playlist_name'],
-            trim(str(v['frame_label'])),
-            trim(str(v['object_label'])),
-            trim(str(v['bboxes']))
-        )
-        session.add(video)
+            for v in videos:
+                print len(str(v['bboxes']))
+                video = Video(
+                    str(v['video_id']),
+                    v['playlist_name'],
+                    trim(str(v['frame_label'])),
+                    trim(str(v['object_label'])),
+                    trim(str(v['bboxes']))
+                )
+                session.add(video)
 else:
     # test
     frame_labels = {'label': []}

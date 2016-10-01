@@ -6,7 +6,7 @@ import window from 'global/window';
 import BoxMaker from './box.js';
 import MediaPropertiesItem from './/media-properties-item.js';
 
-var FPS = 5.0;
+var FPS = 2.0;
 
 const Box = BoxMaker(MediaPropertiesItem);
 

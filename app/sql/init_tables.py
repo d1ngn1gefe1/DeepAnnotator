@@ -44,7 +44,7 @@ class Video(Base):
     video_id = Column(String(20), primary_key=True)
     playlist_name = Column(String(100), primary_key=True)
     frame_label = Column(String(1000))
-    object_label = Column(String(10000))
+    object_label = Column(String(20000))
     bboxes = Column(String(40000))
 
     #----------------------------------------------------------------------

@@ -26,7 +26,7 @@ import json from "../sql/configs/config.json";
 var HEIGHT = 240;
 var WIDTH = 320;
 var SCALING = 2;
-var FPS = 5.0;
+var FPS = 2.0;
 
 export default class VideoAnnotator extends React.Component {
 
@@ -102,7 +102,7 @@ export default class VideoAnnotator extends React.Component {
       playlist.push({
         sources: [{
           // src: "http://"+self.public+"/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
-          src: "http://128.12.137.178/emma/DeepAnnotator/public/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          src: "http://aicare.stanford.edu/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
           type: "video/mp4"
         }],
         name: "Video "+i,
