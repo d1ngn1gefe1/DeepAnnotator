@@ -17,6 +17,7 @@
 ```bash
 npm install
 npm start
+bash prep.sh
 cd public
 python app.py --port xxxx (xxxx corresponds to the port number)
 ```
