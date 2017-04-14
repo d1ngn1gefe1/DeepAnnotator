@@ -16,8 +16,8 @@ def read_json(data_path):
 def update_user_config(users):
     while True:
         try:
-            username = raw_input("Username: ")
-            password = raw_input("Password: ")
+            username = raw_input('Username: ')
+            password = raw_input('Password: ')
             users[username] = password
         except EOFError:
             break
@@ -31,7 +31,7 @@ def main(params):
         'video_root': params['video_root'],
         'server': params['server'],
         'database': params['database'],
-        'db_password': raw_input("Database password: ")
+        'db_password': raw_input('Database password: ')
     }
     config_path = os.path.join(params['config_root'], 'config.json')
     write_json(config, config_path)
@@ -47,63 +47,63 @@ def main(params):
     options = {}
     option_config_path = os.path.join(params['config_root'], 'options.json')
     frame_options = [{
-            "label": "Alcohol Rub - No Attempt",
-            "value": "Alcohol Rub - No Attempt"
+            'label': 'Alcohol Rub - No Attempt',
+            'value': 'Alcohol Rub - No Attempt'
         }, {
-            "label": "Alcohol Rub - Insufficient Rub",
-            "value": "Alcohol Rub - Insufficient Rub"
+            'label': 'Alcohol Rub - Insufficient Rub',
+            'value': 'Alcohol Rub - Insufficient Rub'
         }, {
-            "label": "Alcohol Rub - sufficient Rub",
-            "value": "Alcohol Rub - sufficient Rub"
+            'label': 'Alcohol Rub - sufficient Rub',
+            'value': 'Alcohol Rub - sufficient Rub'
         },{
-            "label": "Soup and Water Wash - No Attempt",
-            "value": "Soup and Water Wash - No Attempt"
+            'label': 'Soup and Water Wash - No Attempt',
+            'value': 'Soup and Water Wash - No Attempt'
         }, {
-            "label": "Soup and Water Wash - Insufficient Rub",
-            "value": "Soup and Water Wash - Insufficient Rub"
+            'label': 'Soup and Water Wash - Insufficient Rub',
+            'value': 'Soup and Water Wash - Insufficient Rub'
         }, {
-            "label": "Soup and Water Wash - sufficient Rub",
-            "value": "Soup and Water Wash - sufficient Rub"
+            'label': 'Soup and Water Wash - sufficient Rub',
+            'value': 'Soup and Water Wash - sufficient Rub'
     }]
 
     object_options =[{
-          "label": "Table",
-          "value": "Table"
+          'label': 'Table',
+          'value': 'Table'
         }, {
-          "label": "Chair",
-          "value": "Chair"
+          'label': 'Chair',
+          'value': 'Chair'
         }, {
-          "label": "Bed",
-          "value": "Bed"
+          'label': 'Bed',
+          'value': 'Bed'
         }, {
-          "label": "Doctor",
-          "value": "Doctor"
+          'label': 'Doctor',
+          'value': 'Doctor'
         }, {
-          "label": "Nurse",
-          "value": "Nurse"
+          'label': 'Nurse',
+          'value': 'Nurse'
         }, {
-          "label": "Others",
-          "value": "Others"
+          'label': 'Others',
+          'value': 'Others'
     }]
 
     action_options = [{
-            "label": "Alcohol Rub - No Attempt",
-            "value": "Alcohol Rub - No Attempt"
+            'label': 'Alcohol Rub - No Attempt',
+            'value': 'Alcohol Rub - No Attempt'
         }, {
-            "label": "Alcohol Rub - Insufficient Rub",
-            "value": "Alcohol Rub - Insufficient Rub"
+            'label': 'Alcohol Rub - Insufficient Rub',
+            'value': 'Alcohol Rub - Insufficient Rub'
         }, {
-            "label": "Alcohol Rub - sufficient Rub",
-            "value": "Alcohol Rub - sufficient Rub"
+            'label': 'Alcohol Rub - sufficient Rub',
+            'value': 'Alcohol Rub - sufficient Rub'
         },{
-            "label": "Soup and Water Wash - No Attempt",
-            "value": "Soup and Water Wash - No Attempt"
+            'label': 'Soup and Water Wash - No Attempt',
+            'value': 'Soup and Water Wash - No Attempt'
         }, {
-            "label": "Soup and Water Wash - Insufficient Rub",
-            "value": "Soup and Water Wash - Insufficient Rub"
+            'label': 'Soup and Water Wash - Insufficient Rub',
+            'value': 'Soup and Water Wash - Insufficient Rub'
         }, {
-            "label": "Soup and Water Wash - sufficient Rub",
-            "value": "Soup and Water Wash - sufficient Rub"
+            'label': 'Soup and Water Wash - sufficient Rub',
+            'value': 'Soup and Water Wash - sufficient Rub'
     }]
 
     options['frame_options'] = frame_options
@@ -112,12 +112,12 @@ def main(params):
     write_json(options, option_config_path)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  parser.add_argument('-video_root', nargs='?', default='../public/static/video', type=str)
-  parser.add_argument('-server', nargs='?', default='128.12.137.178', type=str)
-  parser.add_argument('-database', nargs='?', default='deep_annotator', type=str)
-  parser.add_argument('-config_root', nargs='?', default='../app/sql/configs/', type=str)
+  parser.add_argument('--video_root', nargs='?', default='../public/static/video', type=str)
+  parser.add_argument('--server', nargs='?', default='128.12.137.178', type=str)
+  parser.add_argument('--database', nargs='?', default='deep_annotator', type=str)
+  parser.add_argument('--config_root', nargs='?', default='../app/sql/configs/', type=str)
 
   args = parser.parse_args()
   params = vars(args)

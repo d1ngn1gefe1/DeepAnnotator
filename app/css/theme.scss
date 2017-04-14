@@ -235,6 +235,9 @@ section {
       position: relative;
       max-width: 320px;
       margin: 0 auto;
+      .img-responsive {
+        width: 100%;
+      }
       .caption {
         z-index: 5;
         background: fade-out($theme-secondary, 0.2);

@@ -53,8 +53,8 @@ def frames_to_mp4(frame_dir, out_dir, fps, rotate):
         None
     '''
     frames = os.path.join(frame_dir, '*.png')
-    
-    frames = "\'" + frames + "\'"
+
+    frames = '\'' + frames + '\''
     mp4 = os.path.join(out_dir, 'depth.mp4')
     if rotate:
         command = ['ffmpeg',
@@ -63,7 +63,7 @@ def frames_to_mp4(frame_dir, out_dir, fps, rotate):
                    '-i', frames,
                    '-vcodec', 'libx264',
                    '-pix_fmt', 'yuv420p',
-	           '-vf', "\'transpose=2,transpose=2\'",
+	               '-vf', '\'transpose=2,transpose=2\'',
                    '-y',
                    mp4]
     else:
@@ -169,7 +169,7 @@ def main(params):
     inspect_video_data(params['out_dir'], params['video_per_playlist'])
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--data_dir', default='../data',
@@ -183,11 +183,8 @@ if __name__ == "__main__":
     parser.add_argument('--video_per_playlist', default=10,
                         help='Number of videos per playlist')
     parser.add_argument('--rotate', default=False,
-	                help='Rotate video by 180 degrees if True')
+	                    help='Rotate video by 180 degrees if True')
 
     args = parser.parse_args()
     params = vars(args)
     main(params)
-
-
-
