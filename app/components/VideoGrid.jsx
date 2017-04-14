@@ -25,7 +25,7 @@ export default class VideoGrid extends React.Component {
 
           <div className="row">{
             self.props.playlists.map(function(playlistName, index) {
-              var thumbnail = "./static/video/"+playlistName+"/"+self.props.start_index[index]+"/thumbnail.jpg";
+              var thumbnail = "./static/video/"+playlistName+"/"+self.props.start_index[index]+"/thumbnail"+self.props.ext;
               var playlistLabel = "video "+self.props.start_index[index]+" - "+(self.props.end_index[index]-1);
               var link = "/"+playlistName+"/"+self.props.start_index[index]+"-"+(self.props.end_index[index]-1);
 
@@ -59,5 +59,6 @@ VideoGrid.propTypes = {
 VideoGrid.defaultProps = {
   playlists: info.playlists,
   start_index: info.start_index,
-  end_index: info.end_index
+  end_index: info.end_index,
+  ext: info.ext
 };

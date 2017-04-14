@@ -9,11 +9,11 @@ green=$(tput setaf 2)
 #sudo apt-get install npm
 echo "\n${green}pred_data...${normal}"
 cd ./misc
-# python prep_data.py --data_dir '/home/alan/bigdata/thermset'
+python3 prep_data.py --input_path '/home/alan/bigdata/thermset' --output_path '../public/static/video'
 echo "\n${green}create_config...${normal}"
-# python create_config.py --server 128.12.137.178 --config_root '../app/sql/configs/'
+python3 create_config.py --server 128.12.137.178 --config_root '../app/sql/configs/'
 echo "\n${green}update_users...${normal}"
 cd ../app/sql
-python update_users.py
-echo "\n${green}create_config...${normal}"
-python update_options.py
+python3 update_users.py
+echo "\n${green}update_options...${normal}"
+python3 update_options.py

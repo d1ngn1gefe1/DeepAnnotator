@@ -2,6 +2,7 @@ import datetime
 import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from init_tables import *
 
 # Contact admin if config files don't exist

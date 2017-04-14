@@ -12,7 +12,6 @@ def read_json(data_path):
   with open(data_path, 'r') as fp:
     return json.load(fp)
 
-
 # Connect to a database
 config = read_json(CONFIG)
 db = config['database']

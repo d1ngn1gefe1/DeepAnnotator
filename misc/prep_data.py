@@ -1,61 +1,59 @@
 import argparse
+import cv2
+import glob
 import json
 import math
+import numpy as np
 import os
 import re
 import subprocess as sp
 from shutil import copyfile, rmtree
 from create_config import write_json
 
-def inspect_video_data(video_dir, video_per_playlist):
+
+def inspect_video_data(output_path):
     '''Save video information to json.
       Args:
-        video_dir: root directory that contains all the videos
-        video_per_playlist: number of videos per playlist
+        output_path: root directory that contains all the videos
       Returns:
         None
     '''
     stat = {}
-    print(video_dir)
-    sensorsup = [s for s in os.listdir(video_dir)]
-    print(sensorsup)
-    sensors = [os.path.join(sensor, d) for sensor in sensorsup for d in os.listdir(os.path.join(video_dir, sensor)) if d.find('2016') != -1]
-    print(sensors)
+    playlists = [d for d in os.listdir(output_path) if os.path.isdir(os.path.join(output_path, d))]
     start_index = []
     end_index = [] # exclusive
-    playlists = []
-    for s in sensors:
-        s_dir = os.path.join(video_dir, s)
-        video_count = len(os.listdir(s_dir))
-        print(video_count)
-        num_video = int(math.ceil(float(video_count)/video_per_playlist))
-        for i in range(num_video):
-          start_index.append(i*video_per_playlist)
-          end_index.append(min((i+1)*video_per_playlist, video_count))
-          playlists.append(s)
+    for playlist in playlists:
+        start_index.append(0)
+        end_index.append(len(os.listdir(os.path.join(output_path, playlist))))
 
     stat['start_index'] = start_index
     stat['end_index'] = end_index
     stat['playlists'] = playlists
-    out_path = os.path.join(video_dir, 'info.json')
-    print('Output json to:', out_path)
+    stat['ext'] = '.'+glob.glob(os.path.join(output_path, playlists[0], '0', 'thumbnail*'))[0].split('.')[-1]
+    json_path = os.path.join(output_path, 'info.json')
     print(stat)
-    write_json(stat, out_path)
+    write_json(stat, json_path)
 
 
-def frames_to_mp4(frame_dir, out_dir, fps, rotate):
-    '''Create a mp4 from images in frame_dir and save to out_dir.
+def frames_to_mp4(frame_paths, output_path, fps, rotate):
+    '''Create a mp4 from images in frame_paths and save to output_path.
       Args:
-        frame_dir: directory that contains all the frames
-        out_dir: directory to save the output mp4 video
+        frame_paths: paths to all the frames
+        output_path: directory to save the output mp4 video
         fps: frame rate (frame per second)
       Returns:
         None
     '''
-    frames = os.path.join(frame_dir, '*.png')
+    os.makedirs(output_path, exist_ok=True)
+    ext = '.'+frame_paths[0].split('.')[-1]
+    for i, frame_path in enumerate(frame_paths):
+        frame = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
+        frame = np.clip((frame-20)*8, 0, 255)  # hardcoded
+        frame = cv2.applyColorMap(frame, cv2.COLORMAP_JET)
+        cv2.imwrite(os.path.join(output_path, str(i).zfill(5)+ext), frame)
 
-    frames = '\'' + frames + '\''
-    mp4 = os.path.join(out_dir, 'depth.mp4')
+    frames = '\'' + os.path.join(output_path, '*'+ext) + '\''
+    mp4_path = os.path.join(output_path, 'video.mp4')
     if rotate:
         command = ['ffmpeg',
                    '-r', str(fps),
@@ -63,9 +61,9 @@ def frames_to_mp4(frame_dir, out_dir, fps, rotate):
                    '-i', frames,
                    '-vcodec', 'libx264',
                    '-pix_fmt', 'yuv420p',
-	               '-vf', '\'transpose=2,transpose=2\'',
+                   '-vf', '\'transpose=2,transpose=2\'',
                    '-y',
-                   mp4]
+                   mp4_path]
     else:
         command = ['ffmpeg',
                    '-r', str(fps),
@@ -74,10 +72,19 @@ def frames_to_mp4(frame_dir, out_dir, fps, rotate):
                    '-vcodec', 'libx264',
                    '-pix_fmt', 'yuv420p',
                    '-y',
-                   mp4]
+                   mp4_path]
     command = ' '.join(command)
-    print(command)
     sp.call(command, shell=True)
+
+    files = [f for f in os.listdir(output_path) if f.endswith(ext)]
+    for f in files:
+        os.remove(os.path.join(output_path, f))
+
+    thumbnail_path = frame_paths[0]
+    thumbnail = cv2.imread(thumbnail_path, cv2.IMREAD_GRAYSCALE)
+    thumbnail = np.clip((thumbnail-20)*8, 0, 255)  # hardcoded
+    thumbnail = cv2.applyColorMap(thumbnail, cv2.COLORMAP_JET)
+    cv2.imwrite(os.path.join(output_path, 'thumbnail'+ext), thumbnail)
 
 
 def natural_sort(l):
@@ -92,98 +99,53 @@ def natural_sort(l):
     return sorted(l, key = alphanum_key)
 
 
-def parse_frames(sensor, data_dir, fpv):
-    '''Parse all frames that belong to sensor into fpv-frame sequences.
-      Args:
-        sensor: sensor id
-        data_dir: root directory for raw data
-        fpv: frames per video. Number of frames we want in each video.
-      Returns: a tuple of
-        out_dir: directory for parsed frames
-        dir_count: number of video sequences after parsing
-    '''
-    out_dir = os.path.join(data_dir, sensor, 'd_parsed')
-    print('Parsing data...Output to:', out_dir)
-    if os.path.exists(out_dir): rmtree(out_dir)
-
-    frame_dir = os.path.join(data_dir, sensor)
-    if os.path.exists(frame_dir):
-        frames = [f for f in os.listdir(frame_dir) if f.find('png') != -1]
-        print(frames)
-	if len(frames) == 0:
-            frames = []
-            print 'Frames not found: ' + frame_dir
-        else:
-            frames = natural_sort(frames)
-            padding = len(frames[-1].split('.png')[0])
-            os.makedirs(out_dir)
-    else:
-        frames = []
-        print 'Frames not found: ' + frame_dir
-
-    frame_count = 0; dir_count = 0;
-    dst = os.path.join(out_dir, '0')
-    for i in range(len(frames)):
-        if i % fpv == 0:
-            print 'Prev video # of frames:', frame_count
-            print 'End frame', frames[i]
-            dst = os.path.join(out_dir, str(i/fpv).zfill(3))
-            if not os.path.exists(dst):
-                os.makedirs(dst)
-            frame_count = 0; dir_count += 1
-        src = os.path.join(frame_dir, frames[i])
-        num_frame = frames[i].split('.png')[0]
-        dst_frame = os.path.join(dst, num_frame.zfill(padding)+'.png')
-        copyfile(src, dst_frame)
-        frame_count += 1
-    print 'Num. videos:', dir_count
-
-    if frame_count > 0:
-        command = ' '.join(['chmod', '777', '-R', out_dir])
-        sp.call(command, shell=True)
-    return (out_dir, dir_count)
+def parse_frames(input_path, path_level1, dirs_level2):
+    frame_paths = []
+    for dir_level2 in dirs_level2:
+        frames = [f for f in os.listdir(os.path.join(path_level1, dir_level2)) if f.split('.')[1] == 'jpg' or 'png']
+        frames = natural_sort(frames)
+        frame_paths += [os.path.join(path_level1, dir_level2, frame) for frame in frames]
+    return frame_paths
 
 
 def main(params):
-    if os.path.exists(params['out_dir']): rmtree(params['out_dir'])
-    os.makedirs(params['out_dir'])
-    sensor_dirs = ['Fiona_001']#[d for d in os.listdir(params['data_dir'])]
-    for s in sensor_dirs:
-	joinit = os.path.join(params['data_dir'], s)
-	furtherdown = [d for d in os.listdir(joinit) if d.find('2016') != -1]
-	for d in furtherdown:
-		path = os.path.join(s, d)
-        	frames_dir, dir_count = parse_frames(path, params['data_dir'],
-            		params['frame_per_video'])
-        	for i in range(dir_count):
-            		frame_dir = os.path.join(frames_dir, str(i).zfill(3))
-            		out_dir = os.path.join(params['out_dir'], path, str(i))
-            		assert os.path.exists(frame_dir), 'Frames not found: ' + frame_dir
-            		if not os.path.exists(out_dir):
-                		os.makedirs(out_dir)
-            		# For each video save one thumbnail image
-            		frames = [f for f in os.listdir(frame_dir) if f.find('png') != -1]
-            		thumbnail = os.path.join(frame_dir, frames[0])
-            		copyfile(thumbnail, os.path.join(out_dir, 'thumbnail.jpg'))
-            		frames_to_mp4(frame_dir, out_dir, params['frame_per_second'], params['rotate'])
-    inspect_video_data(params['out_dir'], params['video_per_playlist'])
+    input_path = params['input_path']
+    output_path = params['output_path']
+    videos_per_playlist = params['videos_per_playlist']
+    clips_per_video = params['clips_per_video']
+
+    # if os.path.exists(output_path): rmtree(output_path)
+    # os.makedirs(output_path)
+    # dirs_level1 = [d for d in os.listdir(input_path)]
+    # for dir_level1 in dirs_level1:
+    #     path_level1 = os.path.join(input_path, dir_level1)
+    #     dirs_level2 = [d for d in os.listdir(path_level1) if os.path.isdir(os.path.join(path_level1, d))]
+    #
+    #     num_playlists = int(math.ceil(len(dirs_level2)/float(videos_per_playlist*clips_per_video)))
+    #     for i in range(num_playlists):
+    #         playlist_name = dir_level1+'_'+dirs_level2[0]
+    #         for j in range(videos_per_playlist):
+    #             start_idx = i*videos_per_playlist*clips_per_video
+    #             end_idx = max(start_idx+clips_per_video, len(dirs_level2))
+    #             frame_paths = parse_frames(input_path, path_level1, dirs_level2[start_idx:end_idx])
+    #             mp4_path = os.path.join(output_path, playlist_name, str(j))
+    #             frames_to_mp4(frame_paths, mp4_path, params['fps'], params['rotate'])
+
+    inspect_video_data(params['output_path'])
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data_dir', default='../data',
-                        help='Root directory where all data resides')
-    parser.add_argument('--out_dir', default='../public/static/video',
-                        help='Output directory')
-    parser.add_argument('--frame_per_video', default=199,
-                        help='Number of frames per video')
-    parser.add_argument('--frame_per_second', default=5,
-                        help='Number of frames per second (frame rate)')
-    parser.add_argument('--video_per_playlist', default=10,
-                        help='Number of videos per playlist')
-    parser.add_argument('--rotate', default=False,
-	                    help='Rotate video by 180 degrees if True')
+    parser.add_argument('--input_path', default='../data', help='Root directory where all data resides')
+    parser.add_argument('--output_path', default='../public/static/video', help='Output directory')
+    parser.add_argument('--rotate', default=False, help='Rotate video by 180 degrees if True')
+    parser.add_argument('--fps', default=5, help='Number of frames per second (frame rate)')
+
+    # input: dataset/dir_level1/dir_level2/*.png
+    # output: video/playlist_name/video_id_in_playlist/video.mp4
+    parser.add_argument('--videos_per_playlist', default=10, help='Number of videos per playlist')
+    parser.add_argument('--clips_per_video', default=5, help='Number of clips per video')
 
     args = parser.parse_args()
     params = vars(args)

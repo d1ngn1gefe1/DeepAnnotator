@@ -16,8 +16,8 @@ def read_json(data_path):
 def update_user_config(users):
     while True:
         try:
-            username = raw_input('Username: ')
-            password = raw_input('Password: ')
+            username = input('Username: ')
+            password = input('Password: ')
             users[username] = password
         except EOFError:
             break
@@ -31,7 +31,7 @@ def main(params):
         'video_root': params['video_root'],
         'server': params['server'],
         'database': params['database'],
-        'db_password': raw_input('Database password: ')
+        'db_password': input('Database password: ')
     }
     config_path = os.path.join(params['config_root'], 'config.json')
     write_json(config, config_path)

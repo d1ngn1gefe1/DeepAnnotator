@@ -68,7 +68,8 @@ export default class VideoAnnotator extends React.Component {
     this.currentKey = 0;
     this.currentLabels = [];
     this.isFocus = false;
-    this.public = json.public;
+    this.public = json.server+':5000';  // hardcoded, bad
+    this.ext = json.ext;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
     this.handleNewObjectLabels = this.handleNewObjectLabels.bind(this);
@@ -101,13 +102,13 @@ export default class VideoAnnotator extends React.Component {
     for (var i = self.start; i < self.end; i++) {
       playlist.push({
         sources: [{
-          // src: "http://"+self.public+"/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
-          src: "http://aicare.stanford.edu/static/video/"+self.playlistName+"/"+i+"/depth.mp4",
+          src: "http://"+self.public+"/static/video/"+self.playlistName+"/"+i+"/video.mp4",
+          // src: "http://aicare.stanford.edu/static/video/"+self.playlistName+"/"+i+"/video.mp4",
           type: "video/mp4"
         }],
         name: "Video "+i,
-        thumbnail: "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg",
-        poster: "/static/video/"+self.playlistName+"/"+i+"/thumbnail.jpg"
+        thumbnail: "/static/video/"+self.playlistName+"/"+i+"/thumbnail"+self.ext,
+        poster: "/static/video/"+self.playlistName+"/"+i+"/thumbnail"+self.ext
       });
     }
 
