@@ -33,7 +33,7 @@ except:
 
 # Insert users to table
 users = read_json(USER_CONFIG)
-for username, password in users.iteritems():
+for username, password in users.items():
     user = User(username, password)
     session.add(user)
 
