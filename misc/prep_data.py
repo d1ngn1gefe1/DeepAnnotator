@@ -31,7 +31,6 @@ def inspect_video_data(output_path):
     stat['playlists'] = playlists
     stat['ext'] = '.'+glob.glob(os.path.join(output_path, playlists[0], '0', 'thumbnail*'))[0].split('.')[-1]
     json_path = os.path.join(output_path, 'info.json')
-    print(stat)
     write_json(stat, json_path)
 
 
@@ -51,7 +50,6 @@ def frames_to_mp4(frame_paths, output_path, fps, rotate):
         frame = np.clip((frame-20)*8, 0, 255)  # hardcoded
         frame = cv2.applyColorMap(frame, cv2.COLORMAP_JET)
         cv2.imwrite(os.path.join(output_path, str(i).zfill(5)+ext), frame)
-
     frames = '\'' + os.path.join(output_path, '*'+ext) + '\''
     mp4_path = os.path.join(output_path, 'video.mp4')
     if rotate:
@@ -98,15 +96,9 @@ def natural_sort(l):
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(l, key = alphanum_key)
 
-
-def parse_frames(input_path, path_level1, dirs_level2):
-    frame_paths = []
-    for dir_level2 in dirs_level2:
-        frames = [f for f in os.listdir(os.path.join(path_level1, dir_level2)) if f.split('.')[1] == 'jpg' or 'png']
-        frames = natural_sort(frames)
-        frame_paths += [os.path.join(path_level1, dir_level2, frame) for frame in frames]
-    return frame_paths
-
+def get_playlistnames(allfold):
+    fold = set([x.split('.')[0] for x in allfold])
+    return list(fold)
 
 def main(params):
     input_path = params['input_path']
@@ -114,22 +106,27 @@ def main(params):
     videos_per_playlist = params['videos_per_playlist']
     clips_per_video = params['clips_per_video']
 
-    # if os.path.exists(output_path): rmtree(output_path)
-    # os.makedirs(output_path)
-    # dirs_level1 = [d for d in os.listdir(input_path)]
-    # for dir_level1 in dirs_level1:
-    #     path_level1 = os.path.join(input_path, dir_level1)
-    #     dirs_level2 = [d for d in os.listdir(path_level1) if os.path.isdir(os.path.join(path_level1, d))]
-    #
-    #     num_playlists = int(math.ceil(len(dirs_level2)/float(videos_per_playlist*clips_per_video)))
-    #     for i in range(num_playlists):
-    #         playlist_name = dir_level1+'_'+dirs_level2[0]
-    #         for j in range(videos_per_playlist):
-    #             start_idx = i*videos_per_playlist*clips_per_video
-    #             end_idx = max(start_idx+clips_per_video, len(dirs_level2))
-    #             frame_paths = parse_frames(input_path, path_level1, dirs_level2[start_idx:end_idx])
-    #             mp4_path = os.path.join(output_path, playlist_name, str(j))
-    #             frames_to_mp4(frame_paths, mp4_path, params['fps'], params['rotate'])
+    if os.path.exists(output_path): rmtree(output_path)
+    os.makedirs(output_path)
+    dirs_level1 = [d for d in os.listdir(input_path)]
+    for dir_level1 in dirs_level1:
+        path_level1 = os.path.join(input_path, dir_level1)
+        dirs_level2 = [d for d in os.listdir(path_level1) if os.path.isdir(os.path.join(path_level1, d))]
+        playlistnames = get_playlistnames(dirs_level2)
+        for play in playlistnames:
+            print("new playlist: ", play)
+            relevdir = [d for d in dirs_level2 if d.find(play) != -1]
+            allframes = [os.path.join(path_level1,rel, frame) for rel in relevdir for frame in os.listdir(os.path.join(path_level1, rel)) if frame.find('jpg') != -1 or frame.find('png') != -1]
+            allframes = sorted(allframes)
+            num_playlists = int(math.ceil(len(allframes)/float(videos_per_playlist*clips_per_video)))
+            for i in range(num_playlists):
+            	playlist_name = play+'.'+ str(i)
+            	for j in range(videos_per_playlist):
+                	start_idx = i*videos_per_playlist*clips_per_video
+                	end_idx = min(start_idx+clips_per_video, len(allframes))
+                	frame_paths = allframes[start_idx:end_idx]
+                	mp4_path = os.path.join(output_path, playlist_name, str(j))
+                	frames_to_mp4(frame_paths, mp4_path, params['fps'], params['rotate'])
 
     inspect_video_data(params['output_path'])
 
@@ -145,7 +142,7 @@ if __name__ == '__main__':
     # input: dataset/dir_level1/dir_level2/*.png
     # output: video/playlist_name/video_id_in_playlist/video.mp4
     parser.add_argument('--videos_per_playlist', default=10, help='Number of videos per playlist')
-    parser.add_argument('--clips_per_video', default=5, help='Number of clips per video')
+    parser.add_argument('--clips_per_video', default=299, help='Number of clips per video')
 
     args = parser.parse_args()
     params = vars(args)

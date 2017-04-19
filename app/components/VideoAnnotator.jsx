@@ -68,7 +68,7 @@ export default class VideoAnnotator extends React.Component {
     this.currentKey = 0;
     this.currentLabels = [];
     this.isFocus = false;
-    this.public = json.server+':5000';  // hardcoded, bad
+    this.public = json.server+':8888';  // hardcoded, bad
     this.ext = json.ext;
 
     this.handleNewFrameLabels = this.handleNewFrameLabels.bind(this);
