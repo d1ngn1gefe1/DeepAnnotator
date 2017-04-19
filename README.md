@@ -15,6 +15,7 @@
 
 ## To setup the website, please run the following commands:
 ```bash
+python3 changedataset.py --input_path '/data/thermset' --ouput_path '/data/deepannotator' (optional: if your dataset is not datasetname->folder->*.jpg/png format)
 npm install
 npm start
 bash prep.sh
