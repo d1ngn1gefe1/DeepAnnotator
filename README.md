@@ -18,8 +18,8 @@
 python3 changedataset.py --input_path '/data/thermset' --ouput_path '/data/deepannotator' (optional: if your dataset is not datasetname->folder->*.jpg/png format)
 mysql -u root -p (create database deep_annotator)
 bash prep.sh
-npm install
-npm start
+sudo npm install
+sudo npm start
 cd public
 python app.py --port xxxx (xxxx corresponds to the port number)
 ```
