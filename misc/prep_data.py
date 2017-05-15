@@ -101,7 +101,7 @@ def main(params):
     output_path = params['output_path']
     videos_per_playlist = params['videos_per_playlist']
     clips_per_video = params['clips_per_video']
-
+    framevidc = {}
     if os.path.exists(output_path): rmtree(output_path)
     os.makedirs(output_path)
     dirs_level1 = [d for d in os.listdir(input_path)]
@@ -109,7 +109,7 @@ def main(params):
             print("new playlist: ", play)
             path_level1 = os.path.join(input_path, play)
             allframes = [os.path.join(path_level1, frame) for frame in os.listdir(path_level1) if frame.find('jpg') != -1 or frame.find('png') != -1]
-            allframes = sorted(allframes,  key=lambda x: int(x.split('/')[-1].split('_')[0]))
+            allframes = sorted(allframes,  key=lambda x: int(x.split('/')[-1].split('-')[0]))
             num_playlists = int(math.ceil(len(allframes)/float(videos_per_playlist*clips_per_video)))
             print(play, num_playlists)
             for i in range(num_playlists):
@@ -120,8 +120,11 @@ def main(params):
                 	frame_paths = allframes[start_idx:end_idx]
                 	mp4_path = os.path.join(output_path, playlist_name, str(j))
                 	frames_to_mp4(frame_paths, mp4_path, params['fps'], params['rotate'])
+                	match = {i:v for i,v in enumerate(frame_paths)}
+                	framevidc[playlist_name+str(j)] = match
                 	if (end_idx == len(allframes)):
                 		break
+    write_json(framevidc, os.path.join(output_path, 'conv.json'))
     inspect_video_data(params['output_path'])
 
 

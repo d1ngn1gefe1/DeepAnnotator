@@ -26,6 +26,7 @@ def main(params):
 		os.makedirs(os.path.join(outpath, fold), exist_ok=True)
 		outimgs = str(cnt) + '_'.join((path.replace(inpath, ' ')).split('/'))
 		cnt += 1
+		print(path)
 		cv2.imwrite(os.path.join(outpath,fold,outimgs), cv2.imread(os.path.join(path)))
 
 if __name__ == '__main__':
