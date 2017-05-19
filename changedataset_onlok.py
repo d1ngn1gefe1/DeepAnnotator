@@ -3,15 +3,12 @@ import cv2
 import argparse
 import re
 
-INPUTPATH = './'
-OUTPUTPATH = './output'
-
 def unzip(path):
     for root, dirs, files in os.walk(path, topdown=False):
         for name in files:
             if re.search('.gz', name):
                 # Unzip the .gz file
-                print '[INFO]-Unzipping: ', os.path.join(root, name)
+                print('[INFO]-Unzipping: ', os.path.join(root, name))
                 os.system('tar -xf ' + os.path.join(root, name) + ' -C ' + root)
 #                Delete the .gz file
 #                os.system('rm ' + os.path.join(root, name))
@@ -35,18 +32,18 @@ def findpaths(path):
     return depth_paths_sorted, depth_dict
 
 def main(params):
-    print 'Input path: ', params['input_path']
-    print 'Output path: ', params['output_path']
+    print('Input path: ', params['input_path'])
+    print('Output path: ', params['output_path'])
     inpath = params['input_path']
     outpath = params['output_path']
     unzip(inpath)
-    print '[INFO]-Finding all images...'
+    print('[INFO]-Finding all images...')
     d_paths, d_dict = findpaths(inpath)
-    print '[INFO]-Starting to copy images...'
+    print('[INFO]-Starting to copy images...')
     # DEPTH IMAGES
     for cnt, d_path in enumerate(d_paths):
         if (1+cnt)%500==0:
-            print '[INFO]-Copying depth image # ', 1+cnt
+            print('[INFO]-Copying depth image # ', 1+cnt)
         if not os.path.exists(outpath):
             os.makedirs(outpath)
         cv2.imwrite(os.path.join(outpath, str(cnt)+'-'+d_dict[d_path][0]+'-'+d_dict[d_path][1]+'-'+d_dict[d_path][2]+'.jpg'), cv2.imread(d_path))
@@ -54,8 +51,8 @@ def main(params):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--input_path', default=INPUTPATH, help='Root directory where all data resides eg: ./')
-    parser.add_argument('--output_path', default=OUTPUTPATH, help='Output directory')
+    parser.add_argument('--input_path', default='./', help='Root directory where all data resides eg: ./')
+    parser.add_argument('--output_path', default='./output', help='Output directory')
     args = parser.parse_args()
     params = vars(args)
     main(params)
