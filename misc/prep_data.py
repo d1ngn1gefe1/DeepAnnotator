@@ -47,14 +47,14 @@ def frames_to_mp4(frame_paths, output_path, fps, rotate):
     ext = '.'+frame_paths[0].split('.')[-1]
     for i, frame_path in enumerate(frame_paths):
         frame = cv2.imread(frame_path)
-	img = frame.astype(np.float32)
-    	if img.ndim == 3:
-        	img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
-	max_threshold = 70
-	img = np.clip(img, 0, max_threshold) / max_threshold
- 	img = np.array(img * 255, dtype=np.uint8)
-	img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-	img = cv2.applyColorMap(img, cv2.COLORMAP_JET)
+        img = frame.astype(np.float32)
+        if img.ndim == 3:
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
+        max_threshold = 70
+        img = np.clip(img, 0, max_threshold) / max_threshold
+        img = np.array(img * 255, dtype=np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        img = cv2.applyColorMap(img, cv2.COLORMAP_JET)
         cv2.imwrite(os.path.join(output_path, str(i).zfill(5)+ext), img)
     frames = '\'' + os.path.join(output_path, '*'+ext) + '\''
     mp4_path = os.path.join(output_path, 'video.mp4')
@@ -88,7 +88,7 @@ def frames_to_mp4(frame_paths, output_path, fps, rotate):
     frame = cv2.imread(thumbnail_path)
     img = frame.astype(np.float32)
     if img.ndim == 3:
-    	img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
     max_threshold = 70
     img = np.clip(img, 0, max_threshold) / max_threshold
     img = np.array(img * 255, dtype=np.uint8)
@@ -125,17 +125,17 @@ def main(params):
             num_playlists = int(math.ceil(len(allframes)/float(videos_per_playlist*clips_per_video)))
             print(play, num_playlists)
             for i in range(num_playlists):
-            	playlist_name = play+'.'+ str(i)
-            	for j in range(videos_per_playlist):
-                	start_idx = i*videos_per_playlist*clips_per_video + j*clips_per_video
-                	end_idx = min(start_idx+clips_per_video, len(allframes))
-                	frame_paths = allframes[start_idx:end_idx]
-                	mp4_path = os.path.join(output_path, playlist_name, str(j))
-                	frames_to_mp4(frame_paths, mp4_path, params['fps'], params['rotate'])
-                	match = {i:v for i,v in enumerate(frame_paths)}
-                	framevidc[playlist_name+str(j)] = match
-                	if (end_idx == len(allframes)):
-                		break
+                playlist_name = play+'.'+ str(i)
+                for j in range(videos_per_playlist):
+                    start_idx = i*videos_per_playlist*clips_per_video + j*clips_per_video
+                    end_idx = min(start_idx+clips_per_video, len(allframes))
+                    frame_paths = allframes[start_idx:end_idx]
+                    mp4_path = os.path.join(output_path, playlist_name, str(j))
+                    frames_to_mp4(frame_paths, mp4_path, params['fps'], params['rotate'])
+                    match = {i:v for i,v in enumerate(frame_paths)}
+                    framevidc[playlist_name+str(j)] = match
+                    if (end_idx == len(allframes)):
+                        break
     #write_json(framevidc, os.path.join(output_path, 'conv.json'))
     inspect_video_data(params['output_path'])
 
