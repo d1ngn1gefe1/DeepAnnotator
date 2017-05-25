@@ -46,10 +46,16 @@ def frames_to_mp4(frame_paths, output_path, fps, rotate):
     os.makedirs(output_path, exist_ok=True)
     ext = '.'+frame_paths[0].split('.')[-1]
     for i, frame_path in enumerate(frame_paths):
-        frame = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
-        frame = np.clip((frame-20)*8, 0, 255)  # hardcoded
-        frame = cv2.applyColorMap(frame, cv2.COLORMAP_JET)
-        cv2.imwrite(os.path.join(output_path, str(i).zfill(5)+ext), frame)
+        frame = cv2.imread(frame_path)
+	img = frame.astype(np.float32)
+    	if img.ndim == 3:
+        	img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
+	max_threshold = 70
+	img = np.clip(img, 0, max_threshold) / max_threshold
+ 	img = np.array(img * 255, dtype=np.uint8)
+	img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+	img = cv2.applyColorMap(img, cv2.COLORMAP_JET)
+        cv2.imwrite(os.path.join(output_path, str(i).zfill(5)+ext), img)
     frames = '\'' + os.path.join(output_path, '*'+ext) + '\''
     mp4_path = os.path.join(output_path, 'video.mp4')
     if rotate:
@@ -79,10 +85,16 @@ def frames_to_mp4(frame_paths, output_path, fps, rotate):
         os.remove(os.path.join(output_path, f))
 
     thumbnail_path = frame_paths[0]
-    thumbnail = cv2.imread(thumbnail_path, cv2.IMREAD_GRAYSCALE)
-    thumbnail = np.clip((thumbnail-20)*8, 0, 255)  # hardcoded
-    thumbnail = cv2.applyColorMap(thumbnail, cv2.COLORMAP_JET)
-    cv2.imwrite(os.path.join(output_path, 'thumbnail'+ext), thumbnail)
+    frame = cv2.imread(thumbnail_path)
+    img = frame.astype(np.float32)
+    if img.ndim == 3:
+    	img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
+    max_threshold = 70
+    img = np.clip(img, 0, max_threshold) / max_threshold
+    img = np.array(img * 255, dtype=np.uint8)
+    img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    img = cv2.applyColorMap(img, cv2.COLORMAP_JET)
+    cv2.imwrite(os.path.join(output_path, 'thumbnail'+ext), img)
 
 
 def natural_sort(l):
@@ -124,14 +136,14 @@ def main(params):
                 	framevidc[playlist_name+str(j)] = match
                 	if (end_idx == len(allframes)):
                 		break
-    write_json(framevidc, os.path.join(output_path, 'conv.json'))
+    #write_json(framevidc, os.path.join(output_path, 'conv.json'))
     inspect_video_data(params['output_path'])
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--input_path', default='/data/deepannotator', help='Root directory where all data resides')
+    parser.add_argument('--input_path', default='/data/new', help='Root directory where all data resides')
     parser.add_argument('--output_path', default='../public/static/video', help='Output directory')
     parser.add_argument('--rotate', default=False, help='Rotate video by 180 degrees if True')
     parser.add_argument('--fps', default=5, help='Number of frames per second (frame rate)')
