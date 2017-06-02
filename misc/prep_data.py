@@ -8,7 +8,7 @@ import os
 import re
 import subprocess as sp
 from shutil import copyfile, rmtree
-from create_config import write_json
+from create_config import read_json, write_json
 
 
 def inspect_video_data(output_path):
@@ -46,16 +46,10 @@ def frames_to_mp4(frame_paths, output_path, fps, rotate):
     os.makedirs(output_path, exist_ok=True)
     ext = '.'+frame_paths[0].split('.')[-1]
     for i, frame_path in enumerate(frame_paths):
-        frame = cv2.imread(frame_path)
-        img = frame.astype(np.float32)
-        if img.ndim == 3:
-            img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
-        max_threshold = 70
-        img = np.clip(img, 0, max_threshold) / max_threshold
-        img = np.array(img * 255, dtype=np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-        img = cv2.applyColorMap(img, cv2.COLORMAP_JET)
-        cv2.imwrite(os.path.join(output_path, str(i).zfill(5)+ext), img)
+        frame = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
+        frame = np.clip((frame-20)*8, 0, 255)  # hardcoded
+        frame = cv2.applyColorMap(frame, cv2.COLORMAP_OCEAN)
+        cv2.imwrite(os.path.join(output_path, str(i).zfill(5)+ext), frame)
     frames = '\'' + os.path.join(output_path, '*'+ext) + '\''
     mp4_path = os.path.join(output_path, 'video.mp4')
     if rotate:
@@ -83,19 +77,12 @@ def frames_to_mp4(frame_paths, output_path, fps, rotate):
     files = [f for f in os.listdir(output_path) if f.endswith(ext)]
     for f in files:
         os.remove(os.path.join(output_path, f))
-
+    
     thumbnail_path = frame_paths[0]
-    frame = cv2.imread(thumbnail_path)
-    img = frame.astype(np.float32)
-    if img.ndim == 3:
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # float between 0, 255
-    max_threshold = 70
-    img = np.clip(img, 0, max_threshold) / max_threshold
-    img = np.array(img * 255, dtype=np.uint8)
-    img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-    img = cv2.applyColorMap(img, cv2.COLORMAP_JET)
-    cv2.imwrite(os.path.join(output_path, 'thumbnail'+ext), img)
-
+    thumbnail = cv2.imread(thumbnail_path, cv2.IMREAD_GRAYSCALE)
+    thumbnail = np.clip((thumbnail-20)*8, 0, 255)  # hardcoded
+    thumbnail = cv2.applyColorMap(thumbnail, cv2.COLORMAP_OCEAN)
+    cv2.imwrite(os.path.join(output_path, 'thumbnail'+ext), thumbnail)
 
 def natural_sort(l):
     '''Sort a list of strings base on digits each string contains
@@ -114,9 +101,12 @@ def main(params):
     videos_per_playlist = params['videos_per_playlist']
     clips_per_video = params['clips_per_video']
     framevidc = {}
-    if os.path.exists(output_path): rmtree(output_path)
-    os.makedirs(output_path)
+    #if os.path.exists(output_path): rmtree(output_path)
+    if not os.path.exists(output_path):
+            os.makedirs(output_path)
     dirs_level1 = [d for d in os.listdir(input_path)]
+    videosdone = [d.split('.')[0] for d in os.listdir(output_path)]
+    dirs_level1 = list(set(dirs_level1)-set(videosdone))
     for play in dirs_level1:
             print("new playlist: ", play)
             path_level1 = os.path.join(input_path, play)
@@ -136,7 +126,11 @@ def main(params):
                     framevidc[playlist_name+str(j)] = match
                     if (end_idx == len(allframes)):
                         break
-    #write_json(framevidc, os.path.join(output_path, 'conv.json'))
+    if os.path.exists(os.path.join(output_path, 'conv.json')):
+            val = read_json(os.path.join(output_path, 'conv.json'))
+            val.update(framevidc)
+            framevidc = val
+    write_json(framevidc, os.path.join(output_path, 'conv.json'))
     inspect_video_data(params['output_path'])
 
 
